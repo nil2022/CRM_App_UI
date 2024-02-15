@@ -12,9 +12,13 @@ export default defineConfig(async ({ mode }) => {
         '/crm/api': 
         {
           target: `${env.VITE_CRM_BACKEND_URL}`,
-          changeOrigin: true
+          changeOrigin: true,
         }
       },
+      cors: true
+    },
+    define: {
+      VITE_CRM_BACKEND_URL: JSON.stringify(env.VITE_CRM_BACKEND_URL),
     },
     plugins: [react()],
   }
