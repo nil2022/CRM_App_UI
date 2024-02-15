@@ -1,12 +1,25 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  server: {
-    proxy: {
-      '/crm/api': 'http://localhost:3000',
+
+export default defineConfig(async ({ mode }) => {
+  const env = loadEnv(mode, '', '')
+  
+  return {
+    server: {
+      proxy: {
+        '/crm/api': 
+        {
+          target: `${env.VITE_CRM_BACKEND_URL}`,
+          changeOrigin: true,
+        }
+      },
+      cors: true
     },
-  },
-  plugins: [react()],
+    define: {
+      VITE_CRM_BACKEND_URL: JSON.stringify(env.VITE_CRM_BACKEND_URL),
+    },
+    plugins: [react()],
+  }
 })

@@ -3,44 +3,51 @@ import { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import toast,{ Toaster } from 'react-hot-toast'
 
-function Signup() {
+function Signin() {
     // console.log("login:", login)
 
     const [data, setData] = useState({})
     const [userId, setUserId] = useState("")
     const [password, setPassword] = useState("")
-
-    const login = useCallback(() => {
-      axios.post(`/crm/api/auth/signin`,
+  
+    const login = useCallback(async() => {
+      await axios.post(`${import.meta.env.VITE_CRM_BACKEND_URL}/crm/api/auth/signin`,
       {
         userId,
         password
       })
-      .then(response => {
-        // console.log(response.data)
-        setData(response.data)
-        toast.success(response.data?.message,
+      .then((res) => {
+        setData(res.data)
+        console.log(res.data)
+        toast.success(res.data?.message || data?.message,
             {
                 duration: 3000
             })
       })
-      .catch(error => {
-        console.log("Got Error:",error)
-        setData(error)
-        toast.error(error.response?.data.message || error.message,
+      .catch((err) => {
+        setData(err.response)
+        console.log("Got Error:",err.response)
+        console.log({
+            message:'error in cloud',
+            error1: err.response.data?.message,
+            error2: err?.message,
+            error3: err.data?.error?.message
+        })
+        toast.error(err.response.data?.message || err?.message || err.data?.error?.message,
             {
                 duration: 3000
             })
       })
-    },[userId, password, setData])
-    
+    },[userId, password, data])
 
     // useEffect(() => {
-    //   login()
+    //     setData(data)
+    //     setError(error)
     //   return () => {
-    //     setData("")
+    //     setError({})
+    //     setData({})
     //   }
-    // },[login])
+    // },[setData, setError])
 
     // console.log(data)
 
@@ -77,7 +84,10 @@ function Signup() {
                                 Register Now !
                             </a>
                         </p>
-                        <form action="/login" method="POST" className="mt-8">
+                        <form action="#" 
+                            method="POST" 
+                            className="mt-8"
+                            onSubmit={(e) => e.preventDefault()}>
                             <div className="space-y-5">
                                 {/* <div>
                                     <label htmlFor="name" className="text-base font-medium text-gray-900">
@@ -191,4 +201,4 @@ function Signup() {
     )
 }
 
-export default Signup
+export default Signin
