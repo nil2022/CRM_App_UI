@@ -1,7 +1,8 @@
 import { ArrowRight } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import axios from 'axios'
 import toast,{ Toaster } from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 
 function Signin() {
     // console.log("login:", login)
@@ -27,30 +28,18 @@ function Signin() {
       .catch((err) => {
         setData(err.response)
         console.log("Got Error:",err.response)
-        console.log({
-            message:'error in cloud',
-            error1: err.response.data?.message,
-            error2: err?.message,
-            error3: err.data?.error?.message
-        })
+        // console.log({
+        //     message:'error in cloud',
+        //     error1: err.response.data?.message,
+        //     error2: err?.message,
+        //     error3: err.data?.error?.message
+        // })
         toast.error(err.response.data?.message || err?.message || err.data?.error?.message,
             {
                 duration: 3000
             })
       })
     },[userId, password, data])
-
-    // useEffect(() => {
-    //     setData(data)
-    //     setError(error)
-    //   return () => {
-    //     setError({})
-    //     setData({})
-    //   }
-    // },[setData, setError])
-
-    // console.log(data)
-
     return (
         <>
             <section>
@@ -76,33 +65,18 @@ function Signin() {
                         <p className="mt-2 text-center text-base text-gray-600">
                             Don&apos;t have an account?{' '}
                             <br/>
-                            <a
-                                href="#"
-                                title=""
+                            <Link
+                                to="/signup"
                                 className="font-[800] text-black transition-all duration-200 hover:underline"
                             >
                                 Register Now !
-                            </a>
+                            </Link>
                         </p>
                         <form action="#" 
                             method="POST" 
                             className="mt-8"
                             onSubmit={(e) => e.preventDefault()}>
                             <div className="space-y-5">
-                                {/* <div>
-                                    <label htmlFor="name" className="text-base font-medium text-gray-900">
-                                        {' '}
-                                        Full Name{' '}
-                                    </label>
-                                    <div className="mt-2">
-                                        <input
-                                            className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                                            type="text"
-                                            placeholder="Full Name"
-                                            id="name"
-                                        ></input>
-                                    </div>
-                                </div> */}
                                 <div>
                                     <div className="flex items-center justify-between">
                                         <label htmlFor="userId" 
@@ -195,6 +169,13 @@ function Signin() {
                         </p> */}
                     </div>
                 </div>
+                {/* <div>
+                    Please Note that initially after clicking  
+                    <div className="inline-flex w-[90px] h-[30px] gap-x-1 items-center justify-center rounded-lg bg-black mx-1 px-[5px] py-1 font-semibold leading-5 text-white hover:bg-slate-700 transition-all duration-400">
+                        Sign In
+                    </div>
+                    button, it may take time because the backend of this app is connected with a server which sleeps after inactivity.
+                </div> */}
             </section>
             <Toaster position="top-center" />
         </>
