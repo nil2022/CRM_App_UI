@@ -1,7 +1,3 @@
 {
-    "rewrites": [
-        {
-            "source": "/crm/api", "destination": "https://crm-app-5px1.onrender.com"
-        }
-    ]
+   
 }
