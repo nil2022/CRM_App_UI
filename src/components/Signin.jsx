@@ -28,6 +28,12 @@ function Signin() {
       .catch((err) => {
         setData(err.response)
         console.log("Got Error:",err.response)
+        console.log({
+            message:'error in cloud',
+            error1: err.response.data?.message,
+            error2: err?.message,
+            error3: err.data?.error?.message
+        })
         toast.error(err.response.data?.message || err?.message || err.data?.error?.message,
             {
                 duration: 3000
