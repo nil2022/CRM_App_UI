@@ -28,7 +28,7 @@ function Signin() {
       .catch((err) => {
         setData(err.response)
         console.log("Got Error:",err.response)
-        toast.error(err.response.data?.message || err?.message,
+        toast.error(err.response.data?.message || err?.message || err.data?.error?.message,
             {
                 duration: 3000
             })
