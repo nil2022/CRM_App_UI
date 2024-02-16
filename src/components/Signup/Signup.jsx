@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
-import Usertype from '../Signin/Usertype'
 
 function Signup() {
     // console.log("login:", login)
@@ -13,6 +12,7 @@ function Signup() {
     const [userId, setUserId] = useState("")
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
+    const [usertype, setUsertype] = useState("CUSTOMER")
 
     const register = useCallback(async () => {
         await axios.post(`${import.meta.env.VITE_CRM_BACKEND_URL}/crm/api/auth/signup`,
@@ -21,6 +21,7 @@ function Signup() {
                 userId,
                 password,
                 email,
+                userType: usertype
             })
             .then((res) => {
                 setData(res.data)
@@ -44,7 +45,9 @@ function Signup() {
                         duration: 3000
                     })
             })
-    }, [firstName, userId, password, email, data])
+    }, [firstName, userId, password, email, usertype, data])
+
+    console.log("usertype:", usertype)
     return (
         <>
             <section>
@@ -65,7 +68,7 @@ function Signup() {
                             </svg>
                         </div>
                         <h2 className="text-center text-2xl font-bold leading-tight text-black">
-                           Register to your account
+                            Register to your account
                         </h2>
                         <p className="mt-2 text-center text-base text-gray-600">
                             Already have an account?{' '}
@@ -83,20 +86,20 @@ function Signup() {
                             onSubmit={(e) => e.preventDefault()}>
                             <div className="space-y-5">
                                 <div>
-                                  <label htmlFor="name" className="text-base font-medium text-gray-900">
-                                      {' '}
-                                      Full Name{' '}
-                                  </label>
-                                  <div className="mt-2">
-                                      <input
-                                          className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                                          type="text"
-                                          placeholder="Full Name"
-                                          id="name"
-                                          onChange={(e) => setFirstName(e.target.value)}
-                                      ></input>
-                                  </div>
-                              </div>
+                                    <label htmlFor="name" className="text-base font-[800] text-gray-900">
+                                        {' '}
+                                        Full Name{' '}
+                                    </label>
+                                    <div className="mt-2">
+                                        <input
+                                            className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                                            type="text"
+                                            placeholder="Full Name"
+                                            id="name"
+                                            onChange={(e) => setFirstName(e.target.value)}
+                                        ></input>
+                                    </div>
+                                </div>
                                 <div>
                                     <div className="flex items-center justify-between">
                                         <label htmlFor="userId"
@@ -143,7 +146,7 @@ function Signup() {
                                             Email Id{' '}
                                         </label>
                                     </div>
-                                    <div className="mt-2">
+                                    <div className="mt-2 mb-4">
                                         <input
                                             className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                                             type="email"
@@ -154,7 +157,24 @@ function Signup() {
                                         ></input>
                                     </div>
                                 </div>
-                                <Usertype/>
+                                <div>
+                                    <div className="flex items-center justify-between">
+                                        <label htmlFor="usertype"
+                                            className="text-base font-[800] text-gray-900">
+                                            Usertype:
+                                        </label>
+                                        <select 
+                                        name="usertype" 
+                                        onChange={(e) => setUsertype(e.target.value)}
+                                        className='bg-gray-200 border border-gray-500 text-slate-900 text-sm font-[700] ml-5 rounded-lg 
+                                             focus:border-blue-500  focus:border-2 block w-full p-2 focus:outline-none
+                                             has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-900' >
+                                            <option value="CUSTOMER">CUSTOMER</option>
+                                            <option value="ENGINEER">ENGINEER</option>
+                                            <option value="ADMIN">ADMIN</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div>
                                     <button
                                         onClick={register}
@@ -166,11 +186,11 @@ function Signup() {
                                 </div>
                             </div>
                         </form>
-    
+
                     </div>
                 </div>
                 <div>
-                   
+
                 </div>
             </section>
             <Toaster position="top-center" />
