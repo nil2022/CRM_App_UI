@@ -31,4 +31,5 @@ dist-ssr
 .env.*
 *.env
 
+# Local Vercel folder
 .vercel
