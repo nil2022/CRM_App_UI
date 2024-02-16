@@ -9,10 +9,10 @@ import { Dashboard } from './components/Dashboard/Dashboard.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<Layout />}>
-    <Route path='' element={<Dashboard />}/>
-    <Route path='signup' element={<Signup />}/>
-    <Route path='signin' element={<Signin />}/>
+  <Route path='/' element={<Layout />}>
+      <Route path='' element={<Dashboard />}/>
+      <Route path='signup' element={<Signup />}/>
+      <Route path='signin' element={<Signin />}/>
   </Route>
   ) 
 )
