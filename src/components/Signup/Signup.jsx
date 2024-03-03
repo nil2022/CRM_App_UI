@@ -18,7 +18,7 @@ function Signup() {
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormValues({ ...formValues, [id]: value });
-        console.log(formValues);
+        // console.log(formValues);
     }
 
 
@@ -62,7 +62,7 @@ function Signup() {
         }
     }, [loading])
 
-    console.log('formValues:', formValues)
+    // console.log('formValues:', formValues)
 
     return (
         <>
@@ -70,8 +70,8 @@ function Signup() {
                 <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
-                            <img src="../../src/assets/icons8-register-100.png"
-                                className="h-12 w-12" alt="login-image" />
+                            <img src="/register-icon.png"
+                                className="h-12 w-12" alt="register_page_image" />
                         </div>
                         <h2 className="text-center text-4xl font-bold leading-tight text-black">
                             Create your {'\n'} account
