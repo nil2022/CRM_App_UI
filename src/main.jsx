@@ -6,6 +6,8 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 import Signup from './components/Signup/Signup.jsx'
 import Signin from './components/Signin/Signin.jsx'
 import { Dashboard } from './components/Dashboard/Dashboard.jsx'
+import Edit from './components/Edit/Edit.jsx'
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -13,6 +15,7 @@ const router = createBrowserRouter(
       <Route path='/' element={<Dashboard />}/>
       <Route path='/signup' element={<Signup />}/>
       <Route path='/signin' element={<Signin />}/>
+      {/* <Route path='/edit' element={<Edit />}/> */}
   </Route>
   ) 
 )

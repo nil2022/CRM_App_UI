@@ -24,11 +24,10 @@ export function Dashboard() {
             <p className="text-sm font-medium">Join our team &rarr;</p>
           </div>
           <h1 className="mt-8 text-3xl font-bold tracking-tight text-black md:text-4xl lg:text-6xl">
-            People who care about your growth
+            Questions answered in 24 hours !
           </h1>
           <p className="mt-8 text-lg text-gray-700">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur modi blanditiis
-            dolores quasi eaque explicabo!
+              Don&apos;t waste time worrying and waiting. We&apos;ll address your concerns earliest possible. Register today !
           </p>
           <form action="" className="mt-8 flex items-start space-x-2">
             <div>
