@@ -5,7 +5,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { Link, redirect } from 'react-router-dom'
 
 function Signin() {
-    
+
     /** set success message when success is true */
     const [successMsg, setSuccessMsg] = useState({})
     /** set error message when error is true */
@@ -18,7 +18,7 @@ function Signin() {
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormValues({ ...formValues, [id]: value });
-        console.log(formValues);
+        // console.log(formValues);
     }
 
 //    function handleSubmit(e) {
@@ -81,9 +81,9 @@ function Signin() {
                 <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
-                            <img src="../../src/assets/icons8-login-100.png"
+                            <img src="/login-icon.png"
                                 className="h-12 w-12"
-                                alt="login-image" />
+                                alt="login_Page_image" />
                         </div>
                         <h2 className="text-center text-2xl font-bold leading-tight text-black">
                             Welcome back !

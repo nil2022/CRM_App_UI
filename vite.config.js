@@ -20,6 +20,9 @@ export default defineConfig(async ({ mode }) => {
     define: {
       VITE_CRM_BACKEND_URL: JSON.stringify(env.VITE_CRM_BACKEND_URL),
     },
+    build: {
+      outDir: 'dist'
+    },
     plugins: [react()],
   }
 })
