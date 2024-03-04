@@ -5,17 +5,17 @@ import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import Signup from './components/Signup/Signup.jsx'
 import Signin from './components/Signin/Signin.jsx'
-import { Dashboard } from './components/Dashboard/Dashboard.jsx'
-import Edit from './components/Edit/Edit.jsx'
+import { Home } from './components/Home/Home.jsx'
+import Dashboard from './components/Dashboard/Dashboard.jsx'
 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
   <Route path='/' element={<Layout />}>
-      <Route path='/' element={<Dashboard />}/>
+      <Route path='/' element={<Home />}/>
       <Route path='/signup' element={<Signup />}/>
-      <Route path='/signin' element={<Signin />}/>
-      {/* <Route path='/edit' element={<Edit />}/> */}
+      <Route path='/signin' element={<Signin />}></Route>
+      <Route path='/dashboard' element={<Dashboard />}/>
   </Route>
   ) 
 )

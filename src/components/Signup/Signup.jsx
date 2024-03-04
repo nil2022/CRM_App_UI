@@ -71,10 +71,12 @@ function Signup() {
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
                             <img src="/register-icon.png"
-                                className="h-12 w-12" alt="register_page_image" />
+                                className="h-12 w-12" 
+                                alt="register_page_image"
+                                loading='lazy' />
                         </div>
-                        <h2 className="text-center text-4xl font-bold leading-tight text-black">
-                            Create your {'\n'} account
+                        <h2 className="text-center text-3xl font-bold leading-tight text-black">
+                            Create your free{'\n'} account
                         </h2>
                         <p className="mt-2 text-center text-base text-gray-600">
                             Already have an account?{' '}
