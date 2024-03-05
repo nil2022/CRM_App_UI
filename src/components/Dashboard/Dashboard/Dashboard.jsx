@@ -130,13 +130,13 @@ function Dashboard() {
       <div className='w-full h-fit '>
         <h1 className='text-3xl font-bold text-center h-fit'>Dashboard</h1>
          {/* ****************************ACTUAL CODE ************************************* */}
-        <div className=" m-4 grid gap-4 sm:grid-cols-12">
-          <div className="min-h-[100px] rounded bg-orange-400 hidden sm:block sm:col-span-3">
+        <div className=" m-4 grid gap-4 md:grid-cols-8 lg:grid-cols-12">
+          <div className="min-h-[100px] w-full rounded hidden sm:block md:col-span-1 lg:col-span-2">
             <Sidebar />
           </div>
-          <div className="min-h-[100px] rounded  sm:col-span-9">
-            <div className="min-h-[100px] rounded  grid sm:grid-row-6">
-              <div className="h-fit rounded justify-center text-center items-center m-1  sm:row-span-2">
+          <div className="min-h-[100px] rounded md:col-span-7 lg:col-span-10">
+            <div className="min-h-[100px] w-full rounded-lg grid sm:grid-row-6 border">
+              <div className="h-fit rounded justify-center text-center items-center m-1 sm:row-span-2">
                 <button
                   onClick={getUsers}
                   className=" row-span-2 w-[100px] h-full m-2 text-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
@@ -150,9 +150,9 @@ function Dashboard() {
                   Logout
                 </button>
               </div>
-              <div className="h-fit rounded justify-center items-center m-1 sm:row-span-4">
-                <p className='text-2xl text-center font-bold border-2 '>
-                  {' '}{getAllUsersData.Response?.length}
+              <div className="min-h-[50px] rounded justify-center items-center m-1 sm:row-span-4">
+                <p className='text-2xl text-center font-bold '>
+                  {''}{getAllUsersData.Response?.length}
                 </p>
               </div>
             </div>
