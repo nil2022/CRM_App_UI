@@ -11,7 +11,6 @@ function Layout() {
   return (
     <CookiesProvider>
       <Header/>
-      {/* <div>{cookies.accessToken ? <Dashboard user={cookies.accessToken}/> : <HandleCookies/> }</div> */}
       <Outlet/>
       <Footer/>
     </CookiesProvider>    

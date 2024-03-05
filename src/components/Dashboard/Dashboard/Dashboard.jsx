@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
+import { Sidebar } from './Sidebar'
 
 
 function Dashboard() {
@@ -19,7 +20,7 @@ function Dashboard() {
 
   const getUsers = useCallback(async (e) => {
     e.preventDefault()
-    
+
     const backendUrl = import.meta.env.VITE_CRM_BACKEND_URL
     try {
       setIsLoggedOut(false)
@@ -60,6 +61,7 @@ function Dashboard() {
         path: '/',
         secure: true
       })
+      console.log(response.data.message)
 
     } catch (error) {
       setLoading(false)
@@ -69,28 +71,38 @@ function Dashboard() {
     }
   }, [cookies, setCookie])
 
+
+
   useEffect(() => {
 
     if (loading) {
       toast.loading('Please wait.....')
     }
 
-    if(!cookies.accessToken) {
+    if (!cookies.accessToken && !isLoggedOut) {
       toast.dismiss()
       setLoading(false)
       toast.error('Please Login to access dashboard!')
       setTimeout(() => {
-        navigate('/signin')
+        toast.dismiss()
+        navigate('/signin', {
+          unstable_viewTransition: true,
+          unstable_flushSync: true
+        })
       }, 1500);
     }
 
 
-    if(isLoggedOut) {
+    if (isLoggedOut && !cookies.accessToken) {
       setLoading(false)
       toast.dismiss()
       toast.success('Logout successfully!')
       setTimeout(() => {
-        navigate('/signin')
+        toast.dismiss()
+        navigate('/signin', {
+          unstable_viewTransition: true,
+          unstable_flushSync: true
+        })
       }, 1500);
     }
 
@@ -99,46 +111,53 @@ function Dashboard() {
     }
   }, [loading, isLoggedOut, cookies, navigate])
 
-  const handleGetAllUsers = useCallback(async () => {
+  function handleGetAllUsers() {
     const data = getAllUsersData.Response
     for (const iterator of data) {
       console.log(iterator['userId'])
       console.log(iterator['name'])
     }
 
-  },[getAllUsersData])
+  }
 
-// console.log('getAllUsersData:', handleGetAllUsers(getAllUsersData))
+  // console.log('getAllUsersData:', handleGetAllUsers(getAllUsersData))
 
-  // console.log('cookies:', cookies)
+  // console.log('cookies from dahsboard:', cookies)
 
   return (
     <>
-      <div><Toaster position="top-center" /></div>
-      <div className='w-full h-screen'>
+      <Toaster position="top-center" />
+      <div className='w-full h-fit '>
         <h1 className='text-3xl font-bold text-center h-fit'>Dashboard</h1>
-        <div className='w-full h-fit p-4 items-center text-right'>
-          <button
-            onClick={getUsers}
-            className="w-[100px] h-[40px] m-2 text-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-          >
-            Get Users
-          </button>
-          <button
-            onClick={handleLogout}
-            className="w-[100px] h-[40px] m-2 text-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-          >
-            Logout
-          </button>
+         {/* ****************************ACTUAL CODE ************************************* */}
+        <div className=" m-4 grid gap-4 sm:grid-cols-12">
+          <div className="min-h-[100px] rounded bg-orange-400 hidden sm:block sm:col-span-3">
+            <Sidebar />
+          </div>
+          <div className="min-h-[100px] rounded  sm:col-span-9">
+            <div className="min-h-[100px] rounded  grid sm:grid-row-6">
+              <div className="h-fit rounded justify-center text-center items-center m-1  sm:row-span-2">
+                <button
+                  onClick={getUsers}
+                  className=" row-span-2 w-[100px] h-full m-2 text-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                >
+                  Get Users
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="row-span-2 w-[100px] h-full m-2 text-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                >
+                  Logout
+                </button>
+              </div>
+              <div className="h-fit rounded justify-center items-center m-1 sm:row-span-4">
+                <p className='text-2xl text-center font-bold border-2 '>
+                  {' '}{getAllUsersData.Response?.length}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className='w-full h-fit p-2 m-1 text-2xl text-center font-bold'>
-          {' '}{}
-        </div>
-        <button 
-        className=' w-fir h-fit p-2 m-1 text-2xl text-center font-bold bg-slate-300'
-        onClick={handleGetAllUsers}>
-        CLick
-        </button>
       </div>
     </>
   )
