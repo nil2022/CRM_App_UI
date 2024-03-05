@@ -10,14 +10,6 @@ const menuItems = [
     href: '/',
   },
   {
-    name: 'Register',
-    href: '/signup',
-  },
-  {
-    name: 'Login',
-    href: '/signin',
-  },
-  {
     name: 'Dashboard',
     href: '/dashboard',
   }
