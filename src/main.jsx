@@ -6,7 +6,7 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 import Signup from './components/Signup/Signup.jsx'
 import Signin from './components/Signin/Signin.jsx'
 import { Home } from './components/Home/Home.jsx'
-import Dashboard from './components/Dashboard/Dashboard/Dashboard.jsx'
+import Dashboard from './components/Dashboard/Dashboard.jsx'
 
 
 const router = createBrowserRouter(

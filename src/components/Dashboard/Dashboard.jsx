@@ -4,6 +4,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 import { Sidebar } from './Sidebar'
+import { Datatable } from './DataTable'
 
 
 function Dashboard() {
@@ -20,7 +21,7 @@ function Dashboard() {
 
   const getUsers = useCallback(async (e) => {
     e.preventDefault()
-
+    setLoading(true)
     const backendUrl = import.meta.env.VITE_CRM_BACKEND_URL
     try {
       setIsLoggedOut(false)
@@ -31,7 +32,7 @@ function Dashboard() {
       })
       // setIsLoggedIn(true)
       toast.dismiss()
-      console.log('response:', response)
+      // console.log('response:', response)
       setGetAllUsersData(response.data)
       toast.success(response.data.message)
     } catch (error) {
@@ -39,7 +40,7 @@ function Dashboard() {
       setLoading(false)
       console.log('Error:', error)
       toast.dismiss()
-      toast.error(error.response?.data?.message)
+      error.response?.data.message ?  toast.error(error.response.data.message) : toast.error(error.message)
     }
   }, [cookies])
 
@@ -129,12 +130,12 @@ function Dashboard() {
       <Toaster position="top-center" />
       <div className='w-full h-fit '>
         <h1 className='text-3xl font-bold text-center h-fit'>Dashboard</h1>
-         {/* ****************************ACTUAL CODE ************************************* */}
-        <div className=" m-4 grid gap-4 md:grid-cols-8 lg:grid-cols-12">
-          <div className="min-h-[100px] w-full rounded hidden sm:block md:col-span-1 lg:col-span-2">
+        {/* ****************************ACTUAL CODE ************************************* */}
+        <div className=" m-3 grid gap-3 grid-cols-12">
+          <div className="min-h-[100px] w-full rounded hidden lg:block col-span-2">
             <Sidebar />
           </div>
-          <div className="min-h-[100px] rounded md:col-span-7 lg:col-span-10">
+          <div className="min-h-[100px] rounded col-span-12 lg:col-span-10">
             <div className="min-h-[100px] w-full rounded-lg grid sm:grid-row-6 border">
               <div className="h-fit rounded justify-center text-center items-center m-1 sm:row-span-2">
                 <button
@@ -151,9 +152,20 @@ function Dashboard() {
                 </button>
               </div>
               <div className="min-h-[50px] rounded justify-center items-center m-1 sm:row-span-4">
-                <p className='text-2xl text-center font-bold '>
-                  {''}{getAllUsersData.Response?.length}
+                <p className='text-2xl h-[50px] p-2 m-1 border text-center font-bold gap-2'>
+                  {'Data Length-'}{getAllUsersData.Response?.length ? getAllUsersData.Response?.length : 0}
                 </p>
+                {/* Table to view Customers */}
+                <div className='gap-4'>
+                  <Datatable 
+                        value={'Customers'}
+                        data={getAllUsersData.Response} 
+                    />
+                </div>
+                 {/* Table to view Engineerss */}
+                {/* <div className='gap-4'>
+                  <Datatable value={'Employees'} />
+                </div> */}
               </div>
             </div>
           </div>
