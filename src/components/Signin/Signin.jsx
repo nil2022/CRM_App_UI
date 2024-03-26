@@ -1,9 +1,17 @@
+'use client'
 import { ArrowRight } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
+import { Cookies } from 'react-cookie'
+import {  useToast } from '@chakra-ui/react'
+
+const cookies = new Cookies(null, {
+    path: '/',
+    httpOnly: false,
+    secure: true
+});
 
 
 function Signin() {
@@ -17,8 +25,7 @@ function Signin() {
     const intialValues = { userId: "", password: "" };
     const [formValues, setFormValues] = useState(intialValues);
     const [loginSuccess, setLoginSuccess] = useState(false)
-
-    const [cookies, setCookie] = useCookies(['accessToken'])
+    const toastChakra = useToast()
 
     const navigate = useNavigate()
 
@@ -26,11 +33,14 @@ function Signin() {
         const { id, value } = e.target;
         setFormValues({ ...formValues, [id]: value });
     }
+    /* ******************************************** */
+    /* ***********  HANDLE THE LOGIN  ************* */
+    /* ******************************************** */
 
-
-    const handleLogin = useCallback(async(e) => {
+   
+    const handleLogin = useCallback(async (e) => {
         e.preventDefault()
-        
+
         const signInUrl = import.meta.env.VITE_CRM_BACKEND_URL
         setLoading(true)
         try {
@@ -46,10 +56,7 @@ function Signin() {
             setErrorMsg({})
             console.log('success:', response)
             setLoginSuccess(true)
-            setCookie('accessToken', response.data?.Response?.accessToken, {
-                path: '/',
-                secure: true
-            })
+            cookies.set('accessToken', response.data?.Response?.accessToken)
         } catch (error) {
             setLoading(false)
             setLoginSuccess(false)
@@ -57,22 +64,28 @@ function Signin() {
             setErrorMsg(error)
             setSuccessMsg({})
             console.log("Got Error:", error)
-            // setCookie('accessToken', '')
-            error.response?.data.message ?  toast.error(error.response.data.message) : toast.error(error.message)            
+            error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
         }
-    }, [formValues, setCookie])
+
+        toastChakra.promise(examplePromise, {
+            success: { title: 'Promise resolved', description: 'Looks great' },
+            error: { title: 'Promise rejected', description: 'Something wrong' },
+            loading: { title: 'Promise pending', description: 'Please wait' },
+          })
+
+    }, [formValues])
 
 
-    const handleGithubLogin = useCallback(async(e) => {
+    const handleGithubLogin = useCallback(async (e) => {
         e.preventDefault()
         const githubLoginURL = 'http://localhost:5173'
         setLoading(true)
         try {
-                const response = await axios.get(`${githubLoginURL}/api/auth/github`)
-                setLoading(false)
-                toast.dismiss()
-                setSuccessMsg(response.data)
-                console.log('success:', response.data)
+            const response = await axios.get(`${githubLoginURL}/api/auth/github`)
+            setLoading(false)
+            toast.dismiss()
+            setSuccessMsg(response.data)
+            console.log('success:', response.data)
 
         } catch (error) {
             setLoading(false)
@@ -81,9 +94,8 @@ function Signin() {
             console.log("Got Error:", error)
         }
 
-    },[])
+    }, [])
 
-    // console.log('cookies from signin:', cookies)
 
     useEffect(() => {
 
@@ -91,12 +103,12 @@ function Signin() {
             toast.loading('Please wait.....')
         }
 
-        if(loginSuccess && cookies.accessToken) {
+        if (loginSuccess && cookies.get('accessToken')) {
             toast.dismiss()
             toast.success(successMsg.message)
             setTimeout(() => {
                 toast.dismiss()
-                navigate('/dashboard',{
+                navigate('/dashboard', {
                     unstable_viewTransition: true,
                     unstable_flushSync: true
                 })
@@ -106,7 +118,7 @@ function Signin() {
         return () => {
             toast.dismiss()
         }
-    }, [loading,loginSuccess,successMsg, cookies, navigate])
+    }, [loading, loginSuccess, successMsg, navigate])
 
 
     return (
@@ -194,13 +206,6 @@ function Signin() {
                         </form>
                     </div>
                 </div>
-                {/* <div>
-                    Please Note that initially after clicking  
-                    <div className="inline-flex w-[90px] h-[30px] gap-x-1 items-center justify-center rounded-lg bg-black mx-1 px-[5px] py-1 font-semibold leading-5 text-white hover:bg-slate-700 transition-all duration-400">
-                        Sign In
-                    </div>
-                    button, it may take time because the backend of this app is connected with a server which sleeps after inactivity.
-                </div> */}
             </section>
         </>
     )

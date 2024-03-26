@@ -3,6 +3,7 @@
 import React from 'react'
 import { Menu, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
 
 const menuItems = [
   {
@@ -16,19 +17,17 @@ const menuItems = [
   {
     name: 'Login',
     href: '/signin',
-  },
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
   }
 ]
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const [cookies] = useCookies(['accessToken'])
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
+
 
   return (
     <div className="relative w-full bg-white">
@@ -50,20 +49,23 @@ export function Header() {
           </span>
           <span className="font-bold">DevUI</span>
         </div>
-        <div className="hidden grow items-start lg:flex">
-          <ul className="ml-12 inline-flex space-x-8">
-            {menuItems.map((item) => (
-              <li key={item.name}>
-                <Link
-                  to={item.href}
-                  className="text-sm font-semibold text-gray-800 hover:text-gray-900"
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div className={(cookies.accessToken ? 'hidden' : 'block')}>
+          <div className="hidden grow items-center lg:flex">
+            <ul className="ml-12 inline-flex space-x-8">
+              {menuItems.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    to={item.href}
+                    className="text-sm font-semibold text-gray-800 hover:text-gray-900"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
+
         {/* <div className="hidden lg:block">
           <button
             // onSubmit={(e) => { e.preventDefault() }}
@@ -100,7 +102,7 @@ export function Header() {
                     <span className="font-bold">DevUI</span>
                   </div>
                   <div className="-mr-2">
-                  {/* Cross Icon */}
+                    {/* Cross Icon */}
                     <button
                       // type="button"
                       onClick={toggleMenu}
@@ -109,7 +111,7 @@ export function Header() {
                       <span className="sr-only">Close menu</span>
                       <X className="h-6 w-6" aria-hidden="true" />
                     </button>
-                  {/* Cross Icon code ends */}
+                    {/* Cross Icon code ends */}
                   </div>
                 </div>
                 <div className="mt-6">

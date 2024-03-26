@@ -1,10 +1,10 @@
 import React from 'react'
-import { BarChart, Wallet, Newspaper, BellRing, Paperclip, Brush, Wrench } from 'lucide-react'
+import { Newspaper, BellRing, Paperclip, Users, DownloadCloud, LogOut, UserRoundCogIcon } from 'lucide-react'
 
 export function Sidebar() {
     return (
-        <aside className="flex h-screen w-64 flex-col overflow-y-auto border-r bg-white px-5 py-8">
-            <a href="#">
+        <aside className="flex h-screen w-full flex-col overflow-y-auto border-r bg-white px-4 py-8">
+            {/* <a href="#">
                 <svg
                     width="40"
                     height="46"
@@ -17,25 +17,28 @@ export function Sidebar() {
                         fill="black"
                     />
                 </svg>
-            </a>
-            <div className="mt-6 flex flex-1 flex-col justify-between">
+            </a> */}
+            <div className="mt-4 flex flex-1 flex-col justify-between">
                 <nav className="-mx-3 space-y-6 ">
-                    <div className="space-y-3 ">
-                        <label className="px-3 text-xs font-semibold uppercase text-gray-900">analytics</label>
-                        <a
+                <div className='m-1 p-2 text-xl font-bold text-left'>
+                    MENU
+                </div>
+                    <div className="space-y-2 ">
+                        <label className="px-3 text-xs font-semibold uppercase text-gray-900">Users</label>
+                        <button
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            href="#"
+                            // onClick={}
                         >
-                            <BarChart className="h-5 w-5" aria-hidden="true" />
-                            <span className="mx-2 text-sm font-medium">Dashboard</span>
-                        </a>
-                        <a
+                            <DownloadCloud className="h-5 w-5" aria-hidden="true" />
+                            <span className="mx-2 text-sm font-medium">Fetch Customers</span>
+                        </button>
+                        <button
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            href="#"
+                            // onClick={}
                         >
-                            <Wallet className="h-5 w-5" aria-hidden="true" />
-                            <span className="mx-2 text-sm font-medium">Sales</span>
-                        </a>
+                            <Users className="h-5 w-5" aria-hidden="true" />
+                            <span className="mx-2 text-sm font-medium">Fetch Customers</span>
+                        </button>
                     </div>
                     <div className="space-y-3 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">content</label>
@@ -64,22 +67,22 @@ export function Sidebar() {
 
                     <div className="space-y-3 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">
-                            Customization
+                            Account
                         </label>
-                        <a
+                        <button
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            href="#"
+                            // onClick={}
                         >
-                            <Brush className="h-5 w-5" aria-hidden="true" />
-                            <span className="mx-2 text-sm font-medium">Themes</span>
-                        </a>
-                        <a
+                            <UserRoundCogIcon className="h-5 w-5" aria-hidden="true" />
+                            <span className="mx-2 text-sm font-medium">Profile</span>
+                        </button>
+                        <button
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            href="#"
+                            // onClick={}
                         >
-                            <Wrench className="h-5 w-5" aria-hidden="true" />
-                            <span className="mx-2 text-sm font-medium">Setting</span>
-                        </a>
+                            <LogOut className="h-5 w-5" aria-hidden="true" />
+                            <span className="mx-2 text-sm font-medium">Logout</span>
+                        </button>
                     </div>
                 </nav>
             </div>
