@@ -17,9 +17,9 @@ export default defineConfig(async ({ mode }) => {
       },
       cors: true
     },
-    define: {
-      VITE_CRM_BACKEND_URL: JSON.stringify(env.VITE_CRM_BACKEND_URL),
-    },
+    // define: {
+    //   VITE_CRM_BACKEND_URL: JSON.stringify(env.VITE_CRM_BACKEND_URL),
+    // },
     build: {
       outDir: 'dist'
     },

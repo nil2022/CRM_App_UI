@@ -7,13 +7,16 @@ import { CookiesProvider } from 'react-cookie'
 
 function Layout() {
 
+console.log('Environment values:', import.meta.env.VITE_CRM_BACKEND_URL)
 
   return (
+
     <CookiesProvider>
-      <Header/>
-      <Outlet/>
-      <Footer/>
-    </CookiesProvider>    
+      <Header />
+      <Outlet />
+      <Footer />
+    </CookiesProvider>
+
   )
 }
 

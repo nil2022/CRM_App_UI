@@ -1,12 +1,19 @@
+'use client'
+
 import React, { useCallback, useEffect, useState } from 'react'
-import { useCookies } from 'react-cookie'
+import { Cookies } from 'react-cookie'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
-export function Datatable({ value = '', data = {} }) {
+const cookies = new Cookies(null, {
+    path: '/',
+    httpOnly: false,
+    secure: true
+  });
+
+export function Datatable({ value = '', data = {}} ) {
 
     const [propValue, setPropValue] = useState('')
-    const [cookies] = useCookies(['accessToken'])
     /** set loading state  */
     const [loading, setLoading] = useState(false)
     const intialValues = [{ _id: "", name: "", userId: "", email: "", userType: "", userStatus: "" }];
@@ -39,9 +46,9 @@ export function Datatable({ value = '', data = {} }) {
 
     }, [data])
 
-    console.log('formValues:', formValues)
-    console.log('people:', people)
-    console.log('data:', data)
+    // console.log('formValues:', formValues)
+    // console.log('people:', people)
+    // console.log('data:', data)
 
     useEffect(() => {
         setPropValue(value)
@@ -56,7 +63,7 @@ export function Datatable({ value = '', data = {} }) {
 
     return (
         <>
-            <div className={(cookies.accessToken) ? `block` : `hidden`}>
+            <div className={(cookies.get('accessToken')) ? `block` : `hidden`}>
                 <section className="mx-auto w-full max-w-7xl px-4 py-4">
                     <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                         <div>

@@ -1,20 +1,27 @@
+'use client'
+
 import React, { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
+import { Cookies } from 'react-cookie'
 import { Sidebar } from './Sidebar'
 import { Datatable } from './DataTable'
+
+const cookies = new Cookies(null, {
+  path: '/',
+  httpOnly: false,
+  secure: true
+});
 
 
 function Dashboard() {
 
   const navigate = useNavigate()
 
-  const [cookies, setCookie] = useCookies(['accessToken'])
   /** set loading state  */
   const [loading, setLoading] = useState(false)
-  // const [logoutSuccess, setLogoutSuccess] = useState(false)
+
   // const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoggedOut, setIsLoggedOut] = useState(false)
   const [getAllUsersData, setGetAllUsersData] = useState({})
@@ -27,22 +34,21 @@ function Dashboard() {
       setIsLoggedOut(false)
       const response = await axios.get(`${backendUrl}/crm/api/users`, {
         headers: {
-          Authorization: `Bearer ${cookies.accessToken}`
+          Authorization: `Bearer ${cookies.get('accessToken')}`,
         }
       })
-      // setIsLoggedIn(true)
+
       toast.dismiss()
-      // console.log('response:', response)
       setGetAllUsersData(response.data)
       toast.success(response.data.message)
+
     } catch (error) {
-      // setIsLoggedIn(false)
       setLoading(false)
       console.log('Error:', error)
       toast.dismiss()
-      error.response?.data.message ?  toast.error(error.response.data.message) : toast.error(error.message)
+      error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
     }
-  }, [cookies])
+  }, [])
 
   const handleLogout = useCallback(async (e) => {
     e.preventDefault()
@@ -51,17 +57,13 @@ function Dashboard() {
     try {
       const response = await axios.get(`${backendUrl}/crm/api/auth/logout`, {
         headers: {
-          Authorization: `Bearer ${cookies.accessToken}`,
-          // 'x-access-token': cookies.accessToken
+          Authorization: `Bearer ${cookies.get('accessToken')}`,
         }
       })
       setIsLoggedOut(true)
       setLoading(false)
       console.log('response:', response)
-      setCookie('accessToken', '', {
-        path: '/',
-        secure: true
-      })
+      cookies.remove('accessToken')
       console.log(response.data.message)
 
     } catch (error) {
@@ -70,7 +72,7 @@ function Dashboard() {
       toast.dismiss()
       toast.error(error.response?.data?.message)
     }
-  }, [cookies, setCookie])
+  }, [])
 
 
 
@@ -80,7 +82,7 @@ function Dashboard() {
       toast.loading('Please wait.....')
     }
 
-    if (!cookies.accessToken && !isLoggedOut) {
+    if (!cookies.get('accessToken') && !isLoggedOut) {
       toast.dismiss()
       setLoading(false)
       toast.error('Please Login to access dashboard!')
@@ -94,7 +96,7 @@ function Dashboard() {
     }
 
 
-    if (isLoggedOut && !cookies.accessToken) {
+    if (!cookies.get('accessToken') && isLoggedOut) {
       setLoading(false)
       toast.dismiss()
       toast.success('Logout successfully!')
@@ -107,10 +109,11 @@ function Dashboard() {
       }, 1500);
     }
 
+
     return () => {
       toast.dismiss()
     }
-  }, [loading, isLoggedOut, cookies, navigate])
+  }, [loading, isLoggedOut, navigate])
 
   function handleGetAllUsers() {
     const data = getAllUsersData.Response
@@ -123,12 +126,10 @@ function Dashboard() {
 
   // console.log('getAllUsersData:', handleGetAllUsers(getAllUsersData))
 
-  // console.log('cookies from dahsboard:', cookies)
-
   return (
     <>
       <Toaster position="top-center" />
-      <div className='w-full h-fit '>
+      <div className={cookies.get('accessToken') ? `block` : `hidden`}>
         <h1 className='text-3xl font-bold text-center h-fit'>Dashboard</h1>
         {/* ****************************ACTUAL CODE ************************************* */}
         <div className=" m-3 grid gap-3 grid-cols-12">
@@ -157,12 +158,12 @@ function Dashboard() {
                 </p>
                 {/* Table to view Customers */}
                 <div className='gap-4'>
-                  <Datatable 
-                        value={'Customers'}
-                        data={getAllUsersData.Response} 
-                    />
+                  <Datatable
+                    value={'Customers'}
+                    data={getAllUsersData.Response}
+                  />
                 </div>
-                 {/* Table to view Engineerss */}
+                {/* Table to view Engineerss */}
                 {/* <div className='gap-4'>
                   <Datatable value={'Employees'} />
                 </div> */}
