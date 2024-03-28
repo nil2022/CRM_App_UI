@@ -1,28 +1,31 @@
-'use client'
-
 import React from 'react'
 import { Menu, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
-
-const menuItems = [
-  {
-    name: 'Home',
-    href: '/',
-  },
-  {
-    name: 'Register',
-    href: '/signup',
-  },
-  {
-    name: 'Login',
-    href: '/signin',
-  }
-]
+import { useSelector } from 'react-redux'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-  const [cookies] = useCookies(['accessToken'])
+  // const [cookies] = useCookies(['accessToken'])
+
+  const authStatus = useSelector((state) => state.auth.status)
+
+  const menuItems = [
+    {
+      name: 'Home',
+      href: '/',
+      active: true,
+    },
+    {
+      name: 'Register',
+      href: '/register',
+      active: !authStatus
+    },
+    {
+      name: 'Login',
+      href: '/login',
+      active: !authStatus
+    }
+  ]
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -49,19 +52,23 @@ export function Header() {
           </span>
           <span className="font-bold">DevUI</span>
         </div>
-        <div className={(cookies.accessToken ? 'hidden' : 'block')}>
-          <div className="hidden grow items-center lg:flex">
+        <div
+        >
+          <div className="hidden grow items-center sm:flex">
             <ul className="ml-12 inline-flex space-x-8">
               {menuItems.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    to={item.href}
-                    className="text-sm font-semibold text-gray-800 hover:text-gray-900"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
+                item.active ? (
+                  <li key={item.name}>
+                    <Link
+                      to={item.href}
+                      className="text-sm font-semibold text-gray-800 hover:text-gray-900"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ) : null)
+              )
+              }
             </ul>
           </div>
         </div>
@@ -75,12 +82,12 @@ export function Header() {
             Sign In
           </button>
         </div> */}
-        <div className="lg:hidden">
+        <div className="sm:hidden">
           <Menu onClick={toggleMenu} className="h-6 w-6 cursor-pointer" />
         </div>
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="absolute inset-x-0 top-0 z-50 origin-top-right transform p-2 transition lg:hidden">
+          <div className="absolute inset-x-0 top-0 z-50 origin-top-right transform p-2 transition sm:hidden">
             <div className="divide-y-2 divide-gray-50 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
               <div className="px-5 pb-6 pt-5">
                 <div className="flex items-center justify-between">

@@ -1,19 +1,26 @@
 import { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
+import authService from '../server/auth'
+import { useDispatch } from 'react-redux'
+import { login } from '../store/authSlice'
+
 
 function Signup() {
 
     /** set success message when success is true */
     const [successMsg, setSuccessMsg] = useState({})
     /** set error message when error is true */
-    const [errorMsg, setErrorMsg] = useState({})
+    const [error, setError] = useState('')
     /** set loading state  */
     const [loading, setLoading] = useState(false)
 
     const intialValues = { fullName: "", userId: "", password: "", email: "", usertype: "CUSTOMER" };
     const [formValues, setFormValues] = useState(intialValues);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -21,33 +28,36 @@ function Signup() {
         // console.log(formValues);
     }
 
-
     const handleRegistration = useCallback(async (e) => {
         e.preventDefault()
+        setError(null)
 
-        const signupUrl = import.meta.env.VITE_CRM_BACKEND_URL
-        setLoading(true)
         try {
-            const response = await axios.post(`${signupUrl}/crm/api/auth/signup`,
-                {
-                    name: formValues.fullName,
-                    userId: formValues.userId,
-                    password: formValues.password,
-                    email: formValues.email,
-                    userType: formValues.usertype
-                })
-            setLoading(false)
-            toast.dismiss()
-            setSuccessMsg(response.data)
-            console.log('success:', response.data)
-            toast.success(response.data?.message)
-
+            const userCreated = await authService.createAccount(formValues)
+            if (userCreated) {
+                const userSession = await authService.login({ userId: formValues.userId, password: formValues.password })
+                if (userSession) {
+                    console.log('userSession:', userSession)
+                    localStorage.setItem('accessToken', userSession.data.Response?.accessToken || '')
+                    const userData = await authService.getCurrentUser({ userId: userSession.data.Response?.userId, accessToken: userSession.data.Response?.accessToken })
+                    if (userData) {
+                        dispatch(login(userData))
+                        navigate('/dashboard')
+                    } else {
+                        console.log('userData Error ::', userData)
+                        setError(userData.message)
+                    }
+                } else {
+                    console.log('userSession Error ::', userSession)
+                    setError(userSession.message)
+                }
+            } else {
+                console.log('userCreated Error ::', userCreated)
+                setError(userCreated.message)
+            }
         } catch (error) {
-            setLoading(false)
-            toast.dismiss()
-            setErrorMsg(error)
-            console.log("Got Error:", error)
-            error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
+            console.log('handleRegistration :: Error:', error.message)
+            setError(error.message)
         }
     }, [formValues])
 
@@ -82,12 +92,13 @@ function Signup() {
                             Already have an account?{' '}
                             <br />
                             <Link
-                                to="/signin"
+                                to="/login"
                                 className="font-[800] text-black transition-all duration-200 hover:underline"
                             >
                                 Login Here !
                             </Link>
                         </p>
+                        {error && <p className="text-red-500 text-center font-semibold text-lg mt-2">{error}</p>}
                         <form
                             onSubmit={handleRegistration}
                             className="mt-8"
