@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useCallback, useEffect, useState } from 'react'
 import { Cookies } from 'react-cookie'
 import toast from 'react-hot-toast'
