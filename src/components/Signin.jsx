@@ -73,16 +73,15 @@ function Signin() {
             // console.log('formValues: (in login function)', formValues)
             const userSession = await authService.login(formValues)
             console.log('userSession:', userSession)
-            // dispatch(token(userSession.data.Response?.accessToken))
+            dispatch(authLogin(userSession.data?.Response))
             if (userSession) {
                 console.log('Login Successfull !')
                 toast.success(userSession.data.message)
                 const userData = await authService.getCurrentUser({ userId: formValues.userId, accessToken: userSession.data.Response?.accessToken })
                 console.log('userData: (after Login, getting current user)', userData)
-                dispatch(authLogin(userData))
                 // cookies.set('accessToken', userSession.data.Response?.accessToken)
                 localStorage.setItem('accessToken', userSession.data.Response?.accessToken)
-                navigate('/dashboard')
+                navigate('/dashboard/profile')
             }
         } catch (err) {
             setError(err.response?.data?.message)

@@ -1,7 +1,58 @@
-import React from 'react'
-import { Newspaper, BellRing, Paperclip, Users, DownloadCloud, LogOut, UserRoundCogIcon } from 'lucide-react'
+import React, { useState } from 'react'
+import { Users, DownloadCloud, LogOut, UserRoundCogIcon } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import authService from '../../server/auth'
+import { logout } from '../../store/authSlice'
+import { allUsersData, clearAllUsersData } from '../../store/userDataSlice'
+import toast from 'react-hot-toast'
 
 export function Sidebar() {
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate();
+    const [error, setError] = useState('')
+
+    const getUsers = async (e) => {
+        e.preventDefault()
+        setError('')
+
+        authService.getAllUsers({ accessToken: localStorage.getItem('accessToken') })
+            .then((response) => {
+                dispatch(allUsersData(response?.Response))
+                toast.success(response?.message || 'Success')
+            })
+            .catch((error) => {
+                console.log('Error:', error?.message || 'something went wrong')
+                setError(error.response.data.message || error?.message || 'something went wrong')
+                toast.dismiss()
+                // error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
+            })
+
+    }
+
+    const logoutBtn = async (e) => {
+        e.preventDefault()
+        setError('')
+
+        authService.logout(localStorage.getItem('accessToken'))
+            .then((response) => {
+                console.log('Logout Successfull !', response)
+                toast.success('Logout successfully !')
+                dispatch(logout())
+                dispatch(clearAllUsersData())
+                localStorage.removeItem('accessToken')
+                navigate('/login', {
+                    unstable_flushSync: true,
+                    unstable_viewTransition: 'all'
+                })
+            })
+            .catch((error) => {
+                setError(error.message);
+                console.log('Logout Error ::', error.message)
+            })
+            .finally(() => setLoading(false))
+    }
     return (
         <aside className="flex h-screen w-full flex-col overflow-y-auto border-r bg-white px-4 py-8">
             {/* <a href="#">
@@ -20,27 +71,32 @@ export function Sidebar() {
             </a> */}
             <div className="mt-4 flex flex-1 flex-col justify-between">
                 <nav className="-mx-3 space-y-6 ">
-                <div className='m-1 p-2 text-xl font-bold text-left'>
-                    MENU
-                </div>
+                    <div className='m-1 p-2 text-xl font-bold text-left'>
+                        <Link
+                            className='text-xl font-bold px-2 bg-slate-200 hover:bg-slate-700 hover:text-slate-100 rounded-md transition-all duration-500'
+                            to={'/dashboard'}>
+                            DASHBOARD
+                        </Link>
+                    </div>
                     <div className="space-y-2 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">Users</label>
-                        <button
+                        <Link
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                            onClick={getUsers}
                         >
                             <DownloadCloud className="h-5 w-5" aria-hidden="true" />
-                            <span className="mx-2 text-sm font-medium">Fetch Customers</span>
-                        </button>
+                            <span className="mx-2 text-sm font-medium">Fetch Users</span>
+                        </Link>
                         <button
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                        // onClick={}
                         >
                             <Users className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Fetch Customers</span>
                         </button>
                     </div>
-                    <div className="space-y-3 ">
+
+                    {/* <div className="space-y-3 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">content</label>
                         <a
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
@@ -63,26 +119,26 @@ export function Sidebar() {
                             <Paperclip className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Checklists</span>
                         </a>
-                    </div>
+                    </div> */}
 
                     <div className="space-y-3 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">
                             Account
                         </label>
-                        <button
+                        <Link
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                            to={'/dashboard/profile'}
                         >
                             <UserRoundCogIcon className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Profile</span>
-                        </button>
-                        <button
+                        </Link>
+                        <Link
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                            onClick={logoutBtn}
                         >
                             <LogOut className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Logout</span>
-                        </button>
+                        </Link>
                     </div>
                 </nav>
             </div>

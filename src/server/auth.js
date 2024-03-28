@@ -62,6 +62,21 @@ export class AuthService {
         }
     }
 
+    async getAllUsers({ accessToken }) {
+        try {
+            const fetchAllUsers = await this.axiosInstance.get('/crm/api/users', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            })
+            console.log('fetchAllUsers:', fetchAllUsers.data)
+            return fetchAllUsers.data;
+        } catch (error) {
+            console.log('server/auth.js :: getCurrentUser :: Error:', error.message)
+            throw error;
+        }
+    }
+
     async logout(accessToken) {
         try {
             await this.axiosInstance.get('/crm/api/auth/logout', {

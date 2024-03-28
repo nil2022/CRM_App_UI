@@ -26,7 +26,7 @@ export default defineConfig(async ({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         output: {
-          // Provider each package installed in app as manual chunks to distribute in the bundler
+          // Provide each package installed in app as manual chunks to distribute in the bundler
           manualChunks: {
             'material-ui': ['@mui/material', '@emotion/react', '@emotion/styled', 'framer-motion', 'lucide-react'],
             'headlessui': ['@headlessui/react'],
