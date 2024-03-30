@@ -10,14 +10,14 @@ export class AuthService {
             headers: {
                 'Content-Type': 'application/json',
             },
-            timeout: 3000,
+            timeout: 3000
         })
     }
 
     async createAccount({ fullName, email, userId, password, userType}) {
         try {
-            const userResponse = await this.axiosInstance.post('/crm/api/auth/signup',{
-                name: fullName,
+            const userResponse = await this.axiosInstance.post('/crm/api/v1/auth/register',{
+                fullName,
                 email,
                 userId,
                 password,
@@ -26,66 +26,81 @@ export class AuthService {
             console.log('userResponse:', userResponse)
             return userResponse;
         } catch (error) {
-            console.log('createAccount :: Error:', error)
+            console.log('createAccount :: Error:', error.message)
             throw error;
         }
     }
     async login({  userId, password }) {
         try {
-            const loginSession = await this.axiosInstance.post('/crm/api/auth/signin', {
+            const loginSession = await this.axiosInstance.post('crm/api/v1/auth/login', {
                 userId,
                 password
             })
-            console.log(loginSession.data.message)
-            return loginSession;
+            console.log(loginSession)
+            return loginSession.data;
         } catch (error) {
             console.log('server/auth.js :: login :: Error:', error.message)
             throw error;
         }
     }
 
-    async getCurrentUser({ userId, accessToken }) {
+    async getCurrentUser() {
         try {
-            const fetchUser = await this.axiosInstance.get('/crm/api/user',{
-                params: {
-                    userId
-                },
+            const fetchUser = await this.axiosInstance.get('/crm/api/v1/auth/current-user',{
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
                 }
             })
-            // console.log('userResponse: (in getCurrentUser:: )', fetchUser.data)
             return fetchUser.data;
         } catch (error) {
-            console.log('server/auth.js :: getCurrentUser :: Error:', error.message)
+            console.log('server/auth.js :: getCurrentUser :: Error:', error.response)
             throw error;
         }
     }
 
-    async getAllUsers({ accessToken }) {
+    async getAllUsers() {
         try {
-            const fetchAllUsers = await this.axiosInstance.get('/crm/api/users', {
+            if (localStorage.getItem('allUsers')) {
+                return JSON.parse(localStorage.getItem('allUsers'));
+            }
+            const fetchAllUsers = await this.axiosInstance.get('/crm/api/v1/users', {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
                 }
             })
             console.log('fetchAllUsers:', fetchAllUsers.data)
+            localStorage.setItem('allUsers', JSON.stringify(fetchAllUsers.data))
             return fetchAllUsers.data;
         } catch (error) {
-            console.log('server/auth.js :: getCurrentUser :: Error:', error.message)
+            console.log('server/auth.js :: getCurrentUser :: Error:', error.response)
             throw error;
         }
     }
 
-    async logout(accessToken) {
+    async refreshAccessToken() {
         try {
-            await this.axiosInstance.get('/crm/api/auth/logout', {
+            await this.axiosInstance.get('/crm/api/v1/auth/refresh-token', {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
+                    Authorization: `Bearer ${localStorage.getItem('refreshToken')}`,
                 }
             })
+            console.log('Access Token Refreshed');
         } catch (error) {
-            console.log('server/auth.js :: logout :: Error:', error.message)
+            console.log('server/auth.js :: refreshAccessToken :: Error:', error.message)
+            throw error;
+        }
+    }
+
+    async logout() {
+        try {
+            const logoutResponse = await this.axiosInstance.get('/crm/api/v1/auth/logout', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                }
+            })
+            console.log('Logout Response:', logoutResponse.data)
+        } catch (error) {
+            console.log('server/auth.js :: logout :: Error:', error.response)
             throw error;
         }
     }

@@ -16,16 +16,15 @@ export function Datatable() {
 
     // console.log('allUsers:', allUsers)
 
-    useEffect(() => {
-
-
-        return () => {
-            // toast.dismiss()
-        }
-
-    }, [])
-
     // console.log('data:', data)
+
+    useEffect(() => {
+        // localStorage.removeItem('allUsers')
+        return () => {
+            console.log('unmounted')
+            
+        }
+    })
 
     return (
         <>
@@ -89,7 +88,7 @@ export function Datatable() {
                                             </thead>
                                             <tbody className="divide-y divide-gray-200 bg-white">
                                                 {allUsers.map((person) => (
-                                                    <tr key={person.name}>
+                                                    <tr key={person._id}>
                                                         <td className="whitespace-nowrap px-4 py-4">
                                                             <div className="flex items-center">
                                                                 <div className="h-10 w-10 flex-shrink-0">

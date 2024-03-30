@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Users, DownloadCloud, LogOut, UserRoundCogIcon } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
@@ -6,27 +6,37 @@ import authService from '../../server/auth'
 import { logout } from '../../store/authSlice'
 import { allUsersData, clearAllUsersData } from '../../store/userDataSlice'
 import toast from 'react-hot-toast'
+import Profile from './Profile'
+import { useCookies } from 'react-cookie'
 
 export function Sidebar() {
 
     const dispatch = useDispatch()
     const navigate = useNavigate();
     const [error, setError] = useState('')
+    const [cookies, setCookies, removeCookies] = useCookies(['accessToken'])
 
     const getUsers = async (e) => {
         e.preventDefault()
         setError('')
 
-        authService.getAllUsers({ accessToken: localStorage.getItem('accessToken') })
+        authService.getAllUsers()
             .then((response) => {
-                dispatch(allUsersData(response?.Response))
+                dispatch(allUsersData(response?.data))
                 toast.success(response?.message || 'Success')
             })
             .catch((error) => {
-                console.log('Error:', error?.message || 'something went wrong')
-                setError(error.response.data.message || error?.message || 'something went wrong')
-                toast.dismiss()
-                // error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
+                console.log('Error:', error.response?.statusText || 'something went wrong')
+                setError(error.response.data.message || error.response.statusText || 'something went wrong')
+                if(error.response?.statusText === 'Unauthorized' && error.response?.status === 401) {
+                    setTimeout(() => {
+                        toast.error(error.response?.data?.message)
+                        navigate('/login')
+                    }, 1000);
+                } else if (error.response?.data?.message) {
+                    toast.error(error.response?.data?.message || 'Require Admin role')
+                }
+                // toast.error(error.response?.statusText || 'Something went wrong')
             })
 
     }
@@ -35,24 +45,26 @@ export function Sidebar() {
         e.preventDefault()
         setError('')
 
-        authService.logout(localStorage.getItem('accessToken'))
-            .then((response) => {
-                console.log('Logout Successfull !', response)
+        authService.logout()
+            .then(() => {
+                console.log('Logout Successfully !')
                 toast.success('Logout successfully !')
                 dispatch(logout())
                 dispatch(clearAllUsersData())
-                localStorage.removeItem('accessToken')
-                navigate('/login', {
-                    unstable_flushSync: true,
-                    unstable_viewTransition: 'all'
-                })
+                navigate('/login')
             })
             .catch((error) => {
                 setError(error.message);
-                console.log('Logout Error ::', error.message)
+                console.log('Logout Error ::', error.message, error.response.data)
+                // if (!error.response?.data?.success && error.response?.data?.statusCode === 401) {
+                //     toast.error(error.response.data.message, {
+                //         duration: 3000
+                //     })
+                //     navigate('/login')
+                // }
             })
-            .finally(() => setLoading(false))
     }
+
     return (
         <aside className="flex h-screen w-full flex-col overflow-y-auto border-r bg-white px-4 py-8">
             {/* <a href="#">
@@ -132,6 +144,13 @@ export function Sidebar() {
                             <UserRoundCogIcon className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Profile</span>
                         </Link>
+                        {/* <button
+                            className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
+                            onClick={<Profile />}
+                        >
+                            <UserRoundCogIcon className="h-5 w-5" aria-hidden="true" />
+                            <span className="mx-2 text-sm font-medium">ProfileBtn</span>
+                        </button> */}
                         <Link
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
                             onClick={logoutBtn}

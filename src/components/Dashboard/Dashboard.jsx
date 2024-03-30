@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import { Datatable } from '../DataTable'
+import { Datatable } from './DataTable'
 import authService from '../../server/auth'
 import { useDispatch } from 'react-redux'
-import {logout} from '../../store/authSlice'
+import { logout } from '../../store/authSlice'
 import { allUsersData, clearAllUsersData } from '../../store/userDataSlice'
+import { Sidebar } from './Sidebar'
 
 
 function Dashboard() {
@@ -38,37 +39,53 @@ function Dashboard() {
 
   // }, [])
 
-  const logoutBtn = async(e) => {
-    setLoading(true)
-    e.preventDefault()
-    setError('')
-    
-      // console.log('coookies:', cookies.accessToken)
-      authService.logout( localStorage.getItem('accessToken') )
-      .then((response) => {
-        console.log('Logout Successfull !', response)
-        toast.success('Logout successfully !')
-        dispatch(logout())
-        dispatch(clearAllUsersData())
-        localStorage.removeItem('accessToken')
-        navigate('/login', {
-          unstable_flushSync: true,
-          unstable_viewTransition: 'all'
-        })
-      })
-      .catch((error) => {
-        setError(error.message);
-        console.log('Logout Error ::', error.message)
-      })
-      .finally(() => setLoading(false))
-  }
+  // const logoutBtn = async(e) => {
+  //   setLoading(true)
+  //   e.preventDefault()
+  //   setError('')
+
+  //     // console.log('coookies:', cookies.accessToken)
+  //     authService.logout( localStorage.getItem('accessToken') )
+  //     .then((response) => {
+  //       console.log('Logout Successfull !', response)
+  //       toast.success('Logout successfully !')
+  //       dispatch(logout())
+  //       dispatch(clearAllUsersData())
+  //       localStorage.removeItem('accessToken')
+  //       navigate('/login', {
+  //         unstable_flushSync: true,
+  //         unstable_viewTransition: 'all'
+  //       })
+  //     })
+  //     .catch((error) => {
+  //       setError(error.message);
+  //       console.log('Logout Error ::', error.message)
+  //     })
+  //     .finally(() => setLoading(false))
+  // }
 
 
 
   useEffect(() => {
-
+    authService.getCurrentUser()
+      .then((userData) => {
+        // console.log('DashboardLayout :: getCurrentUser :: userData:', userData)
+      })
+      .catch((error) => {
+        console.log('Dashboard.jsx :: getCurrentUser :: Error:', error.response)
+        if (error.response?.statusText === 'Unauthorized' && error.response?.status === 401) {
+          dispatch(logout())
+          dispatch(clearAllUsersData())
+          localStorage.removeItem('accessToken')
+          setTimeout(() => {
+            toast.error(error.response?.data?.message)
+            navigate('/login')
+          }, 1000);
+        }
+      })
     return () => {
-      // toast.dismiss()
+      // console.clear('Unmounting Dashboard.jsx')
+      toast.dismiss()
     }
   }, [])
 
@@ -80,6 +97,7 @@ function Dashboard() {
         {error && <p className="text-red-500 text-center font-semibold text-lg mt-2">{error}</p>}
         {/* ****************************ACTUAL CODE ************************************* */}
         <div className=" m-3 flex flex-col">
+          {/* <Sidebar /> */}
           <div className="min-h-[100px] rounded ">
             <div className="min-h-[100px] w-full rounded-lg border">
               <div className="h-fit rounded justify-center text-center items-center m-1">

@@ -1,7 +1,9 @@
 import { ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 export default function Error() {
+    const { slug } = useParams();
+    console.log('slug:', slug)
     return (
         <div className="py-10">
             <div className="text-center">

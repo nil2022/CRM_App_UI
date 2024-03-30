@@ -2,8 +2,8 @@ import { ArrowRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
-import { Cookies } from 'react-cookie'
-import { useDispatch } from 'react-redux'
+import { useCookies,Cookies } from 'react-cookie'
+import { useDispatch, useSelector } from 'react-redux'
 import { login as authLogin } from '../store/authSlice'
 import authService from '../server/auth'
 
@@ -23,6 +23,10 @@ function Signin() {
     const intialValues = { userId: "", password: "" };
     const [formValues, setFormValues] = useState(intialValues);
 
+    const [cookies, setCookie, removeCookie] = useCookies(['accessToken']);
+
+    const authStatus = useSelector((state) => state.auth.status)
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -33,38 +37,6 @@ function Signin() {
     /* ******************************************** */
     /* ***********  HANDLE THE LOGIN  ************* */
     /* ******************************************** */
- 
-
-    // const handleLogin = useCallback(async (e) => {
-    //     e.preventDefault()
-
-    //     const signInUrl = import.meta.env.VITE_CRM_BACKEND_URL
-    //     setLoading(true)
-    //     try {
-    //         const response = await axios.post(`${signInUrl}/crm/api/auth/signin`,
-    //             {
-    //                 userId: formValues.userId,
-    //                 password: formValues.password,
-    //             })
-    //         setLoading(false)
-    //         toast.dismiss()
-    //         setSuccessMsg(response.data)
-    //         // setErrorMsg({})
-    //         console.log('success:', response)
-    //         setLoginSuccess(true)
-    //         dispatch(login(response.data))
-    //         cookies.set('accessToken', response.data?.Response?.accessToken)
-    //     } catch (error) {
-    //         setLoading(false)
-    //         setLoginSuccess(false)
-    //         toast.dismiss()
-    //         // setErrorMsg(error)
-    //         setSuccessMsg({})
-    //         console.log("Got Error:", error)
-    //         error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
-    //     }
-
-    // }, [formValues])
 
     const login = async (e) => {
         e.preventDefault()
@@ -73,38 +45,64 @@ function Signin() {
             // console.log('formValues: (in login function)', formValues)
             const userSession = await authService.login(formValues)
             console.log('userSession:', userSession)
-            dispatch(authLogin(userSession.data?.Response))
+            dispatch(authLogin(userSession.data?.user))
             if (userSession) {
-                console.log('Login Successfull !')
-                toast.success(userSession.data.message)
-                const userData = await authService.getCurrentUser({ userId: formValues.userId, accessToken: userSession.data.Response?.accessToken })
-                console.log('userData: (after Login, getting current user)', userData)
-                // cookies.set('accessToken', userSession.data.Response?.accessToken)
-                localStorage.setItem('accessToken', userSession.data.Response?.accessToken)
+                // console.log('Login Successfull !')
+                toast.success('Login Success')
+                localStorage.setItem('accessToken', userSession.data?.accessToken || null )
+                localStorage.setItem('refreshToken', userSession.data?.refreshToken || null )
+                setCookie('accessToken', userSession.data?.accessToken || null, {
+                    path: '/',
+                    httpOnly: false,
+                    secure: true,
+                    sameSite: 'none'
+                })
+                setCookie('refreshToken', userSession.data?.refreshToken || null, {
+                    path: '/',
+                    httpOnly: false,
+                    secure: true,
+                    sameSite: 'none'
+                })
+                // sessionStorage.setItem('refreshToken', userSession.data?.refreshToken || null)
+                const userData = await authService.getCurrentUser()
+                // console.log('userData: (after Login, getting current user)', userData)
                 navigate('/dashboard/profile')
             }
         } catch (err) {
             setError(err.response?.data?.message)
-            toast.error(err.response?.data?.message)
-            console.log('Login error ::', err.response?.data?.message)
+            err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
+            console.log('Login error ::', err.response?.statusText)
         }
     }
     // console.log('formValues:', formValues)
 
+    useEffect(() => {
+        console.log('mounted (in Signin.jsx component)')
 
-    // useEffect(() => {
+        if(!authStatus) {
+            localStorage.removeItem('accessToken')
+            localStorage.removeItem('refreshToken')
+            localStorage.removeItem('allUsers')
+            removeCookie('accessToken', {
+                path: '/',
+                httpOnly: false,
+                secure: true,
+                sameSite: 'none'
+            })
+            removeCookie('refreshToken', {
+                path: '/',
+                httpOnly: false,
+                secure: true,
+                sameSite: 'none'
+            })
+        }
 
-    //     // authService.healthCheck()
-    //     //     .then(() => {
-    //     //         console.log('Backend is up and running ✅')
-    //     //     })
-    //     //     .catch((error) => {
-    //     //         console.log(`components/Signin.jsx :: Error :: ${error.name} :: ${error.message}`)
-    //     //     })
+        return () => {
+            console.log('unmounted (in Signin.jsx component)')
+            // toast.dismiss()
+        }
+    }, [])
 
-
-      
-    // }, [])
 
 
     return (

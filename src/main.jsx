@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Layout from './Layout.jsx'
 import './index.css'
-import { RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { Home } from './components/Home.jsx'
 import { Provider } from 'react-redux'
 import store from './store/store.js'
@@ -17,59 +17,65 @@ import ProfilePage from './pages/ProfilePage.jsx'
 import DashboardLayout from './components/Dashboard/DashboardLayout.jsx'
 
 
-// const router = createBrowserRouter(
-//   createRoutesFromElements(
-//     <Route path='/' element={<Layout />}>
-//       <Route path='/' element={<Home />} />
-//       <Route path='/register' element={<Register />} />
-//       <Route path='/login' element={<Login />} />
-//       <Route path='/dashboard' element={
-//         <PrivateRoute><Dashboard /></PrivateRoute>}>
-//         <Route path='/dashboard/profile' element={<ProfilePage />} />
-//       </Route>
-//       <Route path='*' element={<Error />} />
-//     </Route>
-//   )
-// )
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<Layout />}>
+      <Route path='/' element={<Home />} />
+      <Route path='/register' element={<Register />} />
+      <Route path='/login' element={<Login />} />
+      <Route path='/dashboard' element={
+        <PrivateRoute><DashboardLayout /></PrivateRoute>}>
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/dashboard/profile' element={<ProfilePage />} />
+        <Route path='/dashboard/*' element={<Error />} />
+      </Route>
+      <Route path='*' element={<Error />} />
+    </Route>
+  )
+)
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Layout />,
-    children: [
-      {
-        path: '/',
-        element: <Home />,
-      },
-      {
-        path: '/register',
-        element: <Register />,
-      },
-      {
-        path: '/login',
-        element: <Login />,
-      },
-      {
-        path: '/dashboard',
-        element: (<PrivateRoute><DashboardLayout /></PrivateRoute>),
-        children: [
-          {
-            path: '/dashboard',
-            element: <Dashboard />,
-          },
-          {
-            path: '/dashboard/profile',
-            element: <ProfilePage />,
-          }
-        ]
-      },
-      {
-        path: '*',
-        element: <Error />,
-      }
-    ]
-  }
-])
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <Layout />,
+//     children: [
+//       {
+//         path: '/',
+//         element: <Home />,
+//       },
+//       {
+//         path: '/register',
+//         element: <Register />,
+//       },
+//       {
+//         path: '/login',
+//         element: <Login />,
+//       },
+//       {
+//         path: '/dashboard',
+//         element: (<PrivateRoute><DashboardLayout /></PrivateRoute>),
+//         children: [
+//           {
+//             path: '/dashboard',
+//             element: <Dashboard />,
+//           },
+//           {
+//             path: '/dashboard/profile',
+//             element: <ProfilePage />,
+//           },
+//           {
+//             path: '/dashboard/*',
+//             element: <Error />,
+//           }
+//         ]
+//       },
+//       {
+//         path: '/:slug',
+//         element: <Error />,
+//       }
+//     ]
+//   }
+// ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

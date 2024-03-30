@@ -16,7 +16,7 @@ function Signup() {
     /** set loading state  */
     const [loading, setLoading] = useState(false)
 
-    const intialValues = { fullName: "", userId: "", password: "", email: "", usertype: "CUSTOMER" };
+    const intialValues = { fullName: "", userId: "", password: "", email: "", userType: "CUSTOMER" };
     const [formValues, setFormValues] = useState(intialValues);
 
     const dispatch = useDispatch();
@@ -38,11 +38,11 @@ function Signup() {
                 const userSession = await authService.login({ userId: formValues.userId, password: formValues.password })
                 if (userSession) {
                     console.log('userSession:', userSession)
-                    localStorage.setItem('accessToken', userSession.data.Response?.accessToken || '')
-                    const userData = await authService.getCurrentUser({ userId: userSession.data.Response?.userId, accessToken: userSession.data.Response?.accessToken })
+                    localStorage.setItem('accessToken', userSession.data?.accessToken || '')
+                    const userData = await authService.getCurrentUser()
                     if (userData) {
-                        dispatch(login(userData))
-                        navigate('/dashboard')
+                        dispatch(login(userData.data))
+                        navigate('/dashboard/profile')
                     } else {
                         console.log('userData Error ::', userData)
                         setError(userData.message)
@@ -192,11 +192,11 @@ function Signup() {
                                             Usertype:
                                         </label>
                                         <select
-                                            id="usertype"
+                                            id="userType"
                                             onChange={handleChange}
                                             className='bg-gray-200 border border-gray-500 text-slate-900 text-sm font-[700] ml-5 rounded-lg 
-                                             focus:border-blue-500  focus:border-2 block w-full p-2 focus:outline-none
-                                             has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-900' >
+                                                focus:border-blue-500  focus:border-2 block w-full p-2 focus:outline-none
+                                                has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-900' >
                                             <option value="CUSTOMER">CUSTOMER</option>
                                             <option value="ENGINEER">ENGINEER</option>
                                             <option value="ADMIN">ADMIN</option>

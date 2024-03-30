@@ -1,39 +1,61 @@
 import React, { useEffect, useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Header } from './components/Header/Header'
 import { Footer } from './components/Footer/Footer'
-import { CookiesProvider } from 'react-cookie'
+import { CookiesProvider, useCookies } from 'react-cookie'
 import { useDispatch, useSelector } from 'react-redux'
 import { login, logout } from './store/authSlice'
 import authService from './server/auth'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
+import { clearAllUsersData } from './store/userDataSlice'
 
 
 function Layout() {
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [cookies] = useCookies(['accessToken']);
 
-  const userAuth = useSelector((state) => state.auth)
+  // const userAuth = useSelector((state) => state.auth)
   // console.log('userAuth: (in Layout.jsx component)', userAuth)
 
   useEffect(() => {
+    console.log('mounted (in Layout.jsx component)')
     setLoading(true);
-    if (userAuth.status === true && localStorage.getItem('accessToken')) {
-      authService.getCurrentUser({
-        userId: userAuth.userData?.userId,
-        accessToken: localStorage.getItem('accessToken')
-      })
+    // console.log('cookies:', cookies.accessToken)
+    if (localStorage.getItem('accessToken')) {
+      authService.getCurrentUser()
         .then((userData) => {
           if (userData) {
-            dispatch(login({ userData }))
-          } else {
-            dispatch(logout());
+            dispatch(login(userData.data))
           }
+          // else {
+          //   dispatch(logout());
+          // }
+        })
+        .catch((error) => {
+          setLoading(false)
+          console.log('Layout :: getCurrentUser :: Error:', error.response)
+          // if (error.response?.statusText === 'Unauthorized' && error.response?.status === 401) {
+          //   // TODO: add refresh token endpoint to renew access token
+          //   // authService.refreshAccessToken()
+          //   dispatch(logout())
+          //   dispatch(clearAllUsersData())
+          //   localStorage.removeItem('accessToken')
+          //   setTimeout(() => {
+          //     toast.error(error.response?.data?.message)
+          //     navigate('/login')
+          //   }, 1000);
+          // }
         })
         .finally(() => setLoading(false))
     } else {
       setLoading(false)
       dispatch(logout());
+    }
+    return () => {
+      console.log('unmounted (in Layout.jsx component)')
+      // toast.dismiss()
     }
   }, [])
 
@@ -42,7 +64,7 @@ function Layout() {
   return !loading ? (<div className='w-full block'>
     <CookiesProvider>
       <Header />
-      <Toaster position="top-center"/>
+      <Toaster position="top-center" />
       <Outlet />
       <Footer />
     </CookiesProvider>
