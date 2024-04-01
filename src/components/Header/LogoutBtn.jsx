@@ -16,7 +16,6 @@ export default function LogoutBtn() {
     const logoutBtn = async (e) => {
         e.preventDefault()
 
-
         authService.logout()
             .then(() => {
                 console.log('Logout Successfully !')
@@ -39,10 +38,10 @@ export default function LogoutBtn() {
     return (
         <div>
             <Link
-                className='flex items-center text-black bg-gray-200 hover:bg-gray-400 transition-all duration-400 rounded-full px-2 py-1'
+                className='flex hover:bg-gray-400 hover:text-black transition-all duration-500 rounded-full p-2'
                 onClick={logoutBtn}
             >
-                <LogoutIcon sx={{ mr: 0.5 }} fontSize="medium" />
+                <LogoutIcon sx={{ m: 0.5 }} fontSize="medium" />
             </Link>
         </div>
     )

@@ -11,22 +11,22 @@ export function Footer() {
 
           <li className="max-w-[500px] px-3 pt-2 sm:p-3 flex items-center sm:justify-center gap-x-2">
 
-            <li className="sm:px-2 hover:scale-105 sm:rounded-xl transition-all duration-500 outline-none">
+            <div className="sm:px-2 hover:scale-105 sm:rounded-xl transition-all duration-500 outline-none">
               <Link to="https://github.com/nil2022"
                 target='_blank'>
                 <div className="flex items-center justify-center rounded-full border border-gray-300 hover:border-gray-400">
                   <GitHub sx={{ fontSize: 30 }} color='black' />
                 </div>
               </Link>
-            </li>
-            <li className="sm:px-2 hover:scale-105 sm:rounded-xl transition-all duration-500 outline-none">
+            </div>
+            <div className="sm:px-2 hover:scale-105 sm:rounded-xl transition-all duration-500 outline-none">
               <Link to="https://www.linkedin.com/in/nil2022"
                 target='_blank'>
                 <div className="flex items-center justify-center rounded-full border border-gray-300 hover:border-gray-400">
                   <LinkedIn sx={{ fontSize: 32, outline: 'none' }} color='primary' />
                 </div>
               </Link>
-            </li>
+            </div>
           </li>
 
           <ul className="flex flex-col max-w-[500px] sm:flex-row p-3 text-left sm:text-center gap-y-1  ">

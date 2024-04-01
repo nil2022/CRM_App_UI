@@ -24,7 +24,7 @@ function Layout() {
     setLoading(true);
     // console.log('cookies:', cookies.accessToken)
     if (localStorage.getItem('accessToken')) {
-      authService.getCurrentUser()
+      authService.getCurrentUser(cookies?.accessToken || null)
         .then((userData) => {
           if (userData) {
             dispatch(login(userData.data))

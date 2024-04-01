@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import authService from '../server/auth';
 
-export default function PrivateRoute({ children }) {
+export default function PrivateRoute({ children, authentication=true }) {
     const isAuthenticated = useSelector((state) => state.auth.status);
     // const token = useSelector((state) => state.auth.accessToken);
     // const token = localStorage.getItem('accessToken');
@@ -29,7 +29,7 @@ export default function PrivateRoute({ children }) {
 
         if (isAuthenticated) {
             setLoader(false);
-            authService.getCurrentUser()
+            authService.getCurrentUser(token)
                 .then(() => {
                     // ? not needed to implement .then
                     setLoader(false);
@@ -44,7 +44,7 @@ export default function PrivateRoute({ children }) {
         }
 
         // TODO: make it a better authentication for pages
-        if (!isAuthenticated && !token) {
+        if (!isAuthenticated && !token && authentication) {
             setLoader(false);
             toast.dismiss();
             toast.error('Please login first');

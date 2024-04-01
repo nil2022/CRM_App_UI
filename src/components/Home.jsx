@@ -9,13 +9,13 @@ export function Home() {
 
   return (
     <div className="relative">
-      <div className="relative isolate -z-0 px-6 pt-40 lg:px-8 pb-36 md:h-[88vh] ">
+      <div className="relative isolate -z-0 px-6 pt-40 lg:px-8 pb-40 md:pb-36 md:h-[88vh] ">
         <div className="relative mx-auto max-w-2xl py-auto">
           { /** Background Gradient Color */}
           <div className="absolute inset-x-0 -top-[4rem] -z-10 transform-gpu blur-3xl md:-top-[10rem] md:overflow-hidden">
             <svg
-              className="relative left-[calc(50%-11rem)] -z-10 h-[15rem] max-w-none 
-              -translate-x-1/2 rotate-[30deg] md:left-[calc(50%-30rem)] h-[20rem] md:h-[30rem] xl:h-[40rem]"
+              className="relative left-[calc(50%-11rem)] -z-10 max-w-none 
+              -translate-x-1/2 rotate-[30deg] md:left-[calc(50%-30rem)] h-[5rem] md:h-[30rem] xl:h-[35rem]"
               viewBox="0 0 1155 678"
               xmlns="http://www.w3.org/2000/svg"
             >

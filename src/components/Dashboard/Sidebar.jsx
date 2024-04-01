@@ -41,29 +41,29 @@ export function Sidebar() {
 
     }
 
-    const logoutBtn = async (e) => {
-        e.preventDefault()
-        setError('')
+    // const logoutBtn = async (e) => {
+    //     e.preventDefault()
+    //     setError('')
 
-        authService.logout()
-            .then(() => {
-                console.log('Logout Successfully !')
-                toast.success('Logout successfully !')
-                dispatch(logout())
-                dispatch(clearAllUsersData())
-                navigate('/login')
-            })
-            .catch((error) => {
-                setError(error.message);
-                console.log('Logout Error ::', error.message, error.response.data)
-                // if (!error.response?.data?.success && error.response?.data?.statusCode === 401) {
-                //     toast.error(error.response.data.message, {
-                //         duration: 3000
-                //     })
-                //     navigate('/login')
-                // }
-            })
-    }
+    //     authService.logout()
+    //         .then(() => {
+    //             console.log('Logout Successfully !')
+    //             toast.success('Logout successfully !')
+    //             dispatch(logout())
+    //             dispatch(clearAllUsersData())
+    //             navigate('/login')
+    //         })
+    //         .catch((error) => {
+    //             setError(error.message);
+    //             console.log('Logout Error ::', error.message, error.response.data)
+    //             // if (!error.response?.data?.success && error.response?.data?.statusCode === 401) {
+    //             //     toast.error(error.response.data.message, {
+    //             //         duration: 3000
+    //             //     })
+    //             //     navigate('/login')
+    //             // }
+    //         })
+    // }
 
     return (
         <aside className="flex h-screen w-full flex-col overflow-y-auto border-r bg-white px-4 py-8">
@@ -153,7 +153,7 @@ export function Sidebar() {
                         </button> */}
                         <Link
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            onClick={logoutBtn}
+                            // onClick={logoutBtn}
                         >
                             <LogOut className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Logout</span>

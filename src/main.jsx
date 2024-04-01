@@ -20,11 +20,11 @@ import DashboardLayout from './components/Dashboard/DashboardLayout.jsx'
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<Layout />}>
-      <Route path='/' element={<Home />} />
+      <Route path='/' element={<PrivateRoute authentication = {false}> <Home/></PrivateRoute>} />
       <Route path='/register' element={<Register />} />
       <Route path='/login' element={<Login />} />
       <Route path='/dashboard' element={
-        <PrivateRoute><DashboardLayout /></PrivateRoute>}>
+        <PrivateRoute authentication = {true}><DashboardLayout /></PrivateRoute>}>
         <Route path='/dashboard' element={<Dashboard />} />
       </Route>
       <Route path='*' element={<Error />} />

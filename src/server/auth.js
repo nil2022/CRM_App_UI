@@ -23,8 +23,8 @@ export class AuthService {
                 password,
                 userType
             })
-            console.log('userResponse:', userResponse)
-            return userResponse;
+            console.log('userResponse:', userResponse.data)
+            return userResponse.data;
         } catch (error) {
             console.log('createAccount :: Error:', error.message)
             throw error;
@@ -44,11 +44,11 @@ export class AuthService {
         }
     }
 
-    async getCurrentUser() {
+    async getCurrentUser(accessToken) {
         try {
             const fetchUser = await this.axiosInstance.get('/crm/api/v1/auth/current-user',{
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    Authorization: `Bearer ${accessToken}`,
                 }
             })
             return fetchUser.data;
@@ -60,9 +60,6 @@ export class AuthService {
 
     async getAllUsers() {
         try {
-            if (localStorage.getItem('allUsers')) {
-                return JSON.parse(localStorage.getItem('allUsers'));
-            }
             const fetchAllUsers = await this.axiosInstance.get('/crm/api/v1/users', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -77,17 +74,18 @@ export class AuthService {
         }
     }
 
-    async refreshAccessToken() {
+    async refreshAccessToken(refreshToken) {
         try {
-            await this.axiosInstance.get('/crm/api/v1/auth/refresh-token', {
+            const response = await this.axiosInstance.get('/crm/api/v1/auth/refresh-token', {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('refreshToken')}`,
+                    Authorization: `Bearer ${refreshToken}`,
                 }
             })
             console.log('Access Token Refreshed');
-        } catch (error) {
-            console.log('server/auth.js :: refreshAccessToken :: Error:', error.message)
-            throw error;
+            return response.data;
+        } catch(error) {
+            console.log('server/auth.js :: refreshAccessToken :: Error:', error.response.data.message)
+            throw error.response;
         }
     }
 

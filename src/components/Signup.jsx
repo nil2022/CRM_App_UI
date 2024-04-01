@@ -5,6 +5,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import authService from '../server/auth'
 import { useDispatch } from 'react-redux'
 import { login } from '../store/authSlice'
+import { useCookies } from 'react-cookie'
 
 
 function Signup() {
@@ -18,6 +19,7 @@ function Signup() {
 
     const intialValues = { fullName: "", userId: "", password: "", email: "", userType: "CUSTOMER" };
     const [formValues, setFormValues] = useState(intialValues);
+    const [cookies, setCookie] = useCookies(['accessToken']);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -34,15 +36,32 @@ function Signup() {
 
         try {
             const userCreated = await authService.createAccount(formValues)
+            if (userCreated.data.user.userType === 'ADMIN' || userCreated.data.user.userType === 'ENGINEER') {
+                console.log('User Registered!, Verification Pending!')
+                toast('User Registered!, Verification Pending!')
+                return;                
+            }
             if (userCreated) {
                 const userSession = await authService.login({ userId: formValues.userId, password: formValues.password })
                 if (userSession) {
                     console.log('userSession:', userSession)
+                    setCookie('accessToken', userSession.data?.accessToken || null, {
+                        path: '/',
+                        httpOnly: false,
+                        secure: true,
+                        sameSite: 'none'
+                    })
+                    setCookie('refreshToken', userSession.data?.refreshToken || null, {
+                        path: '/',
+                        httpOnly: false,
+                        secure: true,
+                        sameSite: 'none'
+                    })
                     localStorage.setItem('accessToken', userSession.data?.accessToken || '')
-                    const userData = await authService.getCurrentUser()
+                    const userData = await authService.getCurrentUser(userSession.data?.accessToken)
                     if (userData) {
                         dispatch(login(userData.data))
-                        navigate('/dashboard/profile')
+                        navigate('/dashboard')
                     } else {
                         console.log('userData Error ::', userData)
                         setError(userData.message)
@@ -56,7 +75,7 @@ function Signup() {
                 setError(userCreated.message)
             }
         } catch (error) {
-            console.log('handleRegistration :: Error:', error.message)
+            console.log('handleRegistration :: Error:', error.response)
             setError(error.message)
         }
     }, [formValues])

@@ -23,7 +23,7 @@ function Signin() {
     const intialValues = { userId: "", password: "" };
     const [formValues, setFormValues] = useState(intialValues);
 
-    const [cookies, setCookie, removeCookie] = useCookies(['accessToken']);
+    const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
 
     const authStatus = useSelector((state) => state.auth.status)
 
@@ -63,10 +63,9 @@ function Signin() {
                     secure: true,
                     sameSite: 'none'
                 })
-                // sessionStorage.setItem('refreshToken', userSession.data?.refreshToken || null)
-                const userData = await authService.getCurrentUser()
+                const userData = await authService.getCurrentUser(userSession.data?.accessToken || null)
                 // console.log('userData: (after Login, getting current user)', userData)
-                navigate('/dashboard')
+                navigate('/')
             }
         } catch (err) {
             setError(err.response?.data?.message)
