@@ -164,7 +164,6 @@
 
 import React, { useState } from 'react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-// import Link from '@mui/material/Link';
 import { Link, useNavigate } from 'react-router-dom'
 import HomeIcon from '@mui/icons-material/Home';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
@@ -177,6 +176,8 @@ import toast from 'react-hot-toast';
 import { logout } from '../../store/authSlice';
 import { clearAllUsersData } from '../../store/userDataSlice';
 import authService from '../../server/auth';
+import LogoutBtn from './LogoutBtn';
+import Profile from './Profile';
 
 export function Header() {
 
@@ -190,70 +191,60 @@ export function Header() {
     setError('')
 
     authService.logout()
-        .then(() => {
-            console.log('Logout Successfully !')
-            toast.success('Logout successfully !')
-            dispatch(logout())
-            dispatch(clearAllUsersData())
-            navigate('/login')
-        })
-        .catch((error) => {
-            setError(error.message);
-            console.log('Logout Error ::', error.message, error.response.data)
-            // if (!error.response?.data?.success && error.response?.data?.statusCode === 401) {
-            //     toast.error(error.response.data.message, {
-            //         duration: 3000
-            //     })
-            //     navigate('/login')
-            // }
-        })
-}
+      .then(() => {
+        console.log('Logout Successfully !')
+        toast.success('Logout successfully !')
+        dispatch(logout())
+        dispatch(clearAllUsersData())
+        navigate('/login')
+      })
+      .catch((error) => {
+        setError(error.message);
+        console.log('Logout Error ::', error.message, error.response.data)
+        // if (!error.response?.data?.success && error.response?.data?.statusCode === 401) {
+        //     toast.error(error.response.data.message, {
+        //         duration: 3000
+        //     })
+        //     navigate('/login')
+        // }
+      })
+  }
 
   return (
-    <div role="presentation" className='w-full'>
-      <Breadcrumbs aria-label="breadcrumb"
-        sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', py: 2, px: 2, fontFamily: 'inherit', fontWeight: 'semibold' }}
-        className='bg-slate-100 ' >
+    <div className='w-full flex justify-center sm:justify-end gap-x-2  min-h-[50px]'>
+      {authStatus && (<Link
+        className='flex items-center text-black hover:bg-gray-300 transition-all duration-400 rounded-full px-2 py-2'
+        to="/"
+      >
+        <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
+        HOME
+      </Link>)}
 
-        <Link
-          className='flex items-center text-black bg-gray-200 hover:bg-gray-400 transition-all duration-400 rounded-full px-3'
-          to="/"
-        >
-          <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-          HOME
-        </Link>
+      {authStatus && (<Link
+        className='flex items-center text-black hover:bg-gray-400 transition-all duration-400 rounded-full px-2 py-1'
+        to="#"
+      >
+        <HowToRegIcon sx={{ mr: 0.5, color: "black" }} fontSize="small" />
+        ACCOUNT
+      </Link>)}
 
-        {!authStatus && (<Link
-          className='flex items-center text-black bg-gray-200 hover:bg-gray-400 transition-all duration-400 rounded-full px-3'
-          to="/register"
-        >
-          <HowToRegIcon sx={{ mr: 0.5, color: "black" }} fontSize="inherit" color="inherit" />
-          REGISTER
-        </Link>)}
+      {authStatus && (<Link
+        className='flex items-center text-black bg-gray-200 hover:bg-gray-400 transition-all duration-400 rounded-full px-3'
+        to="#"
+      >
+        <LoginIcon sx={{ mr: 0.5 }} fontSize="small" />
+        SUPPORT
+      </Link>)}
 
-        {!authStatus && (<Link
-          className='flex items-center text-black bg-gray-200 hover:bg-gray-400 transition-all duration-400 rounded-full px-3'
-          to="/login"
-        >
-          <LoginIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-          LOGIN
-        </Link>)}
+      {authStatus && (<Link
+        className='flex items-center text-black bg-gray-200 hover:bg-gray-400 transition-all duration-400 rounded-full px-2 py-1'
+        to="/dashboard"
+      >
+        <AccountCircleIcon sx={{ mr: 0.5 }} fontSize="medium" />
+      </Link>)}
+      {/* {authStatus && (<Profile />)} */}
 
-        {authStatus && (<Link
-          className='flex items-center text-black bg-gray-200 hover:bg-gray-400 transition-all duration-400 rounded-full px-3'
-          to="/dashboard/profile"
-        >
-          <AccountCircleIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-          PROFILE
-        </Link>)}
-
-        {authStatus && (<Button
-          onClick={logoutBtn}>
-          <LogoutIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-          Logout</Button>)
-        }
-
-      </Breadcrumbs>
+      {authStatus && (<LogoutBtn />)}
     </div>
   );
 }

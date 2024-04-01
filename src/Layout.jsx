@@ -62,7 +62,7 @@ function Layout() {
   // console.log('Environment values:', import.meta.env.VITE_CRM_BACKEND_URL)
 
   return !loading ? (<div className='w-full block'>
-    <CookiesProvider>
+    <CookiesProvider >
       <Header />
       <Toaster position="top-center" />
       <Outlet />

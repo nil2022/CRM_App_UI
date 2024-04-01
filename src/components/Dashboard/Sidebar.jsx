@@ -6,7 +6,7 @@ import authService from '../../server/auth'
 import { logout } from '../../store/authSlice'
 import { allUsersData, clearAllUsersData } from '../../store/userDataSlice'
 import toast from 'react-hot-toast'
-import Profile from './Profile'
+import Profile from '../Header/Profile'
 import { useCookies } from 'react-cookie'
 
 export function Sidebar() {

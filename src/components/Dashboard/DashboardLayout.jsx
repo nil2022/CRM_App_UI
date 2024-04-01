@@ -29,12 +29,10 @@ export default function DashboardLayout() {
 
     return (
         <div className='w-full flex'>
-            <div className='max-w-[250px] w-4/12 hidden sm:block'>
+            {/* <div className='max-w-[250px] w-4/12 hidden sm:block'>
                 <Sidebar />
-            </div>
-            <div className='w-full md:w-11/12 overflow-auto'>
+            </div> */}
                 <Outlet />
-            </div>
         </div>
     )
 }

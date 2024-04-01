@@ -66,7 +66,7 @@ function Signin() {
                 // sessionStorage.setItem('refreshToken', userSession.data?.refreshToken || null)
                 const userData = await authService.getCurrentUser()
                 // console.log('userData: (after Login, getting current user)', userData)
-                navigate('/dashboard/profile')
+                navigate('/dashboard')
             }
         } catch (err) {
             setError(err.response?.data?.message)
@@ -107,9 +107,8 @@ function Signin() {
 
     return (
         <>
-            <div><Toaster position="top-center" /></div>
             <section>
-                <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
+                <div className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 lg:py-24 xl:h-[88vh]">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
                             <img src="/login-icon.png"
