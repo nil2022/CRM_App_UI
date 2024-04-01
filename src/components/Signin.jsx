@@ -1,33 +1,34 @@
-'use client'
 import { ArrowRight } from 'lucide-react'
-import React, { useCallback, useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
-import { Cookies } from 'react-cookie'
-import {  useToast } from '@chakra-ui/react'
+import { useCookies,Cookies } from 'react-cookie'
+import { useDispatch, useSelector } from 'react-redux'
+import { login as authLogin } from '../store/authSlice'
+import authService from '../server/auth'
 
-const cookies = new Cookies(null, {
-    path: '/',
-    httpOnly: false,
-    secure: true
-});
+// const cookies = new Cookies(null, {
+//     path: '/',
+//     httpOnly: false,
+//     secure: true
+// });
 
 
 function Signin() {
 
-    /** set success message when success is true */
-    const [successMsg, setSuccessMsg] = useState({})
     /** set error message when error is true */
-    const [errorMsg, setErrorMsg] = useState({})
+    const [error, setError] = useState('')
     /** set loading state  */
     const [loading, setLoading] = useState(false)
     const intialValues = { userId: "", password: "" };
     const [formValues, setFormValues] = useState(intialValues);
-    const [loginSuccess, setLoginSuccess] = useState(false)
-    const toastChakra = useToast()
 
-    const navigate = useNavigate()
+    const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
+
+    const authStatus = useSelector((state) => state.auth.status)
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -37,95 +38,76 @@ function Signin() {
     /* ***********  HANDLE THE LOGIN  ************* */
     /* ******************************************** */
 
-   
-    const handleLogin = useCallback(async (e) => {
+    const login = async (e) => {
         e.preventDefault()
-
-        const signInUrl = import.meta.env.VITE_CRM_BACKEND_URL
-        setLoading(true)
+        setError('')
         try {
-            const response = await axios.post(`${signInUrl}/crm/api/auth/signin`,
-                {
-                    userId: formValues.userId,
-                    password: formValues.password,
+            // console.log('formValues: (in login function)', formValues)
+            const userSession = await authService.login(formValues)
+            console.log('userSession:', userSession)
+            dispatch(authLogin(userSession.data?.user))
+            if (userSession) {
+                // console.log('Login Successfull !')
+                toast.success('Login Success')
+                localStorage.setItem('accessToken', userSession.data?.accessToken || null )
+                localStorage.setItem('refreshToken', userSession.data?.refreshToken || null )
+                setCookie('accessToken', userSession.data?.accessToken || null, {
+                    path: '/',
+                    httpOnly: false,
+                    secure: true,
+                    sameSite: 'none'
                 })
-
-            setLoading(false)
-            toast.dismiss()
-            setSuccessMsg(response.data)
-            setErrorMsg({})
-            console.log('success:', response)
-            setLoginSuccess(true)
-            cookies.set('accessToken', response.data?.Response?.accessToken)
-        } catch (error) {
-            setLoading(false)
-            setLoginSuccess(false)
-            toast.dismiss()
-            setErrorMsg(error)
-            setSuccessMsg({})
-            console.log("Got Error:", error)
-            error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
+                setCookie('refreshToken', userSession.data?.refreshToken || null, {
+                    path: '/',
+                    httpOnly: false,
+                    secure: true,
+                    sameSite: 'none'
+                })
+                const userData = await authService.getCurrentUser(userSession.data?.accessToken || null)
+                // console.log('userData: (after Login, getting current user)', userData)
+                navigate('/')
+            }
+        } catch (err) {
+            setError(err.response?.data?.message)
+            err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
+            console.log('Login error ::', err.response?.statusText)
         }
-
-        toastChakra.promise(examplePromise, {
-            success: { title: 'Promise resolved', description: 'Looks great' },
-            error: { title: 'Promise rejected', description: 'Something wrong' },
-            loading: { title: 'Promise pending', description: 'Please wait' },
-          })
-
-    }, [formValues])
-
-
-    const handleGithubLogin = useCallback(async (e) => {
-        e.preventDefault()
-        const githubLoginURL = 'http://localhost:5173'
-        setLoading(true)
-        try {
-            const response = await axios.get(`${githubLoginURL}/api/auth/github`)
-            setLoading(false)
-            toast.dismiss()
-            setSuccessMsg(response.data)
-            console.log('success:', response.data)
-
-        } catch (error) {
-            setLoading(false)
-            toast.dismiss()
-            setErrorMsg(error)
-            console.log("Got Error:", error)
-        }
-
-    }, [])
-
+    }
+    // console.log('formValues:', formValues)
 
     useEffect(() => {
+        console.log('mounted (in Signin.jsx component)')
 
-        if (loading) {
-            toast.loading('Please wait.....')
-        }
-
-        if (loginSuccess && cookies.get('accessToken')) {
-            toast.dismiss()
-            toast.success(successMsg.message)
-            setTimeout(() => {
-                toast.dismiss()
-                navigate('/dashboard', {
-                    unstable_viewTransition: true,
-                    unstable_flushSync: true
-                })
-            }, 1500);
+        if(!authStatus) {
+            localStorage.removeItem('accessToken')
+            localStorage.removeItem('refreshToken')
+            localStorage.removeItem('allUsers')
+            removeCookie('accessToken', {
+                path: '/',
+                httpOnly: false,
+                secure: true,
+                sameSite: 'none'
+            })
+            removeCookie('refreshToken', {
+                path: '/',
+                httpOnly: false,
+                secure: true,
+                sameSite: 'none'
+            })
         }
 
         return () => {
-            toast.dismiss()
+            console.log('unmounted (in Signin.jsx component)')
+            // toast.dismiss()
         }
-    }, [loading, loginSuccess, successMsg, navigate])
+    }, [])
+
 
 
     return (
         <>
-            <div><Toaster position="top-center" /></div>
             <section>
-                <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
+                <div className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 lg:py-24 xl:h-[88vh]">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
                             <img src="/login-icon.png"
@@ -140,15 +122,16 @@ function Signin() {
                             Don&apos;t have an account?{' '}
                             <br />
                             <Link
-                                to="/signup"
+                                to="/register"
                                 rel="noopener noreferrer"
                                 className="font-[800] text-black transition-all duration-200 hover:underline"
                             >
                                 Register Now !
                             </Link>
                         </p>
+                        {/* {error && <p className="text-red-500 text-center font-semibold text-lg my-4 py-4">{error}</p>} */}
                         <form
-                            onSubmit={handleLogin}
+                            onSubmit={login}
                             className="mt-8"
                         >
                             <div className="space-y-5">

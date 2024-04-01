@@ -1,19 +1,28 @@
 import { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
+import authService from '../server/auth'
+import { useDispatch } from 'react-redux'
+import { login } from '../store/authSlice'
+import { useCookies } from 'react-cookie'
+
 
 function Signup() {
 
     /** set success message when success is true */
     const [successMsg, setSuccessMsg] = useState({})
     /** set error message when error is true */
-    const [errorMsg, setErrorMsg] = useState({})
+    const [error, setError] = useState('')
     /** set loading state  */
     const [loading, setLoading] = useState(false)
 
-    const intialValues = { fullName: "", userId: "", password: "", email: "", usertype: "CUSTOMER" };
+    const intialValues = { fullName: "", userId: "", password: "", email: "", userType: "CUSTOMER" };
     const [formValues, setFormValues] = useState(intialValues);
+    const [cookies, setCookie] = useCookies(['accessToken']);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -21,33 +30,53 @@ function Signup() {
         // console.log(formValues);
     }
 
-
     const handleRegistration = useCallback(async (e) => {
         e.preventDefault()
+        setError(null)
 
-        const signupUrl = import.meta.env.VITE_CRM_BACKEND_URL
-        setLoading(true)
         try {
-            const response = await axios.post(`${signupUrl}/crm/api/auth/signup`,
-                {
-                    name: formValues.fullName,
-                    userId: formValues.userId,
-                    password: formValues.password,
-                    email: formValues.email,
-                    userType: formValues.usertype
-                })
-            setLoading(false)
-            toast.dismiss()
-            setSuccessMsg(response.data)
-            console.log('success:', response.data)
-            toast.success(response.data?.message)
-
+            const userCreated = await authService.createAccount(formValues)
+            if (userCreated.data.user.userType === 'ADMIN' || userCreated.data.user.userType === 'ENGINEER') {
+                console.log('User Registered!, Verification Pending!')
+                toast('User Registered!, Verification Pending!')
+                return;                
+            }
+            if (userCreated) {
+                const userSession = await authService.login({ userId: formValues.userId, password: formValues.password })
+                if (userSession) {
+                    console.log('userSession:', userSession)
+                    setCookie('accessToken', userSession.data?.accessToken || null, {
+                        path: '/',
+                        httpOnly: false,
+                        secure: true,
+                        sameSite: 'none'
+                    })
+                    setCookie('refreshToken', userSession.data?.refreshToken || null, {
+                        path: '/',
+                        httpOnly: false,
+                        secure: true,
+                        sameSite: 'none'
+                    })
+                    localStorage.setItem('accessToken', userSession.data?.accessToken || '')
+                    const userData = await authService.getCurrentUser(userSession.data?.accessToken)
+                    if (userData) {
+                        dispatch(login(userData.data))
+                        navigate('/dashboard')
+                    } else {
+                        console.log('userData Error ::', userData)
+                        setError(userData.message)
+                    }
+                } else {
+                    console.log('userSession Error ::', userSession)
+                    setError(userSession.message)
+                }
+            } else {
+                console.log('userCreated Error ::', userCreated)
+                setError(userCreated.message)
+            }
         } catch (error) {
-            setLoading(false)
-            toast.dismiss()
-            setErrorMsg(error)
-            console.log("Got Error:", error)
-            error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
+            console.log('handleRegistration :: Error:', error.response)
+            setError(error.message)
         }
     }, [formValues])
 
@@ -82,12 +111,13 @@ function Signup() {
                             Already have an account?{' '}
                             <br />
                             <Link
-                                to="/signin"
+                                to="/login"
                                 className="font-[800] text-black transition-all duration-200 hover:underline"
                             >
                                 Login Here !
                             </Link>
                         </p>
+                        {error && <p className="text-red-500 text-center font-semibold text-lg mt-2">{error}</p>}
                         <form
                             onSubmit={handleRegistration}
                             className="mt-8"
@@ -181,11 +211,11 @@ function Signup() {
                                             Usertype:
                                         </label>
                                         <select
-                                            id="usertype"
+                                            id="userType"
                                             onChange={handleChange}
                                             className='bg-gray-200 border border-gray-500 text-slate-900 text-sm font-[700] ml-5 rounded-lg 
-                                             focus:border-blue-500  focus:border-2 block w-full p-2 focus:outline-none
-                                             has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-900' >
+                                                focus:border-blue-500  focus:border-2 block w-full p-2 focus:outline-none
+                                                has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-900' >
                                             <option value="CUSTOMER">CUSTOMER</option>
                                             <option value="ENGINEER">ENGINEER</option>
                                             <option value="ADMIN">ADMIN</option>

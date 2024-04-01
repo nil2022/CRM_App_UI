@@ -1,179 +1,122 @@
-'use client'
-
 import React, { useCallback, useEffect, useState } from 'react'
-import axios from 'axios'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import { Cookies } from 'react-cookie'
-import { Sidebar } from './Sidebar'
 import { Datatable } from './DataTable'
-
-const cookies = new Cookies(null, {
-  path: '/',
-  httpOnly: false,
-  secure: true
-});
+import authService from '../../server/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../../store/authSlice'
+import { allUsersData, clearAllUsersData } from '../../store/userDataSlice'
+import { Sidebar } from './Sidebar'
+import { useCookies } from 'react-cookie'
+import { Alert, Box, Button, Snackbar } from '@mui/material'
+import { SuccessBanner } from './SuccessBanner'
 
 
 function Dashboard() {
 
-  const navigate = useNavigate()
-
-  /** set loading state  */
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const [cookies] = useCookies(['accessToken', 'refreshToken']);
+  const allUsers = useSelector((state) => state.allUsers.allUsersData)
+  const [open, setOpen] = useState(false)
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  }
 
-  // const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isLoggedOut, setIsLoggedOut] = useState(false)
-  const [getAllUsersData, setGetAllUsersData] = useState({})
+
+  const authData = useSelector((state) => state.auth.userData)
 
   const getUsers = useCallback(async (e) => {
     e.preventDefault()
     setLoading(true)
-    const backendUrl = import.meta.env.VITE_CRM_BACKEND_URL
-    try {
-      setIsLoggedOut(false)
-      const response = await axios.get(`${backendUrl}/crm/api/users`, {
-        headers: {
-          Authorization: `Bearer ${cookies.get('accessToken')}`,
-        }
+    setError('')
+    setOpen(true);
+
+    authService.getAllUsers()
+      .then((response) => {
+        setLoading(false)
+        dispatch(allUsersData(response?.data))
       })
-
-      toast.dismiss()
-      setGetAllUsersData(response.data)
-      toast.success(response.data.message)
-
-    } catch (error) {
-      setLoading(false)
-      console.log('Error:', error)
-      toast.dismiss()
-      error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
-    }
-  }, [])
-
-  const handleLogout = useCallback(async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const backendUrl = import.meta.env.VITE_CRM_BACKEND_URL
-    try {
-      const response = await axios.get(`${backendUrl}/crm/api/auth/logout`, {
-        headers: {
-          Authorization: `Bearer ${cookies.get('accessToken')}`,
-        }
+      .catch((error) => {
+        setLoading(false)
+        console.log('Error:', error?.message || 'something went wrong')
+        setError(error.response.data.message || error?.message || 'something went wrong')
+        toast.dismiss()
+        // error.response?.data.message ? toast.error(error.response.data.message) : toast.error(error.message)
       })
-      setIsLoggedOut(true)
-      setLoading(false)
-      console.log('response:', response)
-      cookies.remove('accessToken')
-      console.log(response.data.message)
+      .finally(() => setLoading(false))
 
-    } catch (error) {
-      setLoading(false)
-      console.log('Error:', error)
-      toast.dismiss()
-      toast.error(error.response?.data?.message)
-    }
   }, [])
-
 
 
   useEffect(() => {
+    authService.getCurrentUser(cookies?.accessToken || null)
+      .then((userData) => {
+        // console.log('DashboardLayout :: getCurrentUser :: userData:', userData)
+      })
+      .catch((error) => {
+        console.log('Dashboard.jsx :: getCurrentUser :: Error:', error?.response)
+        if (error.response?.statusText === 'Unauthorized' && error.response?.status === 401) {
+          authService.refreshAccessToken(cookies?.refreshToken || null)
+            .then((response) => {
+              console.log('response:', response)
+            })
+            .catch((error) => {
+              console.log('Dashboard.jsx :: getCurrentUser :: Error:', error?.response)
+            })
+          // setError(error?.response?.data?.message || error?.response.statusText)
+          // dispatch(logout())
+          // dispatch(clearAllUsersData())
+          // localStorage.removeItem('accessToken')
+          // setTimeout(() => {
+          //   toast.error(error.response?.data?.message)
+          //   navigate('/login')
+          // }, 1000);
+        }
+      })
+  }, [])
 
-    if (loading) {
-      toast.loading('Please wait.....')
-    }
-
-    if (!cookies.get('accessToken') && !isLoggedOut) {
-      toast.dismiss()
-      setLoading(false)
-      toast.error('Please Login to access dashboard!')
-      setTimeout(() => {
-        toast.dismiss()
-        navigate('/signin', {
-          unstable_viewTransition: true,
-          unstable_flushSync: true
-        })
-      }, 1500);
-    }
-
-
-    if (!cookies.get('accessToken') && isLoggedOut) {
-      setLoading(false)
-      toast.dismiss()
-      toast.success('Logout successfully!')
-      setTimeout(() => {
-        toast.dismiss()
-        navigate('/signin', {
-          unstable_viewTransition: true,
-          unstable_flushSync: true
-        })
-      }, 1500);
-    }
-
-
-    return () => {
-      toast.dismiss()
-    }
-  }, [loading, isLoggedOut, navigate])
-
-  function handleGetAllUsers() {
-    const data = getAllUsersData.Response
-    for (const iterator of data) {
-      console.log(iterator['userId'])
-      console.log(iterator['name'])
-    }
-
-  }
-
-  // console.log('getAllUsersData:', handleGetAllUsers(getAllUsersData))
-
-  return (
-    <>
-      <Toaster position="top-center" />
-      <div className={cookies.get('accessToken') ? `block` : `hidden`}>
-        <h1 className='text-3xl font-bold text-center h-fit'>Dashboard</h1>
-        {/* ****************************ACTUAL CODE ************************************* */}
-        <div className=" m-3 grid gap-3 grid-cols-12">
-          <div className="min-h-[100px] w-full rounded hidden lg:block col-span-2">
-            <Sidebar />
-          </div>
-          <div className="min-h-[100px] rounded col-span-12 lg:col-span-10">
-            <div className="min-h-[100px] w-full rounded-lg grid sm:grid-row-6 border">
-              <div className="h-fit rounded justify-center text-center items-center m-1 sm:row-span-2">
-                <button
-                  onClick={getUsers}
-                  className=" row-span-2 w-[100px] h-full m-2 text-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-                >
-                  Get Users
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="row-span-2 w-[100px] h-full m-2 text-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-                >
-                  Logout
-                </button>
-              </div>
-              <div className="min-h-[50px] rounded justify-center items-center m-1 sm:row-span-4">
-                <p className='text-2xl h-[50px] p-2 m-1 border text-center font-bold gap-2'>
-                  {'Data Length-'}{getAllUsersData.Response?.length ? getAllUsersData.Response?.length : 0}
-                </p>
-                {/* Table to view Customers */}
-                <div className='gap-4'>
-                  <Datatable
-                    value={'Customers'}
-                    data={getAllUsersData.Response}
-                  />
+  if (authData) {
+    return !loading ? (
+      <>
+        <div className='min-h-[88vh]'>
+          {/* <h1 className='text-3xl font-bold text-center h-fit'>Dashboard</h1> */}
+          {error && <p className="text-red-500 text-center font-semibold text-lg mt-2">{error}</p>}
+          {/* ****************************ACTUAL CODE ************************************* */}
+          <div className=" m-3 flex flex-col">
+            {authData.userType === 'ADMIN' ? (<Button onClick={getUsers} variant='contained' sx={{ m: 1, width: 'fit-content', alignSelf: 'flex-end' }}>Fetch Users</Button>) : null}
+            {authData.userType === 'CUSTOMER' && <SuccessBanner />}
+            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+              <Alert
+                onClose={handleClose}
+                severity="success"
+                variant="filled"
+                sx={{ width: '100%' }}
+              >
+                Users fetched Successfully !
+              </Alert>
+            </Snackbar>
+            <div className="min-h-[100px] rounded ">
+              <div className="min-h-[100px] w-full rounded-lg border">
+                <div className="min-h-[50px] rounded justify-center items-center m-1 ">
+                  {/* Table to view Customers */}
+                  <div className='gap-4'>
+                    <Datatable />
+                  </div>
                 </div>
-                {/* Table to view Engineerss */}
-                {/* <div className='gap-4'>
-                  <Datatable value={'Employees'} />
-                </div> */}
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </>
-  )
+      </>
+    ) : null
+  }
+
 }
 
 export default Dashboard

@@ -1,7 +1,70 @@
-import React from 'react'
-import { Newspaper, BellRing, Paperclip, Users, DownloadCloud, LogOut, UserRoundCogIcon } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { Users, DownloadCloud, LogOut, UserRoundCogIcon } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import authService from '../../server/auth'
+import { logout } from '../../store/authSlice'
+import { allUsersData, clearAllUsersData } from '../../store/userDataSlice'
+import toast from 'react-hot-toast'
+import Profile from '../Header/Profile'
+import { useCookies } from 'react-cookie'
 
 export function Sidebar() {
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate();
+    const [error, setError] = useState('')
+    const [cookies, setCookies, removeCookies] = useCookies(['accessToken'])
+
+    const getUsers = async (e) => {
+        e.preventDefault()
+        setError('')
+
+        authService.getAllUsers()
+            .then((response) => {
+                dispatch(allUsersData(response?.data))
+                toast.success(response?.message || 'Success')
+            })
+            .catch((error) => {
+                console.log('Error:', error.response?.statusText || 'something went wrong')
+                setError(error.response.data.message || error.response.statusText || 'something went wrong')
+                if(error.response?.statusText === 'Unauthorized' && error.response?.status === 401) {
+                    setTimeout(() => {
+                        toast.error(error.response?.data?.message)
+                        navigate('/login')
+                    }, 1000);
+                } else if (error.response?.data?.message) {
+                    toast.error(error.response?.data?.message || 'Require Admin role')
+                }
+                // toast.error(error.response?.statusText || 'Something went wrong')
+            })
+
+    }
+
+    // const logoutBtn = async (e) => {
+    //     e.preventDefault()
+    //     setError('')
+
+    //     authService.logout()
+    //         .then(() => {
+    //             console.log('Logout Successfully !')
+    //             toast.success('Logout successfully !')
+    //             dispatch(logout())
+    //             dispatch(clearAllUsersData())
+    //             navigate('/login')
+    //         })
+    //         .catch((error) => {
+    //             setError(error.message);
+    //             console.log('Logout Error ::', error.message, error.response.data)
+    //             // if (!error.response?.data?.success && error.response?.data?.statusCode === 401) {
+    //             //     toast.error(error.response.data.message, {
+    //             //         duration: 3000
+    //             //     })
+    //             //     navigate('/login')
+    //             // }
+    //         })
+    // }
+
     return (
         <aside className="flex h-screen w-full flex-col overflow-y-auto border-r bg-white px-4 py-8">
             {/* <a href="#">
@@ -20,27 +83,32 @@ export function Sidebar() {
             </a> */}
             <div className="mt-4 flex flex-1 flex-col justify-between">
                 <nav className="-mx-3 space-y-6 ">
-                <div className='m-1 p-2 text-xl font-bold text-left'>
-                    MENU
-                </div>
+                    <div className='m-1 p-2 text-xl font-bold text-left'>
+                        <Link
+                            className='text-xl font-bold px-2 bg-slate-200 hover:bg-slate-700 hover:text-slate-100 rounded-md transition-all duration-500'
+                            to={'/dashboard'}>
+                            DASHBOARD
+                        </Link>
+                    </div>
                     <div className="space-y-2 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">Users</label>
-                        <button
+                        <Link
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                            onClick={getUsers}
                         >
                             <DownloadCloud className="h-5 w-5" aria-hidden="true" />
-                            <span className="mx-2 text-sm font-medium">Fetch Customers</span>
-                        </button>
+                            <span className="mx-2 text-sm font-medium">Fetch Users</span>
+                        </Link>
                         <button
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                        // onClick={}
                         >
                             <Users className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Fetch Customers</span>
                         </button>
                     </div>
-                    <div className="space-y-3 ">
+
+                    {/* <div className="space-y-3 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">content</label>
                         <a
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
@@ -63,26 +131,33 @@ export function Sidebar() {
                             <Paperclip className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Checklists</span>
                         </a>
-                    </div>
+                    </div> */}
 
                     <div className="space-y-3 ">
                         <label className="px-3 text-xs font-semibold uppercase text-gray-900">
                             Account
                         </label>
-                        <button
+                        <Link
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                            to={'/dashboard/profile'}
                         >
                             <UserRoundCogIcon className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Profile</span>
-                        </button>
-                        <button
+                        </Link>
+                        {/* <button
                             className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-                            // onClick={}
+                            onClick={<Profile />}
+                        >
+                            <UserRoundCogIcon className="h-5 w-5" aria-hidden="true" />
+                            <span className="mx-2 text-sm font-medium">ProfileBtn</span>
+                        </button> */}
+                        <Link
+                            className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
+                            // onClick={logoutBtn}
                         >
                             <LogOut className="h-5 w-5" aria-hidden="true" />
                             <span className="mx-2 text-sm font-medium">Logout</span>
-                        </button>
+                        </Link>
                     </div>
                 </nav>
             </div>
