@@ -61,7 +61,7 @@ function Signup() {
                     const userData = await authService.getCurrentUser(userSession.data?.accessToken)
                     if (userData) {
                         dispatch(login(userData.data))
-                        navigate('/dashboard')
+                        navigate('/')
                     } else {
                         console.log('userData Error ::', userData)
                         setError(userData.message)
