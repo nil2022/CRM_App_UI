@@ -48,7 +48,7 @@ function Signin() {
             dispatch(authLogin(userSession.data?.user))
             if (userSession) {
                 // console.log('Login Successfull !')
-                toast.success('Login Success')
+                toast(userSession?.message)
                 localStorage.setItem('accessToken', userSession.data?.accessToken || null )
                 localStorage.setItem('refreshToken', userSession.data?.refreshToken || null )
                 setCookie('accessToken', userSession.data?.accessToken || null, {
@@ -68,9 +68,9 @@ function Signin() {
                 navigate('/')
             }
         } catch (err) {
-            setError(err.response?.data?.message)
-            err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
-            console.log('Login error ::', err.response?.statusText)
+            setError(err.response?.data?.message || err.message)
+            // err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
+            console.log('Login error ::', err.response?.data?.message || err?.message)
         }
     }
     // console.log('formValues:', formValues)
@@ -129,7 +129,7 @@ function Signin() {
                                 Register Now !
                             </Link>
                         </p>
-                        {/* {error && <p className="text-red-500 text-center font-semibold text-lg my-4 py-4">{error}</p>} */}
+                        {error && <p className="text-red-500 text-center font-semibold text-lg my-4 py-4">{error}</p>}
                         <form
                             onSubmit={login}
                             className="mt-8"

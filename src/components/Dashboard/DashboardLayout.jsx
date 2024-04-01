@@ -14,7 +14,7 @@ export default function DashboardLayout() {
     useEffect(() => {
         authService.getCurrentUser(cookies?.accessToken || null, cookies?.refreshToken || null)
             .then((userData) => {
-                console.log('DashboardLayout :: getCurrentUser :: userData:', userData)
+                // console.log('DashboardLayout :: getCurrentUser :: userData:', userData)
             })
             .catch((error) => {
                 console.log('DashboardLayout :: getCurrentUser :: Error:', error?.response || 'something went wrong')
