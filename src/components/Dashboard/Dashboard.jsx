@@ -5,7 +5,7 @@ import authService from '../../server/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../store/authSlice'
 import { useCookies } from 'react-cookie'
-import { Alert, Box, Button, Skeleton, Snackbar } from '@mui/material'
+import { Alert, Backdrop, Box, Button, CircularProgress, Skeleton, Snackbar } from '@mui/material'
 import { SuccessBanner } from './SuccessBanner'
 import UserCard from './UserCard'
 import toast from 'react-hot-toast'
@@ -20,12 +20,14 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [cookies] = useCookies(['accessToken', 'refreshToken']);
   const allUsers = useSelector((state) => state.data?.usersData)
+  const userData = useSelector((state) => state.auth.userData)
   const [renderCount, setRenderCount] = useState(0)
   const authData = useSelector((state) => state.auth.userData)
+  const [open, setOpen] = React.useState(false);
 
 
   useEffect(() => {
-    // setLoading(true)
+    setOpen(true)
     authService.getCurrentUser(cookies?.accessToken || null)
       .then((userData) => {
 
@@ -48,70 +50,62 @@ export default function Dashboard() {
             unstable_viewTransition: true,
             unstable_flushSync: true
           })
-        } 
+        }
       }
       ).finally(() => {
-        // setLoading(false)
+        setOpen(false)
       })
     // console.log('renderCount: (in Dashboard.jsx)', renderCount)
     setRenderCount(prevCount => prevCount + 1)
 
-  }, [navigate])
+  }, [])
 
 
 
   if (authData) {
-    return !loading ? (
-      <div className='min-h-[88vh] flex flex-col items-center justify-center'>
+    return (
+      <div className='flex flex-col'>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
         {authData.userType === 'ADMIN' && (<p className='text-3xl text-center p-2'>Hi, {authData?.fullName}</p>)}
-        {renderCount > 0 && <p>Render Count in Dashboard.jsx :{renderCount}</p>}
+        {renderCount > 0 && <p className='m-4 p-2'>Render Count in Dashboard.jsx :{renderCount}</p>}
         {/* <UserCard /> */}
-        {authData.userType === 'CUSTOMER' && (<ProfileCard />)}
+        {authData.userType === 'CUSTOMER' && (
+          <div className='h-[70vh] '>
+            <div className='block md:hidden items-center justify-center'>
+              <ProfileCard />
+            </div>
+            <div className='hidden md:block text-xl font-[500] m-5'>
+              <div className="p-4">
+                <h1 className=" items-center text-3xl font-semibold">
+                  Hi, {userData?.fullName || 'Full Name'}
+                </h1>
+                <p className='text-xs max-w-[250px] overflow-hidden'>{userData?._id || 'id'}</p>
+                <hr className='my-3 border border-gray-300 w-full ' />
+                <h2 className="font-medium text-gray-800">{userData?.email || 'Email'}</h2>
+                <h2 className="font-medium text-gray-500">{userData?.userType || 'User Type'}</h2>
+                <p className="mt-3 text-sm text-gray-600">
+                  About User
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         {/* <h1 className='text-3xl font-bold text-center h-fit'>Dashboard</h1> */}
         {error && <p className="text-red-500 text-center font-semibold text-lg mt-2">{error}</p>}
         {/* ****************************ACTUAL CODE ************************************* */}
-        <div className=" m-3 flex flex-col">
-          {/* {authData.userType === 'CUSTOMER' && <SuccessBanner />} */}
-          {authData.userType === 'ADMIN' && (<div className="w-full rounded  ">
-            <div className=" w-full justify-start rounded-lg border bg-blue-100">
-              <div className="min-h-[50px] flex rounded justify-start items-center m-1 ">
-                <div className='gap-4'>
-                  <Datatable />
-                </div>
-              </div>
+        {authData.userType === 'ADMIN' && (
+          <div className="m-4 border-2">
+            <div>
+              <Datatable />
             </div>
-          </div>)}
-        </div>
+          </div>
+        )}
       </div>
-    ) : (<div className='text-3xl text-center'>Loading...</div>
-      // <div className='w-full min-h-[52vh] items-center'>
-      //   <Box sx={{ padding: '1em', marginTop: '5em', minHeight: '30vh', alignSelf: 'center', rowGap: '2em' }}>
-      //     <Skeleton animation="pulse" variant='rectangular' sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <br />
-      //     <Skeleton animation="pulse" variant='rectangular' sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //   </Box>
-      //   <Box sx={{ padding: '1em', marginTop: '2em', minHeight: '30vh', alignSelf: 'center', rowGap: '1em' }}>
-      //     <Skeleton animation="pulse" variant='rectangular' sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <br />
-      //     <Skeleton animation="pulse" variant='rectangular' sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" sx={{ fontSize: '1rem' }} />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //     <Skeleton animation="pulse" variant='h2' />
-      //   </Box>
-      // </div>
     )
   }
 }

@@ -64,7 +64,11 @@ function Layout() {
   return !loading ? (<div className='w-full block'>
     <CookiesProvider >
       <Header />
-      <Toaster position="top-center" />
+      <Toaster position="top-center"
+        toastOptions={{
+          duration: 1500,
+          className: 'font-[600]'
+        }} />
       <Outlet />
       <Footer />
     </CookiesProvider>

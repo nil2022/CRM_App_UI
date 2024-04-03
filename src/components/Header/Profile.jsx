@@ -6,10 +6,9 @@ export default function ProfileCard() {
   const userData = useSelector((state) => state.auth.userData)
 
   return (
-    <div className='p-10 items-center justify-center'>
+    <div className='m-2 p-5 flex flex-col items-center'>
       <div 
-      className="w-fit sm:w-[38rem] sm:flex max-w-2xl flex-col justify-center rounded-md border border-gray-200 hover:cursor-pointer hover:border-none hover:outline-none 
-      border-black md:flex-row hover:shadow-2xl hover:shadow-violet-500 focus:shadow-violet-500 transition-all duration-500 hover:scale-110">
+      className="w-[250px] text-center flex flex-col rounded-md border border-gray-200 shadow-violet-300 shadow-xl">
       {/* Profile pic with _id */}
         <div className="flex flex-col items-center justify-center w-full md:h-[250px] md:w-[300px] p-4 gap-y-2">
           <img
@@ -31,28 +30,6 @@ export default function ProfileCard() {
           <p className="mt-3 text-sm text-gray-600">
             About User
           </p>
-          <div className="sm:min-w-[300px] mt-4">
-            {/* <span className="mb-2 mr-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-[10px] font-semibold text-gray-900">
-              {userData?.userId}
-            </span>
-            <span className="mb-2 mr-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-[10px] font-semibold text-gray-900">
-              {userData?.email}
-            </span>
-            <span className="mb-2 mr-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-[10px] font-semibold text-gray-900">
-              {userData?.userType}
-            </span> */}
-          </div>
-          {/* <div className="mt-3 flex items-center space-x-2">
-            <img
-              className="inline-block h-8 w-8 rounded-full"
-              src={userData?.avatar}
-              alt="user-pic"
-            />
-            <span className="flex flex-col">
-              <span className="text-[12px] font-medium text-gray-900">{userData?.fullName}</span>
-              <span className="text-[10px] font-medium text-gray-500">{userData?.email}</span>
-            </span>
-          </div> */}
         </div>
       </div>
     </div>
