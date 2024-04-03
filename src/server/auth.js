@@ -46,7 +46,7 @@ export class AuthService {
             console.log(loginSession)
             return loginSession.data;
         } catch (error) {
-            console.log('server/auth.js :: login :: Error:', error.response)
+            console.log('server/auth.js :: login :: Error:', error.message)
             throw error;
         }
     }

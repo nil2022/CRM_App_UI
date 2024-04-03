@@ -1,50 +1,89 @@
 import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
+import { Backdrop, Button, CircularProgress } from '@mui/material';
+import { DeleteRounded, Edit } from '@mui/icons-material';
+import authService from '../../server/auth';
+import { useSelector } from 'react-redux';
 
-export default function UserCard() {
-    const theme = useTheme();
+export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
+
+    const data = useSelector((state) => state.data?.usersData || [])
+
+    React.useEffect(() => {
+        fetchFunc()
+    }, [])
+
+    // console.log('data: (in UserCard.jsx)', data)
 
     return (
-        <div className=''>
-            <Card sx={{ display: 'flex', width: '30vw' }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <CardContent sx={{ flex: '1 0 auto' }}>
-                        <Typography component="div" variant="h5">
-                            Live From Space
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.secondary" component="div">
-                            Mac Miller
-                        </Typography>
-                    </CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-                        <IconButton aria-label="previous">
-                            {theme.direction === 'rtl' ? <SkipNextIcon /> : <SkipPreviousIcon />}
-                        </IconButton>
-                        <IconButton aria-label="play/pause">
-                            <PlayArrowIcon sx={{ height: 38, width: 38 }} />
-                        </IconButton>
-                        <IconButton aria-label="next">
-                            {theme.direction === 'rtl' ? <SkipPreviousIcon /> : <SkipNextIcon />}
-                        </IconButton>
-                    </Box>
-                </Box>
-                <CardMedia
-                    component="img"
-                    sx={{ width: 151 }}
-                    image="https://grabify.link/ORLAAT"
-                    alt="Live from space album cover"
-                />
-            </Card>
-        </div>
+        <div>
+            {/* <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop> */}
+            <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
+                {data.length > 0 && (data.map((data) => (
+                    <div key={data._id} className="min-w-[150px] rounded-md border">
+                        <img
+                            src={data.avatar}
+                            alt="user-pic"
+                            className="max-h-[300px] w-full rounded-md object-cover"
+                        />
+                        <div className="p-4">
+                            <div>
+                                <h1 className="text-lg font-semibold">{data.fullName}</h1>
+                                <p className="text-[14px] md:text-[12px] font-semibold">_id: {data._id}</p>
+                            </div>
+                            <div className='border border-gray-300 m-2'></div>
+                            <div className='flex flex-col'>
+                                <div className='flex gap-x-4 items-center justify-center'>
+                                    <p>{data.userType === 'ADMIN' ? (<div className="inline-flex rounded-full bg-blue-200 px-2 text-md font-semibold leading-5 text-blue-800">{data.userType}</div>) : (data.userType === 'ENGINEER' ? (<div className="inline-flex rounded-full bg-yellow-200 px-2 text-md font-semibold leading-5 text-yellow-800">{data.userType}</div>) : (
+                                        <div className="inline-flex rounded-full bg-slate-200 px-2 text-md font-semibold leading-5 text-slate-800">{data.userType}</div>
+                                    ))}
+                                    </p>
+                                    <p>{data.userStatus === 'APPROVED' ? (<span className="inline-flex rounded-full bg-green-100 px-2 text-md font-semibold leading-5 text-green-800">
+                                        {data.userStatus}
+                                    </span>) : (
+                                        <span className="inline-flex rounded-full bg-red-100 px-2 text-md font-semibold leading-5 text-red-800">
+                                            {data.userStatus}
+                                        </span>
+                                    )}</p>
+                                </div>
 
-    );
+                                <p className='text-[15px]'><strong>EMAIL :</strong>{' '}{data.email}</p>
+                                <p><strong>UserID :</strong>{' '}{data.userId}</p>
+                                {/* <p><strong>Registered :</strong> {' '}{data.email}</p>
+                        <p><strong>Updated :</strong>{' '}{data.email}</p> */}
+                                <p className="min-h-[50px] mt-3 text-sm text-gray-600 border rounded-md">
+                                    About User
+                                </p>
+                            </div>
+                            <div className='flex justify-around m-4'>
+                                {data.userId !== 'john123' && (
+                                    <Button
+                                        variant='contained'
+                                        startIcon={<Edit />}
+                                        color='info'
+                                        onClick={() => editFunc(data.userId, (data.userStatus === 'APPROVED') ? 'PENDING' : 'APPROVED')}
+                                    >
+                                        Edit
+                                    </Button>)}
+                                {data.userId !== 'john123' && (
+                                    <Button
+                                        variant='contained'
+                                        startIcon={<DeleteRounded />}
+                                        color='error'
+                                        onClick={() => (deleteFunc(data.userId))}
+                                    >
+                                        Delete
+                                    </Button>)}
+                            </div>
+                        </div>
+                    </div>
+                ))
+                )}
+            </div>
+        </div>
+    )
 }

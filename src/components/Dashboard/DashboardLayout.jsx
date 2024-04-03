@@ -24,13 +24,10 @@ export default function DashboardLayout() {
                     }, 1000);
                 }
             })
-        return () => {
-            // console.clear('Unmounting DashboardLayout')
-        }
     }, [])
 
     return (
-        <div className='w-full min-h-[88vh]'>
+        <div className='min-h-[70vh] md:min-h-[88vh]'>
             <Outlet />
         </div>
     )

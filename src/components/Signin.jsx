@@ -80,7 +80,7 @@ export default function Signin() {
             setOpen(false)
             setError(err.response?.data?.message || err.message)
             // err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
-            console.log('Login error ::', err.response?.data?.message || err)
+            console.log('Login error ::', err.response?.data?.message || err.message)
         }
     }
     // console.log('formValues:', formValues)
