@@ -9,8 +9,7 @@ export class AuthService {
             baseURL: urlConfig.backendUrl,
             headers: {
                 'Content-Type': 'application/json',
-            },
-            timeout: 3000
+            }
         })
     }
 
@@ -36,9 +35,13 @@ export class AuthService {
     }
     async login({  userId, password }) {
         try {
-            const loginSession = await this.axiosInstance.post('crm/api/v1/auth/login', {
-                userId,
-                password,
+            const loginSession = await this.axiosInstance({
+                url: '/crm/api/v1/auth/login',
+                method: 'POST',
+                data: {
+                    userId,
+                    password
+                }
             })
             console.log(loginSession)
             return loginSession.data;
@@ -66,16 +69,18 @@ export class AuthService {
 
     async getAllUsers() {
         try {
-            const fetchAllUsers = await this.axiosInstance.get('/crm/api/v1/users', {
+            const fetchAllUsers = await this.axiosInstance({
+                url: '/crm/api/v1/users',
+                method: 'GET',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
                 }
             })
             // console.log('fetchAllUsers:', fetchAllUsers.data)
-            localStorage.setItem('allUsers', JSON.stringify(fetchAllUsers.data))
+            // localStorage.setItem('allUsers', JSON.stringify(fetchAllUsers.data.data))
             return fetchAllUsers.data;
         } catch (error) {
-            console.log('server/auth.js :: getAllUsers :: Error:', error.response)
+            console.log('server/auth.js :: getAllUsers :: Error:', error?.response || 'Something went wrong!')
             throw error;
         }
     }
@@ -110,7 +115,7 @@ export class AuthService {
                     userId
                 }
             })
-            console.log('Edit User Response:', editUserResponse.data)
+            // console.log('Edit User Response:', editUserResponse.data)
             return editUserResponse.data
         } catch (error) {
             console.log('server/auth.js :: editUser :: Error:', error.response)
@@ -140,7 +145,9 @@ export class AuthService {
 
     async logout() {
         try {
-            const logoutResponse = await this.axiosInstance.get('/crm/api/v1/auth/logout', {
+            const logoutResponse = await this.axiosInstance({
+                url: '/crm/api/v1/auth/logout',
+                method: 'GET',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
                 }
@@ -154,7 +161,10 @@ export class AuthService {
 
     async healthCheck() {
         try {
-            const userResponse = await this.axiosInstance.get('/crm/api/health')
+            const userResponse = await this.axiosInstance({
+                url: '/crm/api/health',
+                method: 'GET'
+            })
             console.log(userResponse.data)
         } catch (error) {
             console.log('server/auth.js :: healthCheck :: Error:', error.message)

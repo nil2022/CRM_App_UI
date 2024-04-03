@@ -32,21 +32,21 @@ export function Footer() {
           <ul className="flex flex-col max-w-[500px] sm:flex-row p-3 text-left sm:text-center gap-y-1  ">
 
             <li className="min-w-[100px] sm:p-2 text-left sm:text-center hover:bg-white rounded-md hover:scale-105 sm:rounded-xl transition-all duration-500">
-              <Link className="text-lg text-gray-800 hover:text-gray-700" to="#">
+              <Link className="text-lg text-gray-800 hover:text-gray-700 hover:underline" to="#">
                 Privacy Policy
               </Link>
             </li>
             <li className="min-w-[100px] sm:p-2 text-left sm:text-center hover:bg-white rounded-md hover:scale-105 sm:rounded-xl transition-all duration-500 ">
-              <Link className="text-lg text-gray-800 hover:text-gray-700" to="#">
-                Contact Us
+              <Link className="text-lg text-gray-800 hover:text-gray-700 hover:underline" to="https://www.linkedin.com/in/nil2022" target='_blank'>
+                Contact Me
               </Link>
             </li>
           </ul>
 
-          <div className="flex p-3 min-w-[200px] sm:max-w-[500px] items-center justify-center gap-x-1 bg-violet-700 text-white font-[500] sm:text-black sm:bg-transparent ">          
-            <CopyrightIcon size={16} className='text-white sm:text-gray-800 ' />
-            {' '}2024 Copyright by 
-            <a href="https://github.com/nil2022" target='_blank' className='hover:text-gray-700 hover:underline'>ABC Company</a>
+          <div className="flex flex-col sm:flex-row p-3 min-w-[200px] sm:max-w-[500px] items-center justify-center gap-x-1 bg-violet-700 text-white font-[300] sm:text-black sm:bg-transparent ">          
+            <span className='flex items-center text-center justify-center'><CopyrightIcon size={25} className='text-white sm:text-gray-800 p-1' />
+            {' '}Copyright 2024. All Rights Reserved. Created by </span>
+            <a href="https://github.com/nil2022" target='_blank' className='hover:text-gray-700 hover:underline font-[400]'>Nilanjan</a>
           </div>
         </ul>
       </div>

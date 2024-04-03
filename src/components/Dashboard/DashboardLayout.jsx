@@ -1,5 +1,4 @@
 import { Outlet, useNavigate } from 'react-router-dom'
-import { Sidebar } from './Sidebar'
 import { useEffect } from 'react'
 import authService from '../../server/auth'
 import { useCookies } from 'react-cookie';
@@ -14,7 +13,7 @@ export default function DashboardLayout() {
     useEffect(() => {
         authService.getCurrentUser(cookies?.accessToken || null, cookies?.refreshToken || null)
             .then((userData) => {
-                // console.log('DashboardLayout :: getCurrentUser :: userData:', userData)
+                console.log('DashboardLayout :: getCurrentUser :: userData:', userData)
             })
             .catch((error) => {
                 console.log('DashboardLayout :: getCurrentUser :: Error:', error?.response || 'something went wrong')
@@ -31,7 +30,7 @@ export default function DashboardLayout() {
     }, [])
 
     return (
-        <div>
+        <div className='w-full min-h-[88vh]'>
             <Outlet />
         </div>
     )

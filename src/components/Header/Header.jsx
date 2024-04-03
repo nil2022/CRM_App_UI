@@ -5,7 +5,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import LoginIcon from '@mui/icons-material/Login';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Button } from '@mui/material';
+import { Backdrop, Button, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { logout } from '../../store/authSlice';
@@ -18,13 +18,13 @@ export function Header() {
 
   const authStatus = useSelector((state) => state.auth.status)
   const [error, setError] = useState('')
+  const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const logoutBtn = async (e) => {
     e.preventDefault()
     setError('')
-
     authService.logout()
       .then(() => {
         console.log('Logout Successfully !')
@@ -46,15 +46,16 @@ export function Header() {
   }
 
   return (
-    <div className='w-full flex justify-center items-center sm:justify-end gap-x-2 min-h-[50px] bg-slate-700 text-white'>
-      {authStatus && (<Link
-        className='flex hover:bg-gray-300 hover:text-black transition-all duration-500 rounded-full p-2'
-        to="/"
-      >
-        <HomeIcon sx={{ m: 0.5 }} fontSize="medium" />
-      </Link>)}
+    <div>
+      <div className='w-full flex justify-center items-center sm:justify-end gap-x-2 min-h-[50px] bg-slate-700 text-white'>
+        {authStatus && (<Link
+          className='flex hover:bg-gray-300 hover:text-black transition-all duration-500 rounded-full p-2'
+          to="/"
+        >
+          <HomeIcon sx={{ m: 0.5 }} fontSize="medium" />
+        </Link>)}
 
-      {/* {authStatus && (<Link
+        {/* {authStatus && (<Link
         className='flex items-center  hover:bg-gray-400 transition-all duration-400 rounded-full px-2 py-1'
         to="#"
       >
@@ -70,15 +71,16 @@ export function Header() {
         SUPPORT
       </Link>)} */}
 
-      {authStatus && (<Link
-        className='flex  hover:bg-gray-400 hover:text-black transition-all duration-500 rounded-full p-2'
-        to="/dashboard"
-      >
-        <AccountCircleIcon sx={{ m: 0.5 }} fontSize="medium" />
-      </Link>)}
-      {/* {authStatus && (<Profile />)} */}
+        {authStatus && (<Link
+          className='flex  hover:bg-gray-400 hover:text-black transition-all duration-500 rounded-full p-2'
+          to="/dashboard"
+        >
+          <AccountCircleIcon sx={{ m: 0.5 }} fontSize="medium" />
+        </Link>)}
+        {/* {authStatus && (<Profile />)} */}
 
-      {authStatus && (<LogoutBtn />)}
+        {authStatus && (<LogoutBtn />)}
+      </div>
     </div>
   );
 }

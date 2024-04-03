@@ -2,33 +2,27 @@ import { ArrowRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
-import { useCookies,Cookies } from 'react-cookie'
+import { useCookies, Cookies } from 'react-cookie'
 import { useDispatch, useSelector } from 'react-redux'
 import { login as authLogin } from '../store/authSlice'
 import authService from '../server/auth'
-
-// const cookies = new Cookies(null, {
-//     path: '/',
-//     httpOnly: false,
-//     secure: true
-// });
+import { Alert, Backdrop, CircularProgress } from '@mui/material'
+import CustomizedSnackbars from './SnackbarComponent'
 
 
-function Signin() {
+export default function Signin() {
 
-    /** set error message when error is true */
+    const [successMsg, setSuccessMsg] = useState('')
     const [error, setError] = useState('')
     /** set loading state  */
     const [loading, setLoading] = useState(false)
     const intialValues = { userId: "", password: "" };
     const [formValues, setFormValues] = useState(intialValues);
-
     const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
-
     const authStatus = useSelector((state) => state.auth.status)
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [open, setOpen] = React.useState(false);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -41,16 +35,25 @@ function Signin() {
     const login = async (e) => {
         e.preventDefault()
         setError('')
+        setSuccessMsg('')
         try {
-            // console.log('formValues: (in login function)', formValues)
+            setOpen(true)
             const userSession = await authService.login(formValues)
             console.log('userSession:', userSession)
             dispatch(authLogin(userSession.data?.user))
             if (userSession) {
                 // console.log('Login Successfull !')
-                toast(userSession?.message)
-                localStorage.setItem('accessToken', userSession.data?.accessToken || null )
-                localStorage.setItem('refreshToken', userSession.data?.refreshToken || null )
+                toast(userSession?.message,{
+                    icon: '👏',
+                    style: {
+                        borderRadius: '10px',
+                        background: '#333',
+                        color: '#fff',
+                    },
+                })
+                
+                localStorage.setItem('accessToken', userSession.data?.accessToken || null)
+                localStorage.setItem('refreshToken', userSession.data?.refreshToken || null)
                 setCookie('accessToken', userSession.data?.accessToken || null, {
                     path: '/',
                     httpOnly: false,
@@ -65,12 +68,19 @@ function Signin() {
                 })
                 const userData = await authService.getCurrentUser(userSession.data?.accessToken || null)
                 // console.log('userData: (after Login, getting current user)', userData)
-                navigate('/')
+                setOpen(false)
+                setTimeout(() => {
+                    navigate('/', {
+                        unstable_viewTransition: true,
+                        unstable_flushSync: true
+                    })
+                }, 500);
             }
         } catch (err) {
+            setOpen(false)
             setError(err.response?.data?.message || err.message)
             // err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
-            console.log('Login error ::', err.response?.data?.message || err?.message)
+            console.log('Login error ::', err.response?.data?.message || err)
         }
     }
     // console.log('formValues:', formValues)
@@ -78,7 +88,7 @@ function Signin() {
     useEffect(() => {
         console.log('mounted (in Signin.jsx component)')
 
-        if(!authStatus) {
+        if (!authStatus) {
             localStorage.removeItem('accessToken')
             localStorage.removeItem('refreshToken')
             localStorage.removeItem('allUsers')
@@ -96,6 +106,8 @@ function Signin() {
             })
         }
 
+
+
         return () => {
             console.log('unmounted (in Signin.jsx component)')
             // toast.dismiss()
@@ -107,6 +119,14 @@ function Signin() {
     return (
         <>
             <section>
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={open}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+                {successMsg && (<CustomizedSnackbars severity='success' message={successMsg} setOpenSnackbar= {true}/>)}
+                {error && (<CustomizedSnackbars severity='error' message={error} setOpenSnackbar= {true}/>)}
                 <div className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 lg:py-24 xl:h-[88vh]">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
@@ -129,7 +149,6 @@ function Signin() {
                                 Register Now !
                             </Link>
                         </p>
-                        {error && <p className="text-red-500 text-center font-semibold text-lg my-4 py-4">{error}</p>}
                         <form
                             onSubmit={login}
                             className="mt-8"
@@ -193,5 +212,3 @@ function Signin() {
         </>
     )
 }
-
-export default Signin

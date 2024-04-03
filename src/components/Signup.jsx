@@ -6,12 +6,13 @@ import authService from '../server/auth'
 import { useDispatch } from 'react-redux'
 import { login } from '../store/authSlice'
 import { useCookies } from 'react-cookie'
+import CustomizedSnackbars from './SnackbarComponent'
 
 
 function Signup() {
 
     /** set success message when success is true */
-    const [successMsg, setSuccessMsg] = useState({})
+    const [successMsg, setSuccessMsg] = useState('')
     /** set error message when error is true */
     const [error, setError] = useState('')
     /** set loading state  */
@@ -32,13 +33,14 @@ function Signup() {
 
     const handleRegistration = useCallback(async (e) => {
         e.preventDefault()
-        setError(null)
+        setError('')
+        setSuccessMsg('')
 
         try {
             const userCreated = await authService.createAccount(formValues)
             if (userCreated.data.user.userType === 'ADMIN' || userCreated.data.user.userType === 'ENGINEER') {
                 console.log('User Registered!, Verification Pending!')
-                toast('User Registered!, Verification Pending!')
+                setSuccessMsg('User Registered!, Verification Pending!')
                 return;                
             }
             if (userCreated) {
@@ -74,9 +76,9 @@ function Signup() {
                 console.log('userCreated Error ::', userCreated)
                 setError(userCreated.message)
             }
-        } catch (error) {
-            console.log('handleRegistration :: Error:', error.response)
-            setError(error.message)
+        } catch (err) {
+            console.log('handleRegistration :: Error:', err.response)
+            setError(err.response?.data?.message)
         }
     }, [formValues])
 
@@ -96,6 +98,8 @@ function Signup() {
     return (
         <>
             <section>
+            {successMsg && (<CustomizedSnackbars severity="success" message={successMsg} setOpenSnackbar={true} />)}
+            {error && (<CustomizedSnackbars severity="error" message={error} setOpenSnackbar={true} />)}
                 <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
@@ -117,7 +121,6 @@ function Signup() {
                                 Login Here !
                             </Link>
                         </p>
-                        {error && <p className="text-red-500 text-center font-semibold text-lg mt-2">{error}</p>}
                         <form
                             onSubmit={handleRegistration}
                             className="mt-8"

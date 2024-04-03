@@ -6,7 +6,7 @@ const store = configureStore({
     reducer: {
         auth: authReducer,
         // TODO: add more reducers depending upon use cases
-        allUsers : userReducer
+        data : userReducer
     }
 })
 
