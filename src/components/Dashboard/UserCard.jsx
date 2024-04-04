@@ -16,12 +16,6 @@ export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
 
     return (
         <div>
-            {/* <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={open}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop> */}
             <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
                 {data.length > 0 && (data.map((data) => (
                     <div key={data._id} className="min-w-[150px] rounded-md border">
@@ -81,7 +75,7 @@ export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
                             </div>
                         </div>
                     </div>
-                ))
+                    ))
                 )}
             </div>
         </div>
