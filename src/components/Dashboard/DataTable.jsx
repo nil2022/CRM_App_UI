@@ -134,10 +134,10 @@ export function Datatable() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {renderCount > 0 && <p className='p-4'>Render Count in Datatable.jsx : {renderCount}</p>}
+            {/* {renderCount > 0 && <p className='p-4'>Render Count in Datatable.jsx : {renderCount}</p>} */}
             <p className='p-4'>Users in DB: {allUsers.length}</p>
             {allUsers.length > 0 && (
-                <section className="w-full mx-auto max-w-7xl p-4">
+                <section className="w-full mx-auto max-w-7xl p-4 h-full">
                     {/* //* Important info */}
                     <div className="flex gap-x-4">
                         <div className='w-[80%] sm:w-[50%] flex flex-col gap-y-2'>
@@ -157,8 +157,8 @@ export function Datatable() {
                     </div>
                     <div className="mt-6 flex flex-col hidden lg:block">
                         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div className="inline-block min-w-full py-2 align-middle md:px-6">
-                                <div className="border-2 border-gray-200 md:rounded-lg ">
+                            <div className="inline-block min-w-full py-2 align-middle md:px-6 mb-4">
+                                <div className="border-2 border-gray-200 md:rounded-lg shadow-lg shadow-violet-300">
                                     <table className="min-w-full divide-y divide-gray-200 ">
                                         <thead className="bg-gray-50 ">
                                             <tr>
@@ -218,14 +218,17 @@ export function Datatable() {
                                                 <tr key={person._id}>
                                                     <td className="whitespace-nowrap px-4 py-4">
                                                         <div className="flex items-center">
-                                                            <div className="h-10 w-10 flex-shrink-0">
+                                                            <div className="h-10 w-10 flex-shrink-0 ">
                                                                 {person.avatar ? (
                                                                     <img
                                                                         className="h-10 w-10 rounded-full object-cover"
-                                                                        src='../src/assets/avatar.png'
-                                                                        alt="person-image"
+                                                                        src={person.avatar}
+                                                                        alt="user-image"
                                                                     />
-                                                                ) : (<UserCircleIcon className="h-8 w-8 rounded-full object-cover" />)}
+                                                                ) : (
+                                                                    <UserCircleIcon  style={{color: 'gray', alignSelf: 'center', justifySelf: 'center', margin: 'auto'}} 
+                                                                    className="h-10 w-10 rounded-full object-cover " />
+                                                                )}
                                                             </div>
                                                             <div className="ml-4">
                                                                 <div className="text-sm font-medium text-gray-900">{person.fullName}</div>
@@ -278,7 +281,7 @@ export function Datatable() {
                         </div>
                     </div>
                     <div className='block lg:hidden w-full pt-4'>
-                        <UserCardProfile fetchFunc={handleFetchUsers} editFunc={editUserStatus} 
+                        <UserCardProfile fetchFunc={handleFetchUsers} editFunc={editUserStatus}
                             deleteFunc={deleteUser}
                         />
                     </div>

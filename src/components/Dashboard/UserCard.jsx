@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Backdrop, Button, CircularProgress } from '@mui/material';
-import { DeleteRounded, Edit } from '@mui/icons-material';
-import authService from '../../server/auth';
+import { AlternateEmailRounded, DeleteRounded, Edit, ForwardToInboxOutlined, ForwardToInboxTwoTone } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
+import { UserCircleIcon } from '@heroicons/react/24/solid';
 
 export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
 
@@ -18,12 +18,17 @@ export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
         <div>
             <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
                 {data.length > 0 && (data.map((data) => (
-                    <div key={data._id} className="min-w-[150px] rounded-md border">
-                        <img
-                            src={data.avatar}
-                            alt="user-pic"
-                            className="max-h-[300px] w-full rounded-md object-cover"
-                        />
+                    <div key={data._id} className="min-w-[150px] rounded-md border shadow-lg shadow-violet-300">
+                        <div className='bg-gray-200 m-6 object-cover rounded-lg'>
+                            {data.avatar ? (<img
+                                src={data.avatar}
+                                alt="user-pic"
+                                className="max-h-[300px] w-full rounded-md object-cover"
+                            />) : (
+                                <UserCircleIcon style={{ color: 'gray', alignSelf: 'center', justifySelf: 'center', margin: 'auto' }}
+                                    className="h-100 w-100 rounded-full object-cover " />
+                            )}
+                        </div>
                         <div className="p-4">
                             <div>
                                 <h1 className="text-lg font-semibold">{data.fullName}</h1>
@@ -44,22 +49,23 @@ export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
                                         </span>
                                     )}</p>
                                 </div>
-
-                                <p className='text-[15px]'><strong>EMAIL :</strong>{' '}{data.email}</p>
-                                <p><strong>UserID :</strong>{' '}{data.userId}</p>
+                                <p className='text-[15px] md:text-sm'><ForwardToInboxTwoTone />{' '}{data.email}</p>
+                                <p className='text-[15px] md:text-sm'><AlternateEmailRounded />{' '}{data.userId}</p>
                                 {/* <p><strong>Registered :</strong> {' '}{data.email}</p>
                         <p><strong>Updated :</strong>{' '}{data.email}</p> */}
                                 <p className="min-h-[50px] mt-3 text-sm text-gray-600 border rounded-md">
                                     About User
                                 </p>
                             </div>
-                            <div className='flex justify-around m-4'>
+                            <div className='flex justify-between m-4'>
                                 {data.userId !== 'john123' && (
                                     <Button
                                         variant='contained'
                                         startIcon={<Edit />}
                                         color='info'
                                         onClick={() => editFunc(data.userId, (data.userStatus === 'APPROVED') ? 'PENDING' : 'APPROVED')}
+                                        size='small'
+                                        className='transition-all duration-700'
                                     >
                                         Edit
                                     </Button>)}
@@ -69,13 +75,15 @@ export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
                                         startIcon={<DeleteRounded />}
                                         color='error'
                                         onClick={() => (deleteFunc(data.userId))}
+                                        size='small'
+                                        className='transition-all duration-700'
                                     >
                                         Delete
                                     </Button>)}
                             </div>
                         </div>
                     </div>
-                    ))
+                ))
                 )}
             </div>
         </div>

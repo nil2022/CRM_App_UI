@@ -68,18 +68,18 @@ export default function Dashboard() {
         <Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={open}
+          className='w-full h-screen'
         >
           <CircularProgress color="inherit" />
         </Backdrop>
         {authData.userType === 'ADMIN' && (<p className='text-3xl text-center p-2'>Hi, {authData?.fullName}</p>)}
         {renderCount > 0 && <p className='m-4 p-2'>Render Count in Dashboard.jsx :{renderCount}</p>}
-        {/* <UserCard /> */}
-        {authData.userType === 'CUSTOMER' && (
+        {(authData.userType === 'CUSTOMER' || authData.userType === 'ENGINEER') && (
           <div className='h-[70vh] '>
-            <div className='block md:hidden items-center justify-center'>
+            <div className='block sm:hidden items-center justify-center'>
               <ProfileCard />
             </div>
-            <div className='hidden md:block text-xl font-[500] m-5'>
+            <div className='hidden sm:block text-xl font-[500] m-5'>
               <div className="p-4">
                 <h1 className=" items-center text-3xl font-semibold">
                   Hi, {userData?.fullName || 'Full Name'}
@@ -99,7 +99,7 @@ export default function Dashboard() {
         {error && <p className="text-red-500 text-center font-semibold text-lg mt-2">{error}</p>}
         {/* ****************************ACTUAL CODE ************************************* */}
         {authData.userType === 'ADMIN' && (
-          <div className="m-4 border-2">
+          <div className="m-4">
             <div>
               <Datatable />
             </div>
