@@ -9,14 +9,6 @@ export default defineConfig(async ({ mode }) => {
   return {
     server: {
       port: 3001,
-      // proxy: {
-      //   '/crm/api': 
-      //   {
-      //     target: `${env.VITE_CRM_BACKEND_URL}`,
-      //     changeOrigin: true,
-      //   }
-      // },
-      // cors: true
     },
     preview: {
       port: 3001
