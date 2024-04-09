@@ -67,6 +67,32 @@ export class AuthService {
         }
     }
 
+    /**
+     * * Change User Password
+     */
+    async changeUserPassword(oldPassword, newPassword, confirmPassword) {
+        try {
+            if (newPassword !== confirmPassword) {
+                throw new Error('Passwords do not match !')
+            }
+            const changePassword = await this.axiosInstance({
+                url: '/crm/api/v1/auth/change-password',
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                },
+                data: {
+                    oldPassword,
+                    newPassword
+                }
+            })
+            // console.log('changePassword:', changePassword.data)
+            return changePassword.data;
+        } catch (error) {
+            console.log('server/auth.js :: changeUserPassword :: Error:', error.response)
+            throw error;
+        }
+    }
     async getAllUsers() {
         try {
             const fetchAllUsers = await this.axiosInstance({
@@ -85,6 +111,77 @@ export class AuthService {
         }
     }
 
+    /**
+     * * Get All Tickets
+     */
+    async getAllTickets() {
+        try {
+            const fetchAllTickets = await this.axiosInstance({
+                url: '/crm/api/v1/tickets',
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                }
+            })
+            // console.log('fetchAllTickets:', fetchAllTickets.data)
+            return fetchAllTickets.data;
+        } catch (error) {
+            console.log('server/auth.js :: getAllTickets :: Error:', error?.response || 'Something went wrong!')
+            throw error;
+        }
+    }
+
+    /**
+     * * Create Ticket
+     */
+    async createTicket(ticketTitle, ticketDescription) {
+        try {
+            const createTicket = await this.axiosInstance({
+                url: '/crm/api/v1/tickets/create-ticket',
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                },
+                data: {
+                    title: ticketTitle ? ticketTitle : '',
+                    description: ticketDescription ? ticketDescription : '',
+                }
+            })
+            console.log('createTicket:', createTicket.data)
+            return createTicket.data;
+        } catch (err) {
+            console.log('server/auth.js :: createTicket :: Error:', err || 'Something went wrong!')
+            throw err;
+        }
+    }
+
+    /**
+     * * Edit Ticket Data
+     */
+    async editTicketData(ticketId, ticketPriority, ticketStatus, assignedTo) {
+        try {
+            const editTicket = await this.axiosInstance({
+                url: `/crm/api/v1/tickets/update-ticket`,
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                },
+                data: {
+                    ticketPriority: ticketPriority ? ticketPriority : '',
+                    status: ticketStatus ? ticketStatus : '',
+                    assignee: assignedTo ? assignedTo : ''
+                },
+                params: {
+                    id: ticketId
+                }
+            })
+            // console.log('Edit Ticket Response:', editTicket.data)
+            return editTicket.data;
+        } catch (err) {
+            console.log('server/auth.js :: editTicketData :: Error:', err?.response || 'Something went wrong!')
+            throw err;
+        }
+    }
     async refreshAccessToken(refreshToken) {
         try {
             const response = await this.axiosInstance.get('/crm/api/v1/auth/refresh-token', {
@@ -103,7 +200,7 @@ export class AuthService {
     async editUser(userId, userStatus) {
         try {
             const editUserResponse = await this.axiosInstance({
-                url: `/crm/api/v1/users/updateUser`,
+                url: `/crm/api/v1/users/update-user`,
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,

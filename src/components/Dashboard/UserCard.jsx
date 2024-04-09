@@ -4,12 +4,23 @@ import { AlternateEmailRounded, DeleteRounded, Edit, ForwardToInboxOutlined, For
 import { useSelector } from 'react-redux';
 import { UserCircleIcon } from '@heroicons/react/24/solid';
 
-export default function UserCard({ fetchFunc, editFunc, deleteFunc }) {
+export default function UserCard({ fetchFunc = '', editFunc = '', deleteFunc = '', viewData = 'userData' }) {
 
-    const data = useSelector((state) => state.data?.usersData || [])
+    let data;
+    if(viewData === 'userData') {
+        data = useSelector((state) => state.data?.usersData || [])
+    } else {
+        data = useSelector((state) => state.data?.ticketsData || [])
+    }   
+    
+   
+
+    console.log('tickets: (in UserCard.jsx)', data)
 
     React.useEffect(() => {
-        fetchFunc()
+        if(fetchFunc) {
+            fetchFunc()
+        }
     }, [])
 
     // console.log('data: (in UserCard.jsx)', data)

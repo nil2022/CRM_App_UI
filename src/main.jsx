@@ -15,6 +15,9 @@ import Register from './pages/Register.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import DashboardLayout from './components/Dashboard/DashboardLayout.jsx'
+import ChangePassword from './components/ChangePassword.jsx'
+import Tickets from './components/Tickets.jsx'
+import CreateTicket from './components/CreateTicket.jsx'
 
 
 const router = createBrowserRouter(
@@ -27,6 +30,9 @@ const router = createBrowserRouter(
         <PrivateRoute authentication = {true}><DashboardLayout /></PrivateRoute>}>
         <Route path='/dashboard' element={<Dashboard />} />
       </Route>
+      <Route path='/change-password' element={<PrivateRoute authentication={true}><ChangePassword /></PrivateRoute>}/>
+      <Route path='/tickets' element={<PrivateRoute authentication={true}><Tickets /></PrivateRoute>}/>
+      <Route path='/create-ticket' element={<PrivateRoute authentication={true}><CreateTicket /></PrivateRoute>}/>
       <Route path='*' element={<Error />} />
     </Route>
   )
