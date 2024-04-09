@@ -8,6 +8,7 @@ import { clearAllUsersData } from '../../store/userDataSlice'
 import authService from '../../server/auth'
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useCookies } from 'react-cookie'
+import { clearAllTicketsData } from '../../store/ticketsDataSlice'
 
 export default function LogoutBtn() {
 
@@ -38,6 +39,7 @@ export default function LogoutBtn() {
                     })
                     dispatch(logout())
                     dispatch(clearAllUsersData())
+                    dispatch(clearAllTicketsData())
                     removeCookie('accessToken', {
                         path: '/',
                         httpOnly: false,
@@ -80,10 +82,11 @@ export default function LogoutBtn() {
                 <CircularProgress color="inherit" />
             </Backdrop>
             <Link
-                className='flex hover:bg-gray-400 hover:text-black transition-all duration-500 rounded-full p-2'
+                className='flex'
                 onClick={logoutBtn}
             >
-                <LogoutIcon sx={{ m: 0.5 }} fontSize="medium" />
+                {/* <LogoutIcon sx={{ m: 0.5 }} fontSize="medium" /> */}
+                Logout
             </Link>
         </div>
     )

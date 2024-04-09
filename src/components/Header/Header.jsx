@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import HomeIcon from '@mui/icons-material/Home';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import LoginIcon from '@mui/icons-material/Login';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Backdrop, Button, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +12,9 @@ import { clearAllUsersData } from '../../store/userDataSlice';
 import authService from '../../server/auth';
 import LogoutBtn from './LogoutBtn';
 import Profile from './Profile';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import BasicMenu from '../MenuDropdown';
 
 export function Header() {
 
@@ -21,6 +23,14 @@ export function Header() {
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  // const open = Boolean(anchorEl);
+  const handleClick = (e) => {
+    setAnchorEl(e.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const logoutBtn = async (e) => {
     e.preventDefault()
@@ -71,15 +81,12 @@ export function Header() {
         SUPPORT
       </Link>)} */}
 
-        {authStatus && (<Link
-          className='flex  hover:bg-gray-400 hover:text-black transition-all duration-500 rounded-full p-2'
-          to="/dashboard"
-        >
-          <AccountCircleIcon sx={{ m: 0.5 }} fontSize="medium" />
-        </Link>)}
+        {authStatus && (
+          <div>
+            <BasicMenu buttonText="Menu"/>
+          </div>
+        )}
         {/* {authStatus && (<Profile />)} */}
-
-        {authStatus && (<LogoutBtn />)}
       </div>
     </div>
   );
