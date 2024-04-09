@@ -27,7 +27,6 @@ function ChangePassword() {
         try {
 
             const passwordUpdate = await authService.changeUserPassword(formValues.oldPassword, formValues.newPassword, formValues.confirmPassword)
-            console.log(passwordUpdate)
             if (passwordUpdate.success === true) {
                 toast.success(passwordUpdate.message)
                 setFormValues(intialValues)
