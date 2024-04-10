@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import authService from '../server/auth';
 import { useNavigate } from 'react-router-dom'
+import TextField from '@mui/material/TextField';
 
 function ChangePassword() {
 
@@ -62,69 +63,54 @@ function ChangePassword() {
             <form
                 onSubmit={handlePasswordChange}
                 className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 
-                lg:py-24 xl:h-[88vh] "
+                lg:py-24 min-h-[75vh] xl:h-[88vh] "
             >
-                <div className="space-y-5 min-w-[300px]">
+                <div className="space-y-5 min-w-[300px] lg:min-w-[400px] bg-slate-100 p-4 lg:p-8 z-1 shadow-blue-300 shadow-xl outline-none rounded-lg">
                     <div>
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="userId"
-                                className="text-base font-[500] text-gray-900">
-                                {' '}
-                                Current Password{' '}
-                            </label>
-                        </div>
                         <div className="mt-2">
-                            <input
-                                className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                                type="password"
-                                autoComplete='on'
-                                placeholder="Current Password"
+                            <TextField
+                                type='password'
+                                autoComplete='current-password'
+                                placeholder="Old Password"
                                 id="oldPassword"
                                 value={formValues.oldPassword}
                                 onChange={handleChange}
                                 required
+                                label="Old Password"
+                                variant='outlined'
+                                className='w-full transition-all duration-500'
                             />
                         </div>
                     </div>
                     <div>
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="password"
-                                className="text-base font-[500] text-gray-900">
-                                {' '}
-                                New Password{' '}
-                            </label>
-                        </div>
                         <div className="mt-2">
-                            <input
-                                className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                                type="password"
-                                autoComplete='on'
+                            <TextField
+                                type='password'
+                                autoComplete='current-password'
                                 placeholder="New Password"
                                 id="newPassword"
                                 value={formValues.newPassword}
                                 onChange={handleChange}
                                 required
+                                label="New Password"
+                                variant='outlined'
+                                className='w-full transition-all duration-500'
                             />
                         </div>
                     </div>
                     <div>
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="password"
-                                className="text-base font-[500] text-gray-900">
-                                {' '}
-                                Confirm Password{' '}
-                            </label>
-                        </div>
                         <div className="mt-2">
-                            <input
-                                className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                                type="password"
-                                autoComplete='on'
+                            <TextField
+                                type='password'
+                                autoComplete='current-password'
                                 placeholder="Confirm Password"
                                 id="confirmPassword"
                                 value={formValues.confirmPassword}
                                 onChange={handleChange}
                                 required
+                                label="Confirm Password"
+                                variant='outlined'
+                                className='w-full transition-all duration-500'
                             />
                         </div>
                     </div>
