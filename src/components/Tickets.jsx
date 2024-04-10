@@ -13,6 +13,9 @@ import MenuItem from '@mui/material/MenuItem';
 import toast from 'react-hot-toast'
 import MenuBar from './MenuBar'
 import UserCard from './Dashboard/UserCard'
+import ticketService from '../server/ticket'
+import { useNavigate } from 'react-router-dom'
+import { logout } from '../store/authSlice'
 
 function Tickets() {
 
@@ -21,15 +24,15 @@ function Tickets() {
     const [ticketId, setTicketId] = React.useState('')
     const [loading, setLoading] = React.useState(false)
     let [serialNo, setSerialNo] = React.useState(1)
+    const [renderCount, setRenderCount] = React.useState(0)
     const [open, setOpen] = React.useState(false);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = React.useState(false);
     const openStatusMenu = Boolean(anchorEl);
-    // const openPriorityMenu = Boolean(anchorPriorityEl);
     const handleClick = (e, id) => {
         setAnchorEl(e.currentTarget);
-        // setAnchorPriorityEL(e.currentTarget);
         setTicketId(id)
     };
     const handleClose = () => {
@@ -39,7 +42,8 @@ function Tickets() {
     const handleTicketStatusAndPriority = (id, ticketPriority, ticketStatus) => {
         setLoading(true)
         setOpen(true)
-        authService.editTicketData(id, ticketPriority, ticketStatus)
+        // setRenderCount((prevCount) => prevCount + 1)
+        ticketService.editTicketData(id, ticketPriority, ticketStatus)
             .then((response) => {
                 console.log("Edit Ticket Response:", response.message)
                 toast.success('Ticket Updated Success !')
@@ -58,23 +62,37 @@ function Tickets() {
     // console.log('allTickets', allTickets)
 
     const handleFetchTickets = () => {
+        setLoading(true)
         setSerialNo(1)
-        authService.getAllTickets()
+        setRenderCount((prevCount) => prevCount + 1)
+        ticketService.getAllTickets()
             .then((response) => {
                 console.log(response)
                 dispatch(ticketsData(response.data))
+                // toast.success('Tickets Fetched Successfully !')
             })
             .catch((err) => {
-                console.log('Error:', err)
+                console.log('Error:', err.message)
+                if (err?.data?.statusCode === 429) {
+                    toast.error('Too Many Requests. Please try after some time.')
+                    navigate('/login')
+                    dispatch(logout())
+                    localStorage.removeItem('accessToken')
+                    localStorage.removeItem('refreshToken')
+                }
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }
 
     useEffect(() => {
-
+        setRenderCount((prevCount) => prevCount + 1)
         handleFetchTickets()
 
-    }, [loading])
+    }, [open])
 
+    console.log('render count (in Tickets.jsx):', renderCount)
 
     return (
         <div>
@@ -84,11 +102,11 @@ function Tickets() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <div className='block xl:hidden'>
-            hii
+            {/* <div className='block xl:hidden'>
                 <UserCard  />
-            </div>
-            <section className="w-full mx-auto max-w-7xl p-4 h-full hidden xl:block">
+            </div> */}
+            <div>Render count in Tickets.jsx: {renderCount}</div>
+            <section className="w-full mx-auto max-w-7xl p-4 min-h-[88vh] hidden xl:block">
                 {/* //* Important info */}
                 <div className="flex gap-x-4">
                     <div className='w-[80%] sm:w-[50%] flex flex-col gap-y-2'>
@@ -106,7 +124,7 @@ function Tickets() {
                         </button>
                     </p>
                 </div>
-                <div className="mt-6 flex flex-col hidden lg:block">
+                <div className="mt-6 flex flex-col lg:block">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 mb-4">
                             <div className="border-2 border-gray-200 md:rounded-lg shadow-lg shadow-violet-300">
@@ -183,7 +201,7 @@ function Tickets() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-slate-50">
-                                        {allTickets.map((ticket) => (
+                                        {allTickets.length > 0 && (allTickets.map((ticket) => (
                                             <tr key={ticket._id}>
                                                 <td className="whitespace-nowrap text-center px-4 py-4">
                                                     {serialNo++}
@@ -340,7 +358,7 @@ function Tickets() {
                                                         </IconButton>)} */}
                                                 </td>
                                             </tr>
-                                        ))}
+                                        )))}
                                     </tbody>
                                 </table>
                             </div>
