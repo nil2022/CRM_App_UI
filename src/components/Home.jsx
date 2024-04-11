@@ -9,7 +9,7 @@ export function Home() {
 
   return (
     <div className="relative">
-      <div className="relative isolate -z-0 px-6 pt-40 lg:px-8 pb-40 md:pb-36 md:h-[88vh] ">
+      <div className="relative isolate -z-0 px-6 pt-40 lg:px-8 pb-40 md:pb-36 min-h-[75vh] md:h-[88vh] ">
         <div className="relative mx-auto max-w-2xl py-auto">
           { /** Background Gradient Color */}
           <div className="absolute inset-x-0 -top-[4rem] -z-10 transform-gpu blur-2xl md:-top-[10rem] md:overflow-hidden">

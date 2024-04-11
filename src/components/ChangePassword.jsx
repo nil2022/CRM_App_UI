@@ -5,6 +5,12 @@ import toast from 'react-hot-toast';
 import authService from '../server/auth';
 import { useNavigate } from 'react-router-dom'
 import TextField from '@mui/material/TextField';
+import { VisibilityRounded, VisibilityOffRounded } from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
 
 function ChangePassword() {
 
@@ -13,6 +19,12 @@ function ChangePassword() {
     const [error, setError] = useState('');
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate();
+    const [showOldPassword, setShowOldPassword] = React.useState(false);
+    const [showNewPassword, setShowNewPassword] = React.useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+    const handleMouseDownPassword = (e) => {
+        e.preventDefault();
+    };
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -38,7 +50,7 @@ function ChangePassword() {
                         unstable_flushSync: true,
                     })
                 }, 500);
-                
+
             }
 
         } catch (err) {
@@ -68,39 +80,79 @@ function ChangePassword() {
                 <div className="space-y-5 min-w-[300px] lg:min-w-[400px] bg-slate-100 p-4 lg:p-8 z-1 shadow-blue-300 shadow-xl outline-none rounded-lg">
                     <div>
                         <div className="mt-2">
-                            <TextField
-                                type='password'
-                                autoComplete='current-password'
-                                placeholder="Old Password"
-                                id="oldPassword"
-                                value={formValues.oldPassword}
-                                onChange={handleChange}
-                                required
-                                label="Old Password"
-                                variant='outlined'
-                                className='w-full transition-all duration-500'
-                            />
+                            <FormControl
+                                className='w-full'
+                                variant="outlined">
+                                <InputLabel
+                                    htmlFor="oldPassword"
+                                    required
+                                >
+                                    Old Password
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="oldPassword"
+                                    type={showOldPassword ? 'text' : 'password'}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setShowOldPassword((show) => !show)}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showOldPassword ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    value={formValues.oldPassword}
+                                    onChange={handleChange}
+                                    label="Old Password"
+                                    placeholder='Old Password'
+                                    autoComplete='current-password'
+                                    required
+                                />
+                            </FormControl>
                         </div>
                     </div>
                     <div>
                         <div className="mt-2">
-                            <TextField
-                                type='password'
-                                autoComplete='current-password'
-                                placeholder="New Password"
-                                id="newPassword"
-                                value={formValues.newPassword}
-                                onChange={handleChange}
-                                required
-                                label="New Password"
-                                variant='outlined'
-                                className='w-full transition-all duration-500'
-                            />
+                            <FormControl
+                                className='w-full'
+                                variant="outlined">
+                                <InputLabel
+                                    htmlFor="newPassword"
+                                    required
+                                >
+                                    New Password
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="newPassword"
+                                    type={showNewPassword ? 'text' : 'password'}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setShowNewPassword((show) => !show)}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showNewPassword ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    value={formValues.newPassword}
+                                    onChange={handleChange}
+                                    label="New Password"
+                                    placeholder='New Password'
+                                    autoComplete='new-password'
+                                    required
+                                />
+                            </FormControl>
                         </div>
                     </div>
                     <div>
                         <div className="mt-2">
-                            <TextField
+                            {/* <TextField
                                 type='password'
                                 autoComplete='current-password'
                                 placeholder="Confirm Password"
@@ -111,7 +163,39 @@ function ChangePassword() {
                                 label="Confirm Password"
                                 variant='outlined'
                                 className='w-full transition-all duration-500'
-                            />
+                            /> */}
+                            <FormControl
+                                className='w-full'
+                                variant="outlined">
+                                <InputLabel
+                                    htmlFor="confirmPassword"
+                                    required
+                                >
+                                    Confirm Password
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setShowConfirmPassword((show) => !show)}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showConfirmPassword ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    value={formValues.confirmPassword}
+                                    onChange={handleChange}
+                                    label="Confirm Password"
+                                    placeholder='Confirm Password'
+                                    autoComplete='new-password'
+                                    required
+                                />
+                            </FormControl>
                         </div>
                     </div>
                     <div>
