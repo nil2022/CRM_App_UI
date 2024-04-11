@@ -6,8 +6,15 @@ import { useCookies, Cookies } from 'react-cookie'
 import { useDispatch, useSelector } from 'react-redux'
 import { login as authLogin } from '../store/authSlice'
 import authService from '../server/auth'
-import { Alert, Backdrop, CircularProgress } from '@mui/material'
+import { Alert, Backdrop, CircularProgress, } from '@mui/material'
 import CustomizedSnackbars from './SnackbarComponent'
+import TextField from '@mui/material/TextField';
+import { VisibilityRounded, VisibilityOffRounded } from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
 
 
 export default function Signin() {
@@ -23,6 +30,11 @@ export default function Signin() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (e) => {
+        e.preventDefault();
+    };
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -43,7 +55,7 @@ export default function Signin() {
             dispatch(authLogin(userSession.data?.user))
             if (userSession) {
                 // console.log('Login Successfull !')
-                toast(userSession?.message,{
+                toast(userSession?.message, {
                     icon: '👏',
                     style: {
                         borderRadius: '10px',
@@ -51,7 +63,7 @@ export default function Signin() {
                         color: '#fff',
                     },
                 })
-                
+
                 localStorage.setItem('accessToken', userSession.data?.accessToken || null)
                 localStorage.setItem('refreshToken', userSession.data?.refreshToken || null)
                 setCookie('accessToken', userSession.data?.accessToken || null, {
@@ -81,6 +93,7 @@ export default function Signin() {
             setError(err.response?.data?.message || err.message)
             // err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
             console.log('Login error ::', err.response?.data?.message || err.message)
+            setFormValues(intialValues)
         }
     }
     // console.log('formValues:', formValues)
@@ -125,9 +138,9 @@ export default function Signin() {
                 >
                     <CircularProgress color="inherit" />
                 </Backdrop>
-                {successMsg && (<CustomizedSnackbars severity='success' message={successMsg} setOpenSnackbar= {true}/>)}
-                {error && (<CustomizedSnackbars severity='error' message={error} setOpenSnackbar= {true}/>)}
-                <div className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 lg:py-24 xl:h-[88vh]">
+                {successMsg && (<CustomizedSnackbars severity='success' message={successMsg} setOpenSnackbar={true} />)}
+                {error && (<CustomizedSnackbars severity='error' message={error} setOpenSnackbar={true} />)}
+                <div className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 lg:py-24 min-h-[75vh]  xl:h-[88vh]">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
                             <img src="/login-icon.png"
@@ -155,45 +168,49 @@ export default function Signin() {
                         >
                             <div className="space-y-5">
                                 <div>
-                                    <div className="flex items-center justify-between">
-                                        <label htmlFor="userId"
-                                            className="text-base font-[500] text-gray-900">
-                                            {' '}
-                                            Username{' '}
-                                        </label>
-                                    </div>
                                     <div className="mt-2">
-                                        <input
-                                            className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                                            type="text"
-                                            autoComplete='on'
-                                            placeholder="John Doe"
+                                        <TextField
+                                            type='text'
+                                            autoComplete='userId'
+                                            placeholder="Username"
                                             id="userId"
                                             value={formValues.userId}
                                             onChange={handleChange}
                                             required
+                                            label="Username"
+                                            variant='outlined'
+                                            className='w-full'
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="flex items-center justify-between">
-                                        <label htmlFor="password"
-                                            className="text-base font-[500] text-gray-900">
-                                            {' '}
-                                            Password{' '}
-                                        </label>
-                                    </div>
-                                    <div className="mt-2">
-                                        <input
-                                            className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                                            type="password"
-                                            autoComplete='on'
-                                            placeholder="Password"
-                                            id="password"
-                                            value={formValues.password}
-                                            onChange={handleChange}
-                                            required
-                                        />
+                                    <div className="mt-2 ">
+                                        <FormControl
+                                            className='w-full'
+                                            variant="outlined">
+                                            <InputLabel htmlFor="password">Password</InputLabel>
+                                            <OutlinedInput
+                                                id="password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                endAdornment={
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={handleClickShowPassword}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                                value={formValues.password}
+                                                onChange={handleChange}
+                                                label="Password"
+                                                placeholder='Password'
+                                                required
+                                            />
+                                        </FormControl>
                                     </div>
                                 </div>
                                 <div>

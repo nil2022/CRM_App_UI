@@ -1,21 +1,19 @@
 import { CachedRounded } from '@mui/icons-material'
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import authService from '../server/auth'
 import { ticketsData } from '../store/ticketsDataSlice'
 import { UserCircleIcon } from '@heroicons/react/24/solid'
-import { Backdrop, Button, CircularProgress, IconButton, Skeleton, LinearProgress } from '@mui/material'
-import ModeEditRoundedIcon from '@mui/icons-material/ModeEditRounded';
+import { Backdrop, Button, CircularProgress, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
-import MenuDropDown from './MenuDropdown'
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import toast from 'react-hot-toast'
 import MenuBar from './MenuBar'
-import UserCard from './Dashboard/UserCard'
 import ticketService from '../server/ticket'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../store/authSlice'
+import TextField from '@mui/material/TextField';
+import TicketCard from './TicketCard'
 
 function Tickets() {
 
@@ -102,10 +100,11 @@ function Tickets() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {/* <div className='block xl:hidden'>
-                <UserCard  />
-            </div> */}
-            <div>Render count in Tickets.jsx: {renderCount}</div>
+            {/* <div className='w-full text-left p-4 mx-4'>Render count in Tickets.jsx: {renderCount}</div> */}
+            <div className='w-full min-h-[75vh] lg:h-[88vh] xl:hidden'
+            >
+                <TicketCard />
+            </div>
             <section className="w-full mx-auto max-w-7xl p-4 min-h-[88vh] hidden xl:block">
                 {/* //* Important info */}
                 <div className="flex gap-x-4">
@@ -133,43 +132,43 @@ function Tickets() {
                                         <tr>
                                             <th
                                                 scope="col"
-                                                className="px-4 py-3.5 text-center text-gray-700"
+                                                className="px-4 py-3 text-center text-gray-700"
                                             >
-                                                <span>Sr. No.</span>
+                                                <span>{''}</span>
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-4 py-3.5 text-center text-gray-700"
+                                                className="px-4 py-3 text-center text-gray-700"
                                             >
                                                 <span>Title</span>
                                             </th>
                                             <th
                                                 scope='col'
-                                                className="px-4 py-3.5 text-center text-gray-700"
+                                                className="px-4 py-3 text-center text-gray-700"
                                             >
                                                 <span>Description</span>
                                             </th>
                                             {userData.userType !== 'CUSTOMER' && (<th
                                                 scope='col'
-                                                className="px-4 py-3.5 text-center text-gray-700"
+                                                className="px-4 py-3 text-center text-gray-700"
                                             >
                                                 <span>Reported By</span>
                                             </th>)}
                                             <th
                                                 scope="col"
-                                                className="px-8 py-3.5 text-center text-gray-700"
+                                                className="px-4 py-3 text-center text-gray-700"
                                             >
                                                 Assigned Engineer
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-8 py-3.5 text-center text-gray-700"
+                                                className="px-4 py-3 text-center text-gray-700"
                                             >
                                                 Ticket Status
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-4 py-3.5 text-center text-gray-700"
+                                                className="px-4 py-3 text-center text-gray-700"
                                             >
                                                 Ticket Priority
                                             </th>
@@ -185,7 +184,7 @@ function Tickets() {
                                                 scope="col"
                                                 className="px-4 py-3.5 text-center text-sm font-normal text-gray-700"
                                             >
-                                                
+
                                             </th>
                                             <th
                                                 scope="col"
@@ -200,33 +199,59 @@ function Tickets() {
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-slate-50">
+                                    {allTickets.length > 0 && (<tbody className="divide-y divide-gray-200 bg-slate-50">
                                         {allTickets.length > 0 && (allTickets.map((ticket) => (
                                             <tr key={ticket._id}>
-                                                <td className="whitespace-nowrap text-center px-4 py-4">
+                                                <td className="whitespace-nowrap text-center p-3">
                                                     {serialNo++}
                                                 </td>
                                                 <td className="whitespace-nowrap px-4 py-4">
                                                     <div className="flex items-center">
-                                                        <div className="ml-4">
-                                                            <div className="text-sm font-medium text-gray-900">{ticket.title}</div>
-                                                            <div className="text-sm text-gray-700">{ticket._id}</div>
+                                                        <div className="">
+                                                            <textarea
+                                                                className='w-full text-sm text-center justify-center bg-slate-50'
+                                                                value={ticket.title}
+                                                                rows={2}
+                                                                readOnly
+                                                                disabled
+                                                                style={{ resize: 'none' }}
+                                                            />
+                                                            {/* {userData.userType !== 'CUSTOMER' && (<div className="text-[12px] text-gray-700">{ticket._id}</div>)} */}
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td
-                                                    className='whitespace-wrap px-4 py-4 text-center'
+                                                    className='whitespace-nowrap p-3 text-center'
                                                 >
-                                                    <div className="text-sm text-gray-700">{ticket.description}</div>
+                                                    {/* <div className="text-sm text-gray-700">{ticket.description}</div> */}
+                                                    {/* <TextField
+                                                        id="ticketTitle"
+                                                        value={ticket.description}
+                                                        // label="Ticket Title"
+                                                        variant='outlined'
+                                                        // required
+                                                        // placeholder="Ticket Subject"
+                                                        className='w-full text-sm text-gray-700'
+                                                        rows={2}
+                                                        multiline
+                                                    /> */}
+                                                    <textarea
+                                                        className='w-full text-sm text-center bg-slate-50'
+                                                        value={ticket.description}
+                                                        rows={3}
+                                                        readOnly
+                                                        disabled
+                                                        style={{ resize: 'none' }}
+                                                    />
                                                 </td>
-                                                {userData.userType !== 'CUSTOMER' && (<td className="whitespace-nowrap px-8 py-4 text-center">
+                                                {userData.userType !== 'CUSTOMER' && (<td className="whitespace-nowrap p-3 text-center">
                                                     <div className="text-sm text-gray-700">{ticket.reporter}</div>
                                                 </td>)}
-                                                <td className="whitespace-nowrap px-8 py-4 text-center">
+                                                <td className="whitespace-nowrap p-3 text-center">
                                                     <div className="text-sm text-gray-700">{ticket.assignee}</div>
                                                 </td>
                                                 {/* Ticket Status Buttons */}
-                                                <td className="whitespace-nowrap px-4 py-4 text-center">
+                                                <td className="whitespace-nowrap p-3 text-center">
                                                     <Button
                                                         id="status-button"
                                                         aria-controls={openStatusMenu ? 'status-menu' : undefined}
@@ -299,7 +324,7 @@ function Tickets() {
 
                                                 </td>
                                                 {/*  Ticket Priority Buttons */}
-                                                <td className="whitespace-nowrap px-4 py-4 text-center">
+                                                <td className="whitespace-nowrap p-3 text-center">
                                                     <MenuBar
                                                         buttonItem={[{
                                                             text:
@@ -323,7 +348,7 @@ function Tickets() {
                                                                 text: 'LOW',
                                                                 color: 'green',
                                                                 backgroundColor: '#d6f5d6',
-                                                                menuOnClickFn: () => {handleTicketStatusAndPriority(ticket._id, 'LOW', '')}
+                                                                menuOnClickFn: () => { handleTicketStatusAndPriority(ticket._id, 'LOW', '') }
                                                             },
                                                             {
                                                                 text: 'MEDIUM',
@@ -340,10 +365,10 @@ function Tickets() {
                                                         ]}
                                                     />
                                                 </td>
-                                                <td className="whitespace-wrap px-4 py-4 text-center text-xs font-medium ">
-                                                        {ticket.createdAt}
+                                                <td className="whitespace-wrap p-3 text-center text-xs font-medium ">
+                                                    {ticket.createdAt}
                                                 </td>
-                                                <td className="whitespace-nowrap px-4 py-4 text-center text-sm font-medium">
+                                                <td className="whitespace-nowrap p-3 text-center text-sm font-medium">
                                                     {/* {ticket.userId !== 'john123' &&
                                                         (<Button
                                                             className="text-gray-700"
@@ -351,16 +376,22 @@ function Tickets() {
                                                             <ModeEditRoundedIcon sx={{ color: 'black' }} />
                                                         </Button>)} */}
                                                 </td>
-                                                <td>
-                                                    {/* {ticket.userId !== 'john123' &&
-                                                        (<IconButton aria-label="delete" >
+                                                <td className="whitespace-nowrap p-3 text-center text-sm font-medium">
+                                                    {ticket.userId !== 'john123' &&
+                                                        (<IconButton aria-label="delete"
+                                                            onClick={() => toast('Coming Soon...', {
+                                                                icon: '🚀',
+                                                            })} >
                                                             <DeleteIcon sx={{ color: 'black' }} />
-                                                        </IconButton>)} */}
+                                                        </IconButton>)}
                                                 </td>
                                             </tr>
                                         )))}
-                                    </tbody>
+                                    </tbody>)}
                                 </table>
+                                {allTickets.length === 0 && (<div className='w-full h-[50vh] text-2xl text-center pt-16 items-center justify-center bg-slate-50'>
+                                    No Tickets Found
+                                </div>)}
                             </div>
                         </div>
                     </div>
