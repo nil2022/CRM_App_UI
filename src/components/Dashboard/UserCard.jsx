@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Backdrop, Button, CircularProgress } from '@mui/material';
-import { AlternateEmailRounded, DeleteRounded, Edit, ForwardToInboxOutlined, ForwardToInboxTwoTone } from '@mui/icons-material';
+import {  Button } from '@mui/material';
+import { AlternateEmailRounded, DeleteRounded, Edit, ForwardToInboxTwoTone } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { UserCircleIcon } from '@heroicons/react/24/solid';
 

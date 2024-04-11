@@ -12,7 +12,6 @@ import MenuBar from './MenuBar'
 import ticketService from '../server/ticket'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../store/authSlice'
-import TextField from '@mui/material/TextField';
 import TicketCard from './TicketCard'
 
 function Tickets() {
@@ -103,7 +102,7 @@ function Tickets() {
             {/* <div className='w-full text-left p-4 mx-4'>Render count in Tickets.jsx: {renderCount}</div> */}
             <div className='w-full min-h-[75vh] lg:h-[88vh] xl:hidden'
             >
-                <TicketCard />
+                <TicketCard  />
             </div>
             <section className="w-full mx-auto max-w-7xl p-4 min-h-[88vh] hidden xl:block">
                 {/* //* Important info */}
@@ -396,11 +395,6 @@ function Tickets() {
                         </div>
                     </div>
                 </div>
-                {/* <div className='block lg:hidden w-full pt-4'>
-                    <UserCardProfile fetchFunc={handleFetchUsers} editFunc={editUserStatus}
-                        deleteFunc={deleteUser}
-                    />
-                </div> */}
             </section>
         </div>
     )
