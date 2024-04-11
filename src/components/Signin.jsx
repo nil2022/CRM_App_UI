@@ -140,7 +140,8 @@ export default function Signin() {
                 </Backdrop>
                 {successMsg && (<CustomizedSnackbars severity='success' message={successMsg} setOpenSnackbar={true} />)}
                 {error && (<CustomizedSnackbars severity='error' message={error} setOpenSnackbar={true} />)}
-                <div className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 lg:py-24 min-h-[75vh]  xl:h-[88vh]">
+                <div className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-16 lg:px-8 lg:py-24 
+                min-h-[85vh]  xl:h-[88vh]">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
                             <img src="/login-icon.png"
@@ -188,7 +189,12 @@ export default function Signin() {
                                         <FormControl
                                             className='w-full'
                                             variant="outlined">
-                                            <InputLabel htmlFor="password">Password</InputLabel>
+                                            <InputLabel
+                                                htmlFor="password"
+                                                required
+                                            >
+                                                Password
+                                            </InputLabel>
                                             <OutlinedInput
                                                 id="password"
                                                 type={showPassword ? 'text' : 'password'}
