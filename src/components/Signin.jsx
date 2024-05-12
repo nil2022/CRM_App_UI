@@ -144,8 +144,9 @@ export default function Signin() {
                 min-h-[85vh]  xl:h-[88vh]">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
                         <div className="mb-2 flex justify-center">
-                            <img src="/login-icon.png"
-                                className="h-12 w-12"
+                            <img src="/login.png"
+                                className="rounded-full"
+                                width={60}
                                 alt="login_Page_image"
                                 loading='lazy' />
                         </div>

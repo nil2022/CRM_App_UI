@@ -38,49 +38,6 @@ const router = createBrowserRouter(
   )
 )
 
-// const router = createBrowserRouter([
-//   {
-//     path: '/',
-//     element: <Layout />,
-//     children: [
-//       {
-//         path: '/',
-//         element: <Home />,
-//       },
-//       {
-//         path: '/register',
-//         element: <Register />,
-//       },
-//       {
-//         path: '/login',
-//         element: <Login />,
-//       },
-//       {
-//         path: '/dashboard',
-//         element: (<PrivateRoute><DashboardLayout /></PrivateRoute>),
-//         children: [
-//           {
-//             path: '/dashboard',
-//             element: <Dashboard />,
-//           },
-//           {
-//             path: '/dashboard/profile',
-//             element: <ProfilePage />,
-//           },
-//           {
-//             path: '/dashboard/*',
-//             element: <Error />,
-//           }
-//         ]
-//       },
-//       {
-//         path: '/:slug',
-//         element: <Error />,
-//       }
-//     ]
-//   }
-// ])
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>

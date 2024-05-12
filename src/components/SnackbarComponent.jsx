@@ -28,7 +28,7 @@ export default function CustomizedSnackbars({
                     onClose={handleClose}
                     severity={severity}
                     variant="filled"
-                    sx={{ width: 'fit-content' }}
+                    sx={{ width: 'fit-content', fontWeight: 'semibold' }}
                 >
                     {message}
                 </Alert>
