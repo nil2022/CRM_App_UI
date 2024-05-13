@@ -123,7 +123,7 @@ function Signup() {
                             <br />
                             <Link
                                 to="/login"
-                                className="font-[800] transition-all duration-200 hover:underline"
+                                className="font-[700] transition-all duration-200 hover:underline"
                             >
                                 Login Here !
                             </Link>
@@ -199,7 +199,7 @@ function Signup() {
                                             {...register('userType', {
                                                 required: true
                                             })}
-                                            className='bg-slate-700 text-white font-[600] text-base py-2 px-2 rounded-md outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500 w-full mt-2 ml-4'>
+                                            className='bg-slate-700 text-white font-[600] text-base py-2 px-2 rounded-md outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500 w-full ml-4'>
                                             <option value="CUSTOMER">CUSTOMER</option>
                                             <option value="ENGINEER">ENGINEER</option>
                                             <option value="ADMIN">ADMIN</option>
