@@ -43,7 +43,6 @@ export class AuthService {
                     password
                 }
             })
-            console.log(loginSession)
             return loginSession.data;
         } catch (error) {
             console.log('server/auth.js :: login :: Error:', error.message)

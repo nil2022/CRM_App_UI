@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import authService from '../server/auth'
@@ -16,47 +16,36 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Alert, Backdrop, CircularProgress, } from '@mui/material'
+import { useForm } from "react-hook-form"
 
-
+const cookieOptions = {
+    path: '/',
+    httpOnly: false,
+    secure: false,
+    sameSite: 'none'
+}
 function Signup() {
 
-    /** set success message when success is true */
+ 
     const [successMsg, setSuccessMsg] = useState('')
-    /** set error message when error is true */
     const [error, setError] = useState('')
-    /** set loading state  */
     const [loading, setLoading] = useState(false)
-
-    const intialValues = { fullName: "", userId: "", password: "", email: "", userType: "" };
-    const [formValues, setFormValues] = useState(intialValues);
     const [cookies, setCookie] = useCookies(['accessToken']);
     const [showPassword, setShowPassword] = useState(false);
     const [open, setOpen] = useState(false);
-    const handleMouseDownPassword = (e) => {
-        e.preventDefault();
-    };
+    const {register, handleSubmit, getValues} = useForm();
+
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        const { id, value } = e.target;
-        setFormValues({ ...formValues, [id]: value });
-        // console.log(formValues);
-    }
-
-    const handleUserType = (e) => {
-        setFormValues({ ...formValues, userType: e.target.value })
-    }
-
-    const handleRegistration = useCallback(async (e) => {
-        e.preventDefault()
+    const registerUser = (async(data) => {
         setError('')
         setSuccessMsg('')
         setOpen(true)
 
         try {
-            const userCreated = await authService.createAccount(formValues)
+            const userCreated = await authService.createAccount(data)
             if (userCreated.data.user.userType === 'ADMIN' || userCreated.data.user.userType === 'ENGINEER') {
                 console.log('User Registered ! Verification Pending!')
                 setSuccessMsg('User Registered ! Verification Pending!')
@@ -64,22 +53,12 @@ function Signup() {
                 return;
             }
             if (userCreated) {
-                const userSession = await authService.login({ userId: formValues.userId, password: formValues.password })
+                const userSession = await authService.login({ userId: getValues('userId'), password: getValues('password') })
                 if (userSession) {
-                    console.log('userSession:', userSession)
-                    setCookie('accessToken', userSession.data?.accessToken || null, {
-                        path: '/',
-                        httpOnly: false,
-                        secure: true,
-                        sameSite: 'none'
-                    })
-                    setCookie('refreshToken', userSession.data?.refreshToken || null, {
-                        path: '/',
-                        httpOnly: false,
-                        secure: true,
-                        sameSite: 'none'
-                    })
-                    localStorage.setItem('accessToken', userSession.data?.accessToken || '')
+                    // console.log('userSession:', userSession)
+                    setCookie('accessToken', userSession.data?.accessToken || null, cookieOptions)
+                    setCookie('refreshToken', userSession.data?.refreshToken || null, cookieOptions)
+                    localStorage.setItem('userStatus', JSON.stringify(true))
                     const userData = await authService.getCurrentUser(userSession.data?.accessToken)
                     if (userData) {
                         setOpen(false)
@@ -91,10 +70,7 @@ function Signup() {
                                     textAlign: 'center',
                                 }
                             })
-                            navigate('/', {
-                                unstable_flushSync: true,
-                                unstable_viewTransition: true
-                            })
+                            navigate('/')
                         }, 800);
                     } else {
                         console.log('userData Error ::', userData)
@@ -110,23 +86,14 @@ function Signup() {
             }
         } catch (err) {
             setOpen(false)
-            console.log('handleRegistration :: Error:', err.response)
-            setError(err.response?.data?.message)
+            console.log('registerUser :: Error:', err.response)
+            setError(err.response?.data?.message || err.message)
         }
-    }, [formValues])
+    })
 
     useEffect(() => {
-
-        // if (loading) {
-        //     toast.loading('Please wait.....')
-        // }
-
-        // return () => {
-        //     toast.dismiss()
-        // }
     }, [loading, open])
 
-    // console.log('formValues:', formValues)
 
     return (
         <>
@@ -139,176 +106,116 @@ function Signup() {
                 </Backdrop>
                 {successMsg && (<CustomizedSnackbars severity="success" message={successMsg} setOpenSnackbar={true} />)}
                 {error && (<CustomizedSnackbars severity="error" message={error} setOpenSnackbar={true} />)}
-                <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-                    <div className="sm:mx-auto sm:w-full sm:max-w-sm w-[80%]">
+                <div className="flex items-center justify-center bg-zinc-800 min-h-screen">
+                    <div className="sm:mx-auto sm:max-w-sm w-full bg-gray-600 rounded-xl p-8 shadow-lg shadow-slate-700 text-white mt-[72px]">
                         <div className="mb-2 flex justify-center">
-                            <img src="/register-icon.png"
-                                className="h-12 w-12"
-                                alt="register_page_image"
+                            <img src="/register.png"
+                                className="rounded-full"
+                                width={60}
+                                alt="register_icon"
                                 loading='lazy' />
                         </div>
-                        <h2 className="text-center text-3xl font-bold leading-tight text-black">
+                        <h2 className="text-center text-2xl font-bold leading-tight ">
                             Create your free{'\n'} account
                         </h2>
-                        <p className="mt-2 text-center text-base text-gray-600">
+                        <p className="mt-2 text-center text-base">
                             Already have an account?{' '}
                             <br />
                             <Link
                                 to="/login"
-                                className="font-[800] text-black transition-all duration-200 hover:underline"
+                                className="font-[700] transition-all duration-200 hover:underline"
                             >
                                 Login Here !
                             </Link>
                         </p>
                         <form
-                            onSubmit={handleRegistration}
-                            className="mt-8"
+                            onSubmit={handleSubmit(registerUser)}
+                            className="mt-8 max-w-[280px] mx-auto"
                         >
-                            <div className="space-y-5">
+                            <div className="space-y-4">
                                 <div>
                                     <div className="mt-2">
-                                        <TextField
+                                        <input
                                             type='text'
                                             autoComplete='fullName'
                                             placeholder="John Doe"
-                                            id="fullName"
-                                            value={formValues.fullName}
-                                            onChange={handleChange}
-                                            required
-                                            label="Full Name"
-                                            variant='outlined'
-                                            className='w-full'
+                                            {...register('fullName', {
+                                                required: true
+                                            })}
+                                            className='w-full py-2 px-2 rounded-md bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500'
                                         />
                                     </div>
                                 </div>
                                 <div>
                                     <div className="mt-2">
-                                        <TextField
+                                        <input
                                             type='email'
                                             autoComplete='email'
-                                            placeholder="Email"
-                                            id="email"
-                                            value={formValues.email}
-                                            onChange={handleChange}
-                                            required
-                                            label="Email"
-                                            variant='outlined'
-                                            className='w-full'
+                                            placeholder="johndoe@example.com"
+                                            {...register('email', {
+                                                required: true,
+                                                validate: (value) => {
+                                                    return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value)
+                                                }
+                                            })}
+                                            className='w-full py-2 px-2 rounded-md bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500'
                                         />
                                     </div>
                                 </div>
                                 <div>
                                     <div className="mt-2">
-                                        <TextField
+                                        <input
                                             type='text'
                                             autoComplete='userId'
                                             placeholder="Username"
-                                            id="userId"
-                                            value={formValues.userId}
-                                            onChange={handleChange}
-                                            required
-                                            label="Username"
-                                            variant='outlined'
-                                            className='w-full'
+                                            {...register('userId', {
+                                                required: true,
+                                                minLength: 3
+                                            })}
+                                            className='w-full py-2 px-2 rounded-md bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500'
                                         />
                                     </div>
                                 </div>
                                 <div>
                                     <div className="mt-2 mb-4">
-                                        {/* <TextField
+                                        <input
                                             type='password'
                                             autoComplete='current-password'
                                             placeholder="Password"
-                                            id="password"
-                                            value={formValues.password}
-                                            onChange={handleChange}
-                                            required
-                                            label="Password"
-                                            variant='outlined'
-                                            className='w-full'
-                                        /> */}
-                                        <FormControl
-                                            className='w-full'
-                                            variant="outlined">
-                                            <InputLabel
-                                                htmlFor="password"
-                                                required
-                                            >Password</InputLabel>
-                                            <OutlinedInput
-                                                id="password"
-                                                type={showPassword ? 'text' : 'password'}
-                                                endAdornment={
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            onClick={() => setShowPassword(!showPassword)}
-                                                            onMouseDown={handleMouseDownPassword}
-                                                            edge="end"
-                                                        >
-                                                            {showPassword ? <VisibilityOffRounded /> : <VisibilityRounded />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                }
-                                                value={formValues.password}
-                                                onChange={handleChange}
-                                                label="Password"
-                                                placeholder='Password'
-                                                required
-                                            />
-                                        </FormControl>
+                                            {...register('password', {
+                                                required: true
+                                            })}
+                                            className='w-full py-2 px-2 rounded-md bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500'
+                                        />
                                     </div>
                                 </div>
                                 <div>
                                     <div className="flex items-center justify-between">
-                                        {/* <label htmlFor="usertype"
-                                            className="text-base font-[500] text-gray-900">
+                                        <label htmlFor="usertype"
+                                            className="text-base font-[600]">
                                             Usertype:
-                                        </label> */}
-                                        {/* <select
-                                            id="userType"
-                                            onChange={handleChange}
-                                            className='bg-gray-200 border border-gray-500 text-slate-900 text-sm font-[700] ml-5 rounded-lg 
-                                                focus:border-blue-500  focus:border-2 block w-full p-2 focus:outline-none
-                                                has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-900' >
+                                        </label>
+                                        <select
+                                            {...register('userType', {
+                                                required: true
+                                            })}
+                                            className='bg-slate-700 text-white font-[600] text-base py-2 px-2 rounded-md outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500 w-full ml-4'>
                                             <option value="CUSTOMER">CUSTOMER</option>
                                             <option value="ENGINEER">ENGINEER</option>
                                             <option value="ADMIN">ADMIN</option>
-                                        </select> */}
-                                        <FormControl fullWidth>
-                                            <InputLabel
-                                                id="select-userType"
-                                                required
-                                            >
-                                                User Role
-                                            </InputLabel>
-                                            <Select
-                                                labelId="select-userType"
-                                                id='userType'
-                                                value={formValues.userType}
-                                                onChange={handleUserType}
-                                                required
-                                                label="User Role"
-                                                className='bg-slate-100'
-                                                sx={{ fontWeight: 'bold' }}
-                                            >
-                                                {/* <MenuItem value=''>None</MenuItem> */}
-                                                <MenuItem value='CUSTOMER' sx={{ fontWeight: 'bold' }}>CUSTOMER</MenuItem>
-                                                <MenuItem value='ENGINEER' sx={{ fontWeight: 'bold' }}>ENGINEER</MenuItem>
-                                                <MenuItem value='ADMIN' sx={{ fontWeight: 'bold' }}>ADMIN</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        </select>
                                     </div>
                                 </div>
                                 <div>
                                     <button
-                                        className="inline-flex w-full items-center justify-center rounded-lg bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-slate-700 transition-all duration-400"
+                                        className="w-full items-center justify-center rounded-lg bg-black px-3 py-2 text-lg font-semibold text-white hover:bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500"
                                     >
-                                        Register Now !
+                                        Submit
                                     </button>
                                 </div>
                             </div>
                         </form>
-                        <div className="mt-3 space-y-3">
+                        <div className="mt-3 space-y-3 max-w-[280px] mx-auto">
                             <button
                                 onClick={() => {
                                     toast.dismiss();
