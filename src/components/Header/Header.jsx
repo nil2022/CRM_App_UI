@@ -41,7 +41,7 @@ export function Header() {
       <div className='w-full flex justify-between items-center gap-x-2 h-[70px] bg-zinc-800 fixed top-0 z-10 border-b-0 shadow-md border-zinc-700 text-white'>
         <div>
           <Link to ="/">
-            <img src="/icon-bulb.jpeg" alt="icon-image"
+            <img src="/icon-bulb.png" alt="icon-image"
               width={50}
               className='rounded-full m-4' />
           </Link>

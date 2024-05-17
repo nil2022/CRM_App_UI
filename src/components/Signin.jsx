@@ -19,6 +19,7 @@ const cookieOptions = {
 
 export default function Signin() {
 
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const [successMsg, setSuccessMsg] = useState('')
     const [error, setError] = useState('')
     /** set loading state  */
@@ -28,8 +29,12 @@ export default function Signin() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-    const { register, handleSubmit} = useForm();
-  
+    const { register, handleSubmit } = useForm();
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    };
+
     /* ******************************************** */
     /* ***********  HANDLE THE LOGIN  ************* */
     /* ******************************************** */
@@ -136,9 +141,9 @@ export default function Signin() {
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="mt-2 ">
+                                    <div className="relative mt-2 flex flex-col">
                                         <input
-                                            type='password'
+                                            type={passwordVisible ? 'text' : 'password'}
                                             autoComplete='current-password'
                                             placeholder="Password"
                                             {...register('password', {
@@ -146,6 +151,21 @@ export default function Signin() {
                                             })}
                                             className='w-full py-2 px-2 rounded-md bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500'
                                         />
+                                        <div className="relative w-full py-2">
+                                            <button type='button'
+                                                onClick={togglePasswordVisibility}
+                                                className='flex justify-center'>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={passwordVisible}
+                                                    onChange={togglePasswordVisibility}
+                                                    className="my-auto w-[16px] h-[16px]"
+                                                />
+                                                <span className="ml-2 font-[500] text-base">
+                                                    Show Password
+                                                </span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div>
