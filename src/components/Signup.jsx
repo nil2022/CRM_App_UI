@@ -18,6 +18,8 @@ import MenuItem from '@mui/material/MenuItem';
 import { Alert, Backdrop, CircularProgress, } from '@mui/material'
 import { useForm } from "react-hook-form"
 
+const currentTime = new Date().toLocaleString();
+
 const cookieOptions = {
     path: '/',
     httpOnly: false,
@@ -31,7 +33,6 @@ function Signup() {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [cookies, setCookie] = useCookies(['accessToken']);
-    const [showPassword, setShowPassword] = useState(false);
     const [open, setOpen] = useState(false);
     const { register, handleSubmit, getValues } = useForm();
 
@@ -49,13 +50,24 @@ function Signup() {
 
         try {
             const userCreated = await authService.createAccount(data)
-            if (userCreated.data.user.userType === 'ADMIN' || userCreated.data.user.userType === 'ENGINEER') {
-                console.log('User Registered ! Verification Pending!')
-                setSuccessMsg('User Registered ! Verification Pending!')
+            /**
+             * * modify the user registration process by following implementations 👇
+             * * after user registers successfully, send OTP to user's email id (backend)
+             * * (frontend) after clicking Submit on register page, redirect user to OTP input page
+             * * after submitting otp in frontned, process verification in (backend) and verfy user
+             * * after verification success, login automatically (frontned+backend) and rediret user to dashboard protected route in (frontend)
+             */
+            // console.log({ user: userCreated.data})
+            if (userCreated.data) {
+                console.log(`[${new Date().toLocaleString()}] :: [INFO] :: User Registered, Check email for OTP!`)
+                setSuccessMsg('User Registered, Check Email for OTP!')
+                toast.success('User Registered, Check Email for OTP!')
                 setOpen(false)
+                localStorage.setItem('userId', getValues('userId'))
+                navigate('/verify-otp')
                 return;
             }
-            if (userCreated) {
+            /* if (userCreated) {
                 const userSession = await authService.login({ userId: getValues('userId'), password: getValues('password') })
                 if (userSession) {
                     // console.log('userSession:', userSession)
@@ -86,11 +98,11 @@ function Signup() {
             } else {
                 console.log('userCreated Error ::', userCreated)
                 setError(userCreated.message)
-            }
-        } catch (err) {
-            setOpen(false)
-            console.log('registerUser :: Error:', err.response)
-            setError(err.response?.data?.message || err.message)
+            } */
+            } catch (err) {
+                setOpen(false)
+                console.log('registerUser :: Error:', err?.response || err?.message)
+                setError(err.response?.data?.message || err.message)
         }
     })
 

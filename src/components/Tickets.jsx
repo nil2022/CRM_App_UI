@@ -13,6 +13,7 @@ import ticketService from '../server/ticket'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../store/authSlice'
 import TicketCard from './TicketCard'
+import moment from 'moment'
 
 function Tickets() {
 
@@ -56,7 +57,7 @@ function Tickets() {
             })
     }
 
-    // console.log('allTickets', allTickets)
+    console.log('allTickets', moment(allTickets[5]?.createdAt).format('MMMM Do YYYY, h:mm:ss A'), allTickets[0]?.createdAt || '')
 
     const handleFetchTickets = () => {
         setLoading(true)
@@ -64,7 +65,7 @@ function Tickets() {
         setRenderCount((prevCount) => prevCount + 1)
         ticketService.getAllTickets()
             .then((response) => {
-                console.log(response)
+                // console.log('All Tickets:', response.data)
                 dispatch(ticketsData(response.data))
                 // toast.success('Tickets Fetched Successfully !')
             })
@@ -100,13 +101,14 @@ function Tickets() {
                 <CircularProgress color="inherit" />
             </Backdrop>
             {/* <div className='w-full text-left p-4 mx-4'>Render count in Tickets.jsx: {renderCount}</div> */}
-            <div className='w-full min-h-[75vh] lg:h-[88vh] xl:hidden'
+            {/* DISPLAY TICKETS AS CARDS IN SMALL DEVICES */}
+            <div className='w-full min-h-[75vh] lg:h-[88vh] xl:hidden mt-24'
             >
                 <TicketCard  />
             </div>
-            <section className="w-full mx-auto max-w-7xl p-4 min-h-[88vh] hidden xl:block">
+            <section className="w-full mx-auto max-w-7xl p-4 min-h-screen hidden xl:block">
                 {/* //* Important info */}
-                <div className="flex gap-x-4">
+                <div className="flex gap-x-4 mt-24">
                     <div className='w-[80%] sm:w-[50%] flex flex-col gap-y-2'>
                         <p className="text-base text-gray-700">
                             This is a list of all <strong>Tickets</strong> in our database
@@ -210,10 +212,10 @@ function Tickets() {
                                                             <textarea
                                                                 className='w-full text-sm text-center justify-center bg-slate-50'
                                                                 value={ticket.title}
-                                                                rows={2}
+                                                                rows={1}
                                                                 readOnly
                                                                 disabled
-                                                                style={{ resize: 'none' }}
+                                                                style={{ resize: 'none', overflow: 'hidden'}}
                                                             />
                                                             {/* {userData.userType !== 'CUSTOMER' && (<div className="text-[12px] text-gray-700">{ticket._id}</div>)} */}
                                                         </div>
@@ -235,12 +237,12 @@ function Tickets() {
                                                         multiline
                                                     /> */}
                                                     <textarea
-                                                        className='w-full text-sm text-center bg-slate-50'
+                                                        className='w-full text-sm text-center overflow-hidden'
                                                         value={ticket.description}
-                                                        rows={3}
+                                                        rows={1}
                                                         readOnly
                                                         disabled
-                                                        style={{ resize: 'none' }}
+                                                        style={{ resize: 'none'}}
                                                     />
                                                 </td>
                                                 {userData.userType !== 'CUSTOMER' && (<td className="whitespace-nowrap p-3 text-center">
@@ -365,7 +367,7 @@ function Tickets() {
                                                     />
                                                 </td>
                                                 <td className="whitespace-wrap p-3 text-center text-xs font-medium ">
-                                                    {ticket.createdAt}
+                                                    {moment(ticket.createdAt).format('Do MMMM YYYY, h:mm:ss A')}
                                                 </td>
                                                 <td className="whitespace-nowrap p-3 text-center text-sm font-medium">
                                                     {/* {ticket.userId !== 'john123' &&
