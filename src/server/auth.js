@@ -13,6 +13,7 @@ export class AuthService {
         })
     }
 
+    /** REGISTER USER */
     async createAccount({ fullName, email, userId, password, userType}) {
         try {
             const userResponse = await this.axiosInstance({
@@ -26,13 +27,31 @@ export class AuthService {
                     userType
                 }
             })
-            console.log('userResponse:', userResponse.data)
+            // console.log('userResponse:', userResponse.data)
             return userResponse.data;
         } catch (error) {
             console.log('server/auth.js :: createAccount :: Error:', error.response)
             throw error;
         }
     }
+
+    /** VERIFY USER EMAIL USING OTP */
+    async verifyOtp(userId, otp) {
+        try {
+            const response = await this.axiosInstance({
+                url: '/crm/api/v1/auth/verify-user',
+                method: 'POST',
+                data: { userId, otp }
+            })
+            // console.log('response:', response.data)
+            return response.data
+        } catch (error) {
+            console.log('server/auth.js :: verifyOtp :: Error:', error.response)
+            throw error;
+        }
+    }
+
+    /** LOGIN USER */
     async login({  userId, password }) {
         try {
             const loginSession = await this.axiosInstance({
@@ -50,6 +69,7 @@ export class AuthService {
         }
     }
 
+    /** FETCH CURRENT LOGGED IN USER */
     async getCurrentUser(accessToken) {
         try {
             const fetchUser = await this.axiosInstance({
@@ -92,6 +112,8 @@ export class AuthService {
             throw error;
         }
     }
+
+    /** FETCH ALL USERS IN DATABASE */
     async getAllUsers() {
         try {
             const fetchAllUsers = await this.axiosInstance({
@@ -110,6 +132,8 @@ export class AuthService {
         }
     }
 
+
+    /** REFRESH ACCESS TOKEN */
     async refreshAccessToken(refreshToken) {
         try {
             const response = await this.axiosInstance.get('/crm/api/v1/auth/refresh-token', {
@@ -125,6 +149,8 @@ export class AuthService {
         }
     }
 
+
+    /** UPDATE USERSTATUS DEATILS */
     async editUser(userId, userStatus) {
         try {
             const editUserResponse = await this.axiosInstance({
@@ -148,6 +174,8 @@ export class AuthService {
         }
     }
 
+    /** DELETE USER FROM DATABASE  */
+    // ! PERMANENTLY DELETES USER FROM DATABASE
     async deleteUser(userId) {
         try {
             const deleteUserResponse = await this.axiosInstance({
@@ -168,6 +196,7 @@ export class AuthService {
         }
     }
 
+    /** LOGOUT USER */
     async logout() {
         try {
             const logoutResponse = await this.axiosInstance({
@@ -184,18 +213,19 @@ export class AuthService {
         }
     }
 
-    async healthCheck() {
-        try {
-            const userResponse = await this.axiosInstance({
-                url: '/crm/api/health',
-                method: 'GET'
-            })
-            console.log(userResponse.data)
-        } catch (error) {
-            console.log('server/auth.js :: healthCheck :: Error:', error.message)
-            throw error;
-        }
-    }
+
+    // async healthCheck() {
+    //     try {
+    //         const userResponse = await this.axiosInstance({
+    //             url: '/crm/api/health',
+    //             method: 'GET'
+    //         })
+    //         console.log(userResponse.data)
+    //     } catch (error) {
+    //         console.log('server/auth.js :: healthCheck :: Error:', error.message)
+    //         throw error;
+    //     }
+    // }
 }
 
 const authService = new AuthService();
