@@ -17,7 +17,7 @@ export class TicketService {
     async createTicket(ticketTitle, ticketDescription) {
         try {
             const createTicket = await this.axiosInstance({
-                url: "/crm/api/v1/tickets/create-ticket",
+                url: "/api/v1/tickets/create-ticket",
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -44,7 +44,7 @@ export class TicketService {
     async getAllTickets() {
         try {
             const fetchAllTickets = await this.axiosInstance({
-                url: "/crm/api/v1/tickets",
+                url: "/api/v1/tickets/get-all-tickets",
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -67,7 +67,7 @@ export class TicketService {
     async editTicketData(ticketId, ticketPriority, ticketStatus, assignedTo) {
         try {
             const editTicket = await this.axiosInstance({
-                url: `/crm/api/v1/tickets/update-ticket`,
+                url: `/api/v1/tickets/update-ticket`,
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,

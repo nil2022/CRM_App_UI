@@ -17,7 +17,7 @@ export class AuthService {
     async createAccount({ fullName, email, userId, password, userType}) {
         try {
             const userResponse = await this.axiosInstance({
-                url: '/crm/api/v1/auth/register',
+                url: '/api/v1/auth/register',
                 method: 'POST',
                 data: {
                     fullName,
@@ -39,7 +39,7 @@ export class AuthService {
     async verifyOtp(userId, otp) {
         try {
             const response = await this.axiosInstance({
-                url: '/crm/api/v1/auth/verify-user',
+                url: 'api/v1/auth/verify-user',
                 method: 'POST',
                 data: { userId, otp }
             })
@@ -55,7 +55,7 @@ export class AuthService {
     async login({  userId, password }) {
         try {
             const loginSession = await this.axiosInstance({
-                url: '/crm/api/v1/auth/login',
+                url: 'api/v1/auth/login',
                 method: 'POST',
                 data: {
                     userId,
@@ -73,7 +73,7 @@ export class AuthService {
     async getCurrentUser(accessToken) {
         try {
             const fetchUser = await this.axiosInstance({
-                url: '/crm/api/v1/auth/current-user',
+                url: '/api/v1/auth/current-user',
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -95,7 +95,7 @@ export class AuthService {
                 throw new Error('Passwords do not match !')
             }
             const changePassword = await this.axiosInstance({
-                url: '/crm/api/v1/auth/change-password',
+                url: '/api/v1/auth/change-password',
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -117,7 +117,7 @@ export class AuthService {
     async getAllUsers() {
         try {
             const fetchAllUsers = await this.axiosInstance({
-                url: '/crm/api/v1/users',
+                url: '/api/v1/user/get-all-users',
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -154,7 +154,7 @@ export class AuthService {
     async editUser(userId, userStatus) {
         try {
             const editUserResponse = await this.axiosInstance({
-                url: `/crm/api/v1/users/update-user`,
+                url: `/api/v1/user/update-user`,
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -179,7 +179,7 @@ export class AuthService {
     async deleteUser(userId) {
         try {
             const deleteUserResponse = await this.axiosInstance({
-                url: `/crm/api/v1/users/deleteUser`,
+                url: `/api/v1/users/deleteUser`,
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -200,7 +200,7 @@ export class AuthService {
     async logout() {
         try {
             const logoutResponse = await this.axiosInstance({
-                url: '/crm/api/v1/auth/logout',
+                url: '/api/v1/auth/logout',
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
