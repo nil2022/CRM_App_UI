@@ -15,9 +15,13 @@ export default defineConfig(async () => {
         build: {
             outDir: "dist",
             emptyOutDir: true,
+            // Added optimizations
+            minify: "esbuild", // Faster minification with esbuild (default), can use 'terser' for smaller output
+            sourcemap: false, // Disable in production for smaller builds (enable if needed for debugging)
+            target: "esnext", // Target modern browsers for smaller bundles
+            chunkSizeWarningLimit: 1000, // Increase limit (in kB) to reduce chunk warnings
             rollupOptions: {
                 output: {
-                    // Provide each package installed in app as manual chunks to distribute in the bundler
                     manualChunks: {
                         "material-ui": [
                             "@mui/material",
@@ -40,13 +44,20 @@ export default defineConfig(async () => {
                     chunkFileNames: "assets/[name]-[hash].js",
                     entryFileNames: "assets/[name]-[hash].js",
                     assetFileNames: "assets/[name]-[hash].[ext]",
+                    // Added optimization for better chunk splitting
+                    compact: true, // Minify output by removing unnecessary whitespace
+                },
+                // Added optimization for better tree-shaking
+                treeshake: {
+                    preset: "recommended",
+                    moduleSideEffects: false, // Assume external modules have no side effects
                 },
             },
         },
         plugins: [react()],
         resolve: {
             alias: {
-                "@" : path.resolve(__dirname, "./src"),
+                "@": path.resolve(__dirname, "./src"),
             },
         },
     };
