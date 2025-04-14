@@ -1,34 +1,40 @@
-import React from 'react'
-import { Link } from 'react-router-dom';
+import { Box } from "@mui/material";
+import React from "react";
+import { Link } from "react-router-dom";
 
 export function Footer() {
-  return (
-    <section className="w-full min-h-[40px] bg-zinc-800">
-      <div className="relative mx-auto">
-        <ul className="flex flex-col sm:flex-row justify-between text-zinc-300/50 py-2">
+    return (
+        <Box
+            component="footer"
+            className="w-full py-6 px-4 sm:px-10 bg-gray-800  text-white"
+        >
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                {/* Left Section */}
+                <div className="text-center sm:text-left text-sm">
+                    © 2024{" "}
+                    <span className="font-semibold text-white">CRM</span>. All
+                    rights reserved.
+                </div>
 
-          <div className="flex flex-col sm:flex-row p-3">
-            <span className='flex items-center justify-center text-sm font-[400]'>
-              Copyright &copy; 2024 CRM. All Rights Reserved.
-            </span>
-          </div>
+                {/* Right Section */}
+                <div className="flex flex-wrap justify-center sm:justify-end gap-3 text-sm">
+                    <FooterLink to="#">Privacy Policy</FooterLink>
+                    <FooterLink to="#">Terms & Conditions</FooterLink>
+                    <FooterLink to="#">Contact Us</FooterLink>
+                </div>
+            </div>
+        </Box>
+    );
+}
 
-          <div className='flex flex-col sm:flex-row items-center justify-center text-sm font-[600] gap-y-1 sm:gap-x-2 items-end sm:mr-4'>
-            <Link to={"#"}
-              className='px-2 py-1 hover:bg-zinc-700/40 text-zinc-300/50 hover:text-white transition-all duration-500 rounded-md'>
-              Privacy Policy
-            </Link>
-            <Link to={"#"}
-              className='px-2 py-1 hover:bg-zinc-700/40 text-zinc-300/50 hover:text-white transition-all duration-500 rounded-md'>
-              Terms and Conditions
-            </Link>
-            <Link to={"#"}
-              className='px-2 py-1 hover:bg-zinc-700/40 text-zinc-300/50 hover:text-white transition-all duration-500 rounded-md'>
-              Contact Us
-            </Link>
-          </div>
-        </ul>
-      </div>
-    </section>
-  )
+// Separate FooterLink for better styling
+function FooterLink({ to, children }) {
+    return (
+        <Link
+            to={to}
+            className="px-3 py-1 hover:text-white hover:-translate-y-0.5 transform transition-all duration-300 ease-in-out rounded-md hover:bg-white/10"
+        >
+            {children}
+        </Link>
+    );
 }

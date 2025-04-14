@@ -18,6 +18,7 @@ import ChangePassword from './components/ChangePassword.jsx'
 import Tickets from './components/Tickets.jsx'
 import CreateTicket from './components/CreateTicket.jsx'
 import OTPInput from './components/OtpVerifyPage.jsx'
+import Test from './components/Test.jsx'
 
 
 const router = createBrowserRouter(
@@ -25,6 +26,7 @@ const router = createBrowserRouter(
     <Route path='/' element={<Layout />}>
       <Route path='/' element={<PrivateRoute authentication = {false}> <Home/></PrivateRoute>} />
       <Route path='/register' element={<Register />} />
+      <Route path='/test' element={<Test />} />
       <Route path='/login' element={<Login />} />
       <Route path='/verify-otp' element={<OTPInput />} />
       <Route path='/dashboard' element={
