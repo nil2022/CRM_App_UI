@@ -74,35 +74,3 @@
         @apply bg-background text-foreground;
     }
 }
-
-@keyframes floatLeft {
-    0% {
-        transform: translateX(0);
-    }
-    50% {
-        transform: translateX(15px);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
-@keyframes floatRight {
-    0% {
-        transform: translateX(0);
-    }
-    50% {
-        transform: translateX(-15px);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
-.float-anim-left {
-    animation: floatLeft 3s ease-in-out infinite;
-}
-
-.float-anim-right {
-    animation: floatRight 3.5s ease-in-out infinite;
-}

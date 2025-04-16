@@ -36,6 +36,7 @@ const router = createBrowserRouter(
       <Route path='/change-password' element={<PrivateRoute authentication={true}><ChangePassword /></PrivateRoute>}/>
       <Route path='/tickets' element={<PrivateRoute authentication={true}><Tickets /></PrivateRoute>}/>
       <Route path='/create-ticket' element={<PrivateRoute authentication={true}><CreateTicket /></PrivateRoute>}/>
+      {/* <Route path= '/test-page' element={<Users />} /> */}
       <Route path='*' element={<Error />} />
     </Route>
   )
