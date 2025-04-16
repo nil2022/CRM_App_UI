@@ -1,100 +1,324 @@
-import * as React from 'react';
-import { Button } from '@mui/material';
-import { AlternateEmailRounded, DeleteRounded, Edit, ForwardToInboxTwoTone } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { UserCircleIcon } from '@heroicons/react/24/solid';
+import * as React from "react";
+import {
+    Button,
+    Card,
+    CardContent,
+    Box,
+    Typography,
+    Chip,
+    Divider,
+    Grid,
+    Avatar,
+} from "@mui/material";
+import {
+    AlternateEmailRounded,
+    DeleteRounded,
+    Edit,
+    ForwardToInboxTwoTone,
+} from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
-export default function UserCard({ fetchFunc = '', editFunc = '', deleteFunc = '', viewData = 'userData' }) {
-
-    let data;
-    if (viewData === 'userData') {
-        data = useSelector((state) => state.data?.usersData || [])
-    } else {
-        data = useSelector((state) => state.data?.ticketsData || [])
-    }
-
-    console.log('tickets: (in UserCard.jsx)', data)
+export default function UserCardProfile({
+    fetchFunc = "",
+    editFunc = "",
+    deleteFunc = "",
+}) {
+    const data = useSelector((state) => state.data?.usersData || []);
+    // Use ref to track if fetch has been called
+    const fetchExecuted = React.useRef(false);
 
     React.useEffect(() => {
-        if (fetchFunc) {
-            fetchFunc()
+        // Only fetch if the function exists and hasn't been called yet
+        if (fetchFunc && !fetchExecuted.current) {
+            fetchFunc();
+            fetchExecuted.current = true;
         }
-    }, [])
+        // No dependency on fetchFunc to prevent re-fetching
+    }, []);
 
-    // console.log('data: (in UserCard.jsx)', data)
+    // Helper function to get userType chip props
+    const getUserTypeChipProps = (userType) => {
+        switch (userType) {
+            case "ADMIN":
+                return { color: "primary", sx: { fontWeight: "bold" } };
+            case "ENGINEER":
+                return { color: "warning", sx: { fontWeight: "bold" } };
+            default:
+                return { color: "default", sx: { fontWeight: "bold" } };
+        }
+    };
+
+    // Helper function to get userStatus chip props
+    const getStatusChipProps = (status) => {
+        return status === "APPROVED"
+            ? { color: "success", sx: { fontWeight: "bold" } }
+            : { color: "error", sx: { fontWeight: "bold" } };
+    };
 
     return (
-        <div>
-            <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
-                {data.length > 0 && (data.map((data) => (
-                    <div key={data._id} className="min-w-[150px] rounded-md border shadow-lg shadow-violet-300">
-                        <div className='bg-gray-200 m-6 object-cover rounded-lg'>
-                            {data.avatar ? (<img
-                                src={data.avatar}
-                                alt="user-pic"
-                                className="max-h-[300px] w-full rounded-md object-cover"
-                            />) : (
-                                <UserCircleIcon style={{ color: 'gray', alignSelf: 'center', justifySelf: 'center', margin: 'auto' }}
-                                    className="h-100 w-100 rounded-full object-cover " />
-                            )}
-                        </div>
-                        <div className="p-4">
-                            <div>
-                                <h1 className="text-lg font-semibold">{data.fullName}</h1>
-                                <p className="text-[14px] md:text-[12px] font-semibold">_id: {data._id}</p>
-                            </div>
-                            <div className='border border-gray-300 m-2'></div>
-                            <div className='flex flex-col'>
-                                <div className='flex gap-x-4 items-center justify-center'>
-                                    <p>{data.userType === 'ADMIN' ? (<div className="inline-flex rounded-full bg-blue-200 px-2 text-md font-semibold leading-5 text-blue-800">{data.userType}</div>) : (data.userType === 'ENGINEER' ? (<div className="inline-flex rounded-full bg-yellow-200 px-2 text-md font-semibold leading-5 text-yellow-800">{data.userType}</div>) : (
-                                        <div className="inline-flex rounded-full bg-slate-200 px-2 text-md font-semibold leading-5 text-slate-800">{data.userType}</div>
-                                    ))}
-                                    </p>
-                                    <p>{data.userStatus === 'APPROVED' ? (<span className="inline-flex rounded-full bg-green-100 px-2 text-md font-semibold leading-5 text-green-800">
-                                        {data.userStatus}
-                                    </span>) : (
-                                        <span className="inline-flex rounded-full bg-red-100 px-2 text-md font-semibold leading-5 text-red-800">
-                                            {data.userStatus}
-                                        </span>
-                                    )}</p>
-                                </div>
-                                <p className='text-[15px] md:text-sm'><ForwardToInboxTwoTone />{' '}{data.email}</p>
-                                <p className='text-[15px] md:text-sm'><AlternateEmailRounded />{' '}{data.userId}</p>
-                                {/* <p><strong>Registered :</strong> {' '}{data.email}</p>
-                        <p><strong>Updated :</strong>{' '}{data.email}</p> */}
-                                <p className="min-h-[50px] mt-3 text-sm text-gray-600 border rounded-md">
-                                    About User
-                                </p>
-                            </div>
-                            <div className='flex justify-between m-4'>
-                                {data.userId !== 'john123' && (
-                                    <Button
-                                        variant='contained'
-                                        startIcon={<Edit />}
-                                        color='info'
-                                        onClick={() => editFunc(data.userId, (data.userStatus === 'APPROVED') ? 'PENDING' : 'APPROVED')}
-                                        size='small'
-                                        className='transition-all duration-700'
+        <Box sx={{ px: 1, mt: 2, pb: 8 }}>
+            {data.length > 0 ? (
+                <Grid container spacing={2}>
+                    {data.map((user) => (
+                        <Grid item xs={12} sm={6} md={4} key={user._id}>
+                            <Card
+                                sx={{
+                                    boxShadow: 3,
+                                    borderLeft: 6,
+                                    borderColor:
+                                        user.userStatus === "APPROVED"
+                                            ? "success.main"
+                                            : "error.main",
+                                    height: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
+                                <CardContent
+                                    sx={{
+                                        p: { xs: 2, sm: 3 },
+                                        flex: 1,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
+                                >
+                                    {/* Header with name and status */}
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: {
+                                                xs: "column",
+                                                sm: "row",
+                                            },
+                                            justifyContent: "space-between",
+                                            alignItems: {
+                                                xs: "flex-start",
+                                                sm: "center",
+                                            },
+                                            gap: 1,
+                                            mb: 2,
+                                        }}
                                     >
-                                        Edit
-                                    </Button>)}
-                                {data.userId !== 'john123' && (
-                                    <Button
-                                        variant='contained'
-                                        startIcon={<DeleteRounded />}
-                                        color='error'
-                                        onClick={() => (deleteFunc(data.userId))}
-                                        size='small'
-                                        className='transition-all duration-700'
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                fontSize: {
+                                                    xs: "1rem",
+                                                    sm: "1.25rem",
+                                                },
+                                                wordBreak: "break-word",
+                                            }}
+                                        >
+                                            {user.fullName}
+                                        </Typography>
+                                        <Chip
+                                            label={user.userStatus}
+                                            size="small"
+                                            {...getStatusChipProps(
+                                                user.userStatus
+                                            )}
+                                        />
+                                    </Box>
+
+                                    {/* User avatar and type section */}
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: {
+                                                xs: "column",
+                                                sm: "row",
+                                            },
+                                            alignItems: {
+                                                xs: "center",
+                                                sm: "flex-start",
+                                            },
+                                            mb: 2,
+                                            gap: 2,
+                                        }}
                                     >
-                                        Delete
-                                    </Button>)}
-                            </div>
-                        </div>
-                    </div>
-                ))
-                )}
-            </div>
-        </div>
-    )
+                                        {user.avatar ? (
+                                            <Avatar
+                                                src={user.avatar}
+                                                alt={user.fullName}
+                                                sx={{ width: 64, height: 64 }}
+                                            />
+                                        ) : (
+                                            <Avatar
+                                                sx={{
+                                                    width: 64,
+                                                    height: 64,
+                                                    bgcolor: "grey.300",
+                                                }}
+                                            >
+                                                {user.fullName.charAt(0)}
+                                            </Avatar>
+                                        )}
+                                        <Box
+                                            sx={{
+                                                width: "100%",
+                                                textAlign: {
+                                                    xs: "center",
+                                                    sm: "left",
+                                                },
+                                            }}
+                                        >
+                                            <Chip
+                                                label={user.userType}
+                                                size="small"
+                                                {...getUserTypeChipProps(
+                                                    user.userType
+                                                )}
+                                                sx={{ mb: 1 }}
+                                            />
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 0.5,
+                                                    flexWrap: "wrap",
+                                                    justifyContent: {
+                                                        xs: "center",
+                                                        sm: "flex-start",
+                                                    },
+                                                    wordBreak: "break-word",
+                                                }}
+                                            >
+                                                <AlternateEmailRounded
+                                                    fontSize="small"
+                                                    color="action"
+                                                />
+                                                {user.userId}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Email */}
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "flex-start",
+                                            gap: 0.5,
+                                            mb: 1,
+                                            wordBreak: "break-all",
+                                            overflowWrap: "break-word",
+                                        }}
+                                    >
+                                        <ForwardToInboxTwoTone
+                                            fontSize="small"
+                                            color="action"
+                                            sx={{ mt: 0.3 }}
+                                        />
+                                        <Box component="span" sx={{ flex: 1 }}>
+                                            {user.email}
+                                        </Box>
+                                    </Typography>
+
+                                    {/* User ID */}
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ mt: 1 }}
+                                    >
+                                        User ID
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            mb: 1,
+                                            wordBreak: "break-all",
+                                            overflowWrap: "break-word",
+                                        }}
+                                    >
+                                        {user._id}
+                                    </Typography>
+
+                                    <Divider sx={{ my: 1 }} />
+
+                                    {/* About section */}
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{
+                                            mt: 1,
+                                            p: 1.5,
+                                            bgcolor: "grey.50",
+                                            borderRadius: 1,
+                                            minHeight: "60px",
+                                            flex: 1,
+                                        }}
+                                    >
+                                        About User
+                                    </Typography>
+
+                                    {/* Action buttons */}
+                                    {user.userId !== "john123" && (
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                flexDirection: {
+                                                    xs: "column",
+                                                    sm: "row",
+                                                },
+                                                justifyContent: "space-between",
+                                                gap: 1,
+                                                mt: 2,
+                                            }}
+                                        >
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                color="primary"
+                                                onClick={() =>
+                                                    editFunc(
+                                                        user.userId,
+                                                        user.userStatus ===
+                                                            "APPROVED"
+                                                            ? "PENDING"
+                                                            : "APPROVED"
+                                                    )
+                                                }
+                                                startIcon={<Edit />}
+                                                sx={{
+                                                    textTransform: "capitalize",
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                {user.userStatus === "APPROVED"
+                                                    ? "Set Pending"
+                                                    : "Approve"}
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                color="error"
+                                                onClick={() =>
+                                                    deleteFunc(user.userId)
+                                                }
+                                                startIcon={<DeleteRounded />}
+                                                sx={{
+                                                    textTransform: "capitalize",
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            ) : (
+                <Box sx={{ textAlign: "center", my: 4 }}>
+                    <Typography variant="h6" color="text.secondary">
+                        No Users Found
+                    </Typography>
+                </Box>
+            )}
+        </Box>
+    );
 }

@@ -48,7 +48,7 @@ function Layout() {
                     //   setTimeout(() => {
                     //     toast.error(error.response?.data?.message)
                     //     navigate('/login')
-                    //   }, 1000);s
+                    //   }, 1000);
                     // }
                 })
                 .finally(() => setLoading(false));
@@ -65,7 +65,7 @@ function Layout() {
     // console.log('Environment values:', import.meta.env.VITE_CRM_BACKEND_URL)
 
     return !loading ? (
-        <div className="w-full block">
+        <div className="flex flex-col min-h-screen">
             <CookiesProvider>
                 <Header />
                 <Toaster
@@ -75,7 +75,9 @@ function Layout() {
                         className: "font-[600]",
                     }}
                 />
-                <Outlet />
+                <main className="flex-grow flex flex-col overflow-hidden">
+                    <Outlet />
+                </main>
                 <Footer />
             </CookiesProvider>
         </div>

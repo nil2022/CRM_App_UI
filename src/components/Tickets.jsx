@@ -1,405 +1,825 @@
-import { CachedRounded } from '@mui/icons-material'
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { ticketsData } from '../store/ticketsDataSlice'
-import { UserCircleIcon } from '@heroicons/react/24/solid'
-import { Backdrop, Button, CircularProgress, IconButton } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import toast from 'react-hot-toast'
-import MenuBar from './MenuBar'
-import ticketService from '../server/ticket'
-import { useNavigate } from 'react-router-dom'
-import { logout } from '../store/authSlice'
-import TicketCard from './TicketCard'
-import moment from 'moment'
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { ticketsData } from "../store/ticketsDataSlice";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../store/authSlice";
+import moment from "moment";
+import toast from "react-hot-toast";
+import ticketService from "../server/ticket";
+
+import {
+    Box,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+    Chip,
+    Button,
+    IconButton,
+    Menu,
+    MenuItem,
+    Backdrop,
+    CircularProgress,
+    useMediaQuery,
+    useTheme,
+    Card,
+    CardContent,
+    Divider,
+    Grid,
+    Select,
+    FormControl,
+} from "@mui/material";
+
+import RefreshIcon from "@mui/icons-material/Refresh";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 function Tickets() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
-    const userData = useSelector((state) => state.auth?.userData || [])
-    const allTickets = useSelector((state) => state.tickets?.ticketsData || [])
-    const [ticketId, setTicketId] = React.useState('')
-    const [loading, setLoading] = React.useState(false)
-    let [serialNo, setSerialNo] = React.useState(1)
-    const [renderCount, setRenderCount] = React.useState(0)
-    const [open, setOpen] = React.useState(false);
+    const userData = useSelector((state) => state.auth?.userData || []);
+    const allTickets = useSelector((state) => state.tickets?.ticketsData || []);
+    const [ticketId, setTicketId] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [serialNo, setSerialNo] = useState(1);
+    const [renderCount, setRenderCount] = useState(0);
+    const [open, setOpen] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [anchorEl, setAnchorEl] = React.useState(false);
-    const openStatusMenu = Boolean(anchorEl);
-    const handleClick = (e, id) => {
-        setAnchorEl(e.currentTarget);
-        setTicketId(id)
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
+    const isCustomer = userData.userType === "CUSTOMER";
+
+    const [statusAnchorEl, setStatusAnchorEl] = useState(null);
+    const openStatusMenu = Boolean(statusAnchorEl);
+
+    const [priorityAnchorEl, setPriorityAnchorEl] = useState(null);
+    const openPriorityMenu = Boolean(priorityAnchorEl);
+    const [selectedTicketId, setSelectedTicketId] = useState("");
+
+    const handleStatusClick = (event, id) => {
+        setStatusAnchorEl(event.currentTarget);
+        setTicketId(id);
     };
 
-    const handleTicketStatusAndPriority = (id, ticketPriority, ticketStatus) => {
-        setLoading(true)
-        setOpen(true)
-        // setRenderCount((prevCount) => prevCount + 1)
-        ticketService.editTicketData(id, ticketPriority, ticketStatus)
+    const handleStatusClose = () => {
+        setStatusAnchorEl(null);
+    };
+
+    const handlePriorityClick = (event, id) => {
+        setPriorityAnchorEl(event.currentTarget);
+        setSelectedTicketId(id);
+    };
+
+    const handlePriorityClose = () => {
+        setPriorityAnchorEl(null);
+    };
+
+    const handleTicketStatusAndPriority = (
+        id,
+        ticketPriority,
+        ticketStatus
+    ) => {
+        setLoading(true);
+        setOpen(true);
+
+        ticketService
+            .editTicketData(id, ticketPriority, ticketStatus)
             .then((response) => {
-                console.log("Edit Ticket Response:", response.message)
-                toast.success('Ticket Updated Success !')
+                console.log("Edit Ticket Response:", response.message);
+                toast.success("Ticket Updated Successfully!");
             })
             .catch((err) => {
-                console.log('Error:', err)
-
+                console.log("Error:", err);
+                toast.error("Failed to update ticket");
             })
             .finally(() => {
-                setLoading(false)
-                setOpen(false)
-                setAnchorEl(null);
-            })
-    }
+                setLoading(false);
+                setOpen(false);
+                setStatusAnchorEl(null);
+                setPriorityAnchorEl(null);
+                handleFetchTickets();
+            });
+    };
 
-    console.log('allTickets', moment(allTickets[5]?.createdAt).format('MMMM Do YYYY, h:mm:ss A'), allTickets[0]?.createdAt || '')
+    const handleStatusChange = (event, ticketId) => {
+        const newStatus = event.target.value;
+        handleTicketStatusAndPriority(ticketId, "", newStatus);
+    };
+
+    const handlePriorityChange = (event, ticketId) => {
+        const newPriority = event.target.value;
+        handleTicketStatusAndPriority(ticketId, newPriority, "");
+    };
 
     const handleFetchTickets = () => {
-        setLoading(true)
-        setSerialNo(1)
-        setRenderCount((prevCount) => prevCount + 1)
-        ticketService.getAllTickets()
+        setLoading(true);
+        setSerialNo(1);
+        setRenderCount((prevCount) => prevCount + 1);
+
+        ticketService
+            .getAllTickets()
             .then((response) => {
-                // console.log('All Tickets:', response.data)
-                dispatch(ticketsData(response.data))
-                // toast.success('Tickets Fetched Successfully !')
+                dispatch(ticketsData(response.data));
             })
             .catch((err) => {
-                console.log('Error:', err.message)
+                console.log("Error:", err.message);
                 if (err?.data?.statusCode === 429) {
-                    toast.error('Too Many Requests. Please try after some time.')
-                    navigate('/login')
-                    dispatch(logout())
-                    localStorage.removeItem('accessToken')
-                    localStorage.removeItem('refreshToken')
+                    toast.error(
+                        "Too Many Requests. Please try after some time."
+                    );
+                    navigate("/login");
+                    dispatch(logout());
+                    localStorage.removeItem("accessToken");
+                    localStorage.removeItem("refreshToken");
                 }
             })
             .finally(() => {
-                setLoading(false)
-            })
-    }
+                setLoading(false);
+            });
+    };
 
     useEffect(() => {
-        setRenderCount((prevCount) => prevCount + 1)
-        handleFetchTickets()
+        handleFetchTickets();
+    }, []);
 
-    }, [open])
+    const getStatusChipProps = (status) => {
+        switch (status) {
+            case "OPEN":
+                return { color: "success", variant: "filled" };
+            case "IN_PROGRESS":
+                return { color: "info", variant: "filled" };
+            case "BLOCKED":
+                return { color: "default", variant: "filled" };
+            case "CLOSED":
+                return { color: "error", variant: "filled" };
+            default:
+                return { color: "default", variant: "filled" };
+        }
+    };
 
-    console.log('render count (in Tickets.jsx):', renderCount)
+    const getPriorityChipProps = (priority) => {
+        switch (priority) {
+            case "LOW":
+                return { color: "success", variant: "outlined" };
+            case "MEDIUM":
+                return { color: "warning", variant: "outlined" };
+            case "HIGH":
+                return { color: "error", variant: "outlined" };
+            default:
+                return { color: "default", variant: "outlined" };
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "OPEN":
+                return theme.palette.success.main;
+            case "IN_PROGRESS":
+                return theme.palette.info.main;
+            case "BLOCKED":
+                return theme.palette.grey[500];
+            case "CLOSED":
+                return theme.palette.error.main;
+            default:
+                return theme.palette.text.primary;
+        }
+    };
+
+    const getPriorityColor = (priority) => {
+        switch (priority) {
+            case "LOW":
+                return theme.palette.success.main;
+            case "MEDIUM":
+                return theme.palette.warning.main;
+            case "HIGH":
+                return theme.palette.error.main;
+            default:
+                return theme.palette.text.primary;
+        }
+    };
+
+    const renderMobileView = () => (
+        <Box sx={{ px: 2, mt: 2, pb: 8 }}>
+            {allTickets.length > 0 ? (
+                allTickets.map((ticket, index) => (
+                    <Card
+                        key={ticket._id}
+                        sx={{
+                            mb: 2,
+                            boxShadow: 3,
+                            borderLeft: 6,
+                            borderColor:
+                                ticket.status === "OPEN"
+                                    ? "success.main"
+                                    : ticket.status === "IN_PROGRESS"
+                                      ? "info.main"
+                                      : ticket.status === "BLOCKED"
+                                        ? "grey.500"
+                                        : "error.main",
+                        }}
+                    >
+                        <CardContent>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    mb: 1,
+                                }}
+                            >
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: "bold" }}
+                                >
+                                    #{index + 1} {ticket.title}
+                                </Typography>
+                                <Chip
+                                    label={ticket.status}
+                                    size="small"
+                                    {...getStatusChipProps(ticket.status)}
+                                    sx={{ fontWeight: "bold" }}
+                                />
+                            </Box>
+
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ mb: 2 }}
+                            >
+                                {ticket.description}
+                            </Typography>
+
+                            <Divider sx={{ my: 1 }} />
+
+                            <Grid container spacing={1} sx={{ mt: 1 }}>
+                                {userData.userType !== "CUSTOMER" && (
+                                    <Grid item xs={6}>
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                        >
+                                            Reported By
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            {ticket.reporter}
+                                        </Typography>
+                                    </Grid>
+                                )}
+                                <Grid
+                                    item
+                                    xs={
+                                        userData.userType !== "CUSTOMER"
+                                            ? 6
+                                            : 12
+                                    }
+                                >
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        Assigned To
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {ticket.assignee}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        Priority
+                                    </Typography>
+                                    <Box>
+                                        <Chip
+                                            label={ticket.ticketPriority}
+                                            size="small"
+                                            {...getPriorityChipProps(
+                                                ticket.ticketPriority
+                                            )}
+                                            sx={{ fontSize: "0.7rem" }}
+                                        />
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        Created At
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {moment(ticket.createdAt).format(
+                                            "MMM Do, YYYY"
+                                        )}
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+
+                            {userData.userType !== "CUSTOMER" && (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        gap: 1,
+                                        mt: 2,
+                                    }}
+                                >
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={(e) =>
+                                            handleStatusClick(e, ticket._id)
+                                        }
+                                        endIcon={<ArrowDropDownIcon />}
+                                        sx={{ textTransform: "capitalize" }}
+                                    >
+                                        Change Status
+                                    </Button>
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={(e) =>
+                                            handlePriorityClick(e, ticket._id)
+                                        }
+                                        endIcon={<ArrowDropDownIcon />}
+                                        sx={{ textTransform: "capitalize" }}
+                                    >
+                                        Change Priority
+                                    </Button>
+                                </Box>
+                            )}
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                <Box sx={{ textAlign: "center", my: 4 }}>
+                    <Typography variant="h6" color="text.secondary">
+                        No Tickets Found
+                    </Typography>
+                </Box>
+            )}
+        </Box>
+    );
+
+    const renderDesktopView = () => (
+        <TableContainer
+            component={Paper}
+            sx={{
+                boxShadow: 4,
+                borderRadius: 2,
+                ".MuiTableCell-root": {
+                    borderColor: theme.palette.divider,
+                },
+            }}
+        >
+            <Table sx={{ minWidth: 650 }} size={isTablet ? "small" : "medium"}>
+                <TableHead>
+                    <TableRow className="bg-gray-800">
+                        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                            #
+                        </TableCell>
+                        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                            Title
+                        </TableCell>
+                        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                            Description
+                        </TableCell>
+                        {userData.userType !== "CUSTOMER" && (
+                            <TableCell
+                                sx={{ color: "#fff", fontWeight: "bold" }}
+                            >
+                                Reported By
+                            </TableCell>
+                        )}
+                        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                            Assigned Engineer
+                        </TableCell>
+                        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                            Status
+                        </TableCell>
+                        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                            Priority
+                        </TableCell>
+                        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                            Created At
+                        </TableCell>
+                        <TableCell
+                            align="right"
+                            sx={{ color: "#fff", fontWeight: "bold" }}
+                        >
+                            Action
+                        </TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {allTickets.length > 0 ? (
+                        allTickets.map((ticket, index) => (
+                            <TableRow
+                                key={ticket._id}
+                                sx={{
+                                    "&:nth-of-type(odd)": {
+                                        backgroundColor:
+                                            theme.palette.action.hover,
+                                    },
+                                    "&:hover": {
+                                        backgroundColor:
+                                            theme.palette.action.selected,
+                                    },
+                                }}
+                            >
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>
+                                    <Typography noWrap sx={{ maxWidth: 150 }}>
+                                        {ticket.title}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography noWrap sx={{ maxWidth: 200 }}>
+                                        {ticket.description}
+                                    </Typography>
+                                </TableCell>
+                                {userData.userType !== "CUSTOMER" && (
+                                    <TableCell>{ticket.reporter}</TableCell>
+                                )}
+                                <TableCell>{ticket.assignee}</TableCell>
+                                <TableCell>
+                                    {isCustomer ? (
+                                        <Chip
+                                            label={ticket.status}
+                                            size="small"
+                                            {...getStatusChipProps(
+                                                ticket.status
+                                            )}
+                                            sx={{ fontWeight: "bold" }}
+                                        />
+                                    ) : (
+                                        <FormControl
+                                            size="small"
+                                            sx={{ minWidth: 120 }}
+                                        >
+                                            <Select
+                                                value={ticket.status}
+                                                onChange={(e) =>
+                                                    handleStatusChange(
+                                                        e,
+                                                        ticket._id
+                                                    )
+                                                }
+                                                displayEmpty
+                                                sx={{
+                                                    fontSize: "0.75rem",
+                                                    color: getStatusColor(
+                                                        ticket.status
+                                                    ),
+                                                    fontWeight: "bold",
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                getStatusColor(
+                                                                    ticket.status
+                                                                ),
+                                                        },
+                                                    "&:hover .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                getStatusColor(
+                                                                    ticket.status
+                                                                ),
+                                                        },
+                                                    height: "32px",
+                                                }}
+                                            >
+                                                <MenuItem
+                                                    value="OPEN"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .success.main,
+                                                    }}
+                                                >
+                                                    OPEN
+                                                </MenuItem>
+                                                <MenuItem
+                                                    value="IN_PROGRESS"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .info.main,
+                                                    }}
+                                                >
+                                                    IN PROGRESS
+                                                </MenuItem>
+                                                <MenuItem
+                                                    value="BLOCKED"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .grey[500],
+                                                    }}
+                                                >
+                                                    BLOCKED
+                                                </MenuItem>
+                                                <MenuItem
+                                                    value="CLOSED"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .error.main,
+                                                    }}
+                                                >
+                                                    CLOSED
+                                                </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {isCustomer ? (
+                                        <Chip
+                                            label={ticket.ticketPriority}
+                                            size="small"
+                                            {...getPriorityChipProps(
+                                                ticket.ticketPriority
+                                            )}
+                                            sx={{ fontWeight: "bold" }}
+                                        />
+                                    ) : (
+                                        <FormControl
+                                            size="small"
+                                            sx={{ minWidth: 120 }}
+                                        >
+                                            <Select
+                                                value={ticket.ticketPriority}
+                                                onChange={(e) =>
+                                                    handlePriorityChange(
+                                                        e,
+                                                        ticket._id
+                                                    )
+                                                }
+                                                displayEmpty
+                                                sx={{
+                                                    fontSize: "0.75rem",
+                                                    color: getPriorityColor(
+                                                        ticket.ticketPriority
+                                                    ),
+                                                    fontWeight: "bold",
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                getPriorityColor(
+                                                                    ticket.ticketPriority
+                                                                ),
+                                                        },
+                                                    "&:hover .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                getPriorityColor(
+                                                                    ticket.ticketPriority
+                                                                ),
+                                                        },
+                                                    height: "32px",
+                                                }}
+                                            >
+                                                <MenuItem
+                                                    value="LOW"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .success.main,
+                                                    }}
+                                                >
+                                                    LOW
+                                                </MenuItem>
+                                                <MenuItem
+                                                    value="MEDIUM"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .warning.main,
+                                                    }}
+                                                >
+                                                    MEDIUM
+                                                </MenuItem>
+                                                <MenuItem
+                                                    value="HIGH"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .error.main,
+                                                    }}
+                                                >
+                                                    HIGH
+                                                </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {moment(ticket.createdAt).format(
+                                        "MMM Do, YYYY"
+                                    )}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {userData.userType !== "CUSTOMER" && (
+                                        <IconButton
+                                            size="small"
+                                            color="error"
+                                            onClick={() =>
+                                                toast("Coming Soon...", {
+                                                    icon: "🚀",
+                                                })
+                                            }
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={
+                                    userData.userType !== "CUSTOMER" ? 9 : 8
+                                }
+                                sx={{ textAlign: "center", py: 4 }}
+                            >
+                                <Typography variant="h6" color="text.secondary">
+                                    No Tickets Found
+                                </Typography>
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
 
     return (
-        <div>
+        <Box
+            sx={{
+                p: { xs: 1, sm: 3 },
+                mt: 10,
+                minHeight: "calc(100vh - 180px)",
+                pb: 10,
+            }}
+        >
             <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={open}
+                sx={{
+                    color: "#fff",
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                }}
+                open={open || loading}
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {/* <div className='w-full text-left p-4 mx-4'>Render count in Tickets.jsx: {renderCount}</div> */}
-            {/* DISPLAY TICKETS AS CARDS IN SMALL DEVICES */}
-            <div className='w-full min-h-[75vh] lg:h-[88vh] xl:hidden mt-24'
+
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3,
+                }}
             >
-                <TicketCard  />
-            </div>
-            <section className="w-full mx-auto max-w-7xl p-4 min-h-screen hidden xl:block">
-                {/* //* Important info */}
-                <div className="flex gap-x-4 mt-24">
-                    <div className='w-[80%] sm:w-[50%] flex flex-col gap-y-2'>
-                        <p className="text-base text-gray-700">
-                            This is a list of all <strong>Tickets</strong> in our database
-                        </p>
-                    </div>
-                    <p className='flex w-[20%] sm:w-[50%] text-base my-auto mx-auto items-center  justify-end pr-4 lg:hidden'>
-                        <strong className='px-4 hidden sm:block'>Refresh Users</strong>
-                        <button
-                            onClick={handleFetchTickets}
-                            className='drop-shadow-lg transition-all duration-300'
-                        >
-                            <CachedRounded color='primary' />
-                        </button>
-                    </p>
-                </div>
-                <div className="mt-6 flex flex-col lg:block">
-                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div className="inline-block min-w-full py-2 align-middle md:px-6 mb-4">
-                            <div className="border-2 border-gray-200 md:rounded-lg shadow-lg shadow-violet-300">
-                                <table className="min-w-full divide-y divide-gray-200 ">
-                                    <thead className="bg-gray-50 ">
-                                        <tr>
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3 text-center text-gray-700"
-                                            >
-                                                <span>{''}</span>
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3 text-center text-gray-700"
-                                            >
-                                                <span>Title</span>
-                                            </th>
-                                            <th
-                                                scope='col'
-                                                className="px-4 py-3 text-center text-gray-700"
-                                            >
-                                                <span>Description</span>
-                                            </th>
-                                            {userData.userType !== 'CUSTOMER' && (<th
-                                                scope='col'
-                                                className="px-4 py-3 text-center text-gray-700"
-                                            >
-                                                <span>Reported By</span>
-                                            </th>)}
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3 text-center text-gray-700"
-                                            >
-                                                Assigned Engineer
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3 text-center text-gray-700"
-                                            >
-                                                Ticket Status
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3 text-center text-gray-700"
-                                            >
-                                                Ticket Priority
-                                            </th>
+                <Typography
+                    variant="h5"
+                    component="h1"
+                    sx={{
+                        fontWeight: "bold",
+                        color: theme.palette.primary.main,
+                    }}
+                >
+                    Ticket Management
+                </Typography>
+            </Box>
 
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3.5 text-center text-gray-700"
-                                            >
-                                                <span>Created At</span>
-                                            </th>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                This is a list of all <strong>Tickets</strong> in our database
+            </Typography>
 
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3.5 text-center text-sm font-normal text-gray-700"
-                                            >
+            {isMobile ? renderMobileView() : renderDesktopView()}
 
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3.5 text-center text-gray-700"
-                                            >
-                                                <button
-                                                    onClick={handleFetchTickets}
-                                                    className='hover:scale-105 drop-shadow-lg hover:-rotate-45 transition-all duration-300'
-                                                >
-                                                    <CachedRounded color='primary' />
-                                                </button>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    {allTickets.length > 0 && (<tbody className="divide-y divide-gray-200 bg-slate-50">
-                                        {allTickets.length > 0 && (allTickets.map((ticket) => (
-                                            <tr key={ticket._id}>
-                                                <td className="whitespace-nowrap text-center p-3">
-                                                    {serialNo++}
-                                                </td>
-                                                <td className="whitespace-nowrap px-4 py-4">
-                                                    <div className="flex items-center">
-                                                        <div className="">
-                                                            <textarea
-                                                                className='w-full text-sm text-center justify-center bg-slate-50'
-                                                                value={ticket.title}
-                                                                rows={1}
-                                                                readOnly
-                                                                disabled
-                                                                style={{ resize: 'none', overflow: 'hidden'}}
-                                                            />
-                                                            {/* {userData.userType !== 'CUSTOMER' && (<div className="text-[12px] text-gray-700">{ticket._id}</div>)} */}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    className='whitespace-nowrap p-3 text-center'
-                                                >
-                                                    {/* <div className="text-sm text-gray-700">{ticket.description}</div> */}
-                                                    {/* <TextField
-                                                        id="ticketTitle"
-                                                        value={ticket.description}
-                                                        // label="Ticket Title"
-                                                        variant='outlined'
-                                                        // required
-                                                        // placeholder="Ticket Subject"
-                                                        className='w-full text-sm text-gray-700'
-                                                        rows={2}
-                                                        multiline
-                                                    /> */}
-                                                    <textarea
-                                                        className='w-full text-sm text-center overflow-hidden'
-                                                        value={ticket.description}
-                                                        rows={1}
-                                                        readOnly
-                                                        disabled
-                                                        style={{ resize: 'none'}}
-                                                    />
-                                                </td>
-                                                {userData.userType !== 'CUSTOMER' && (<td className="whitespace-nowrap p-3 text-center">
-                                                    <div className="text-sm text-gray-700">{ticket.reporter}</div>
-                                                </td>)}
-                                                <td className="whitespace-nowrap p-3 text-center">
-                                                    <div className="text-sm text-gray-700">{ticket.assignee}</div>
-                                                </td>
-                                                {/* Ticket Status Buttons */}
-                                                <td className="whitespace-nowrap p-3 text-center">
-                                                    <Button
-                                                        id="status-button"
-                                                        aria-controls={openStatusMenu ? 'status-menu' : undefined}
-                                                        aria-haspopup="true"
-                                                        aria-expanded={openStatusMenu ? 'true' : undefined}
-                                                        onClick={(e) => (handleClick(e, ticket._id))}
-                                                        variant="text"
-                                                        disabled={userData.userType === 'CUSTOMER' ? true : false}
-                                                    >
-                                                        {ticket.status === 'OPEN' ? (<div className="inline-flex rounded-full bg-green-200 px-2 text-xs font-semibold leading-5 text-green-800">{ticket.status}</div>) : (ticket.status === 'IN_PROGRESS' ? (<div className="inline-flex rounded-full bg-blue-200 px-2 text-xs font-semibold leading-5 text-blue-800">{ticket.status}</div>) : (ticket.status === 'BLOCKED' ? (<div className="inline-flex rounded-full bg-gray-200 px-2 text-xs font-semibold leading-5 text-gray-800">{ticket.status}</div>) : (
-                                                            <div className="inline-flex rounded-full bg-red-200 px-2 text-xs font-semibold leading-5 text-red-800">{ticket.status}</div>
-                                                        )))}
+            <Menu
+                id="status-menu"
+                anchorEl={statusAnchorEl}
+                open={openStatusMenu}
+                onClose={handleStatusClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                }}
+            >
+                <MenuItem
+                    onClick={() =>
+                        handleTicketStatusAndPriority(ticketId, "", "OPEN")
+                    }
+                    sx={{
+                        color: "success.main",
+                        "&:hover": { backgroundColor: "success.light" },
+                    }}
+                >
+                    OPEN
+                </MenuItem>
+                <MenuItem
+                    onClick={() =>
+                        handleTicketStatusAndPriority(
+                            ticketId,
+                            "",
+                            "IN_PROGRESS"
+                        )
+                    }
+                    sx={{
+                        color: "info.main",
+                        "&:hover": { backgroundColor: "info.light" },
+                    }}
+                >
+                    IN PROGRESS
+                </MenuItem>
+                <MenuItem
+                    onClick={() =>
+                        handleTicketStatusAndPriority(ticketId, "", "CLOSED")
+                    }
+                    sx={{
+                        color: "error.main",
+                        "&:hover": { backgroundColor: "error.light" },
+                    }}
+                >
+                    CLOSED
+                </MenuItem>
+                <MenuItem
+                    onClick={() =>
+                        handleTicketStatusAndPriority(ticketId, "", "BLOCKED")
+                    }
+                    sx={{
+                        color: "text.primary",
+                        "&:hover": { backgroundColor: "action.hover" },
+                    }}
+                >
+                    BLOCKED
+                </MenuItem>
+            </Menu>
 
-                                                    </Button>
-                                                    {/* TICKET STATUS OPTIONS */}
-                                                    <Menu
-                                                        id="status-menu"
-                                                        anchorEl={anchorEl}
-                                                        open={openStatusMenu}
-                                                        onClose={handleClose}
-                                                        MenuListProps={{
-                                                            'aria-labelledby': 'status-button',
-                                                        }}
-                                                    >
-                                                        <MenuItem onClick={() =>
-                                                            handleTicketStatusAndPriority(ticketId, '', 'OPEN')}
-                                                            sx={{
-                                                                color: 'green',
-                                                                '&:hover': {
-                                                                    backgroundColor: '#d6f5d6',
-                                                                }
-                                                            }}
-                                                        >
-                                                            OPEN
-                                                        </MenuItem>
-                                                        <MenuItem onClick={() =>
-                                                            handleTicketStatusAndPriority(ticketId, '', 'IN_PROGRESS')}
-                                                            sx={{
-                                                                color: '#0077e6',
-                                                                '&:hover': {
-                                                                    backgroundColor: '#cce6ff',
-                                                                }
-                                                            }}
-                                                        >
-                                                            IN PROGRESS
-                                                        </MenuItem>
-                                                        <MenuItem onClick={() =>
-                                                            handleTicketStatusAndPriority(ticketId, '', 'CLOSED')}
-                                                            sx={{
-                                                                color: '#cc0000',
-                                                                '&:hover': {
-                                                                    backgroundColor: '#ffcccc',
-                                                                }
-                                                            }}
-                                                        >
-                                                            CLOSED
-                                                        </MenuItem>
-                                                        <MenuItem onClick={() =>
-                                                            handleTicketStatusAndPriority(ticketId, '', 'BLOCKED')}
-                                                            sx={{
-                                                                color: '#262626',
-                                                                '&:hover': {
-                                                                    backgroundColor: '#e6e6e6',
-                                                                }
-                                                            }}
-                                                        >
-                                                            BLOCKED
-                                                        </MenuItem>
-                                                    </Menu>
-
-                                                </td>
-                                                {/*  Ticket Priority Buttons */}
-                                                <td className="whitespace-nowrap p-3 text-center">
-                                                    <MenuBar
-                                                        buttonItem={[{
-                                                            text:
-                                                                (
-                                                                    ticket.ticketPriority === 'LOW' ? (<span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-                                                                        {ticket.ticketPriority}
-                                                                    </span>) : (ticket.ticketPriority === 'MEDIUM' ? (
-                                                                        <span className="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
-                                                                            {ticket.ticketPriority}
-                                                                        </span>
-                                                                    ) : (<span className="inline-flex rounded-full bg-orange-100 px-2 text-xs font-semibold leading-5 text-orange-800">
-                                                                        {ticket.ticketPriority}
-                                                                    </span>
-                                                                    ))
-                                                                ),
-                                                        }
-
-                                                        ]}
-                                                        menuItem={[
-                                                            {
-                                                                text: 'LOW',
-                                                                color: 'green',
-                                                                backgroundColor: '#d6f5d6',
-                                                                menuOnClickFn: () => { handleTicketStatusAndPriority(ticket._id, 'LOW', '') }
-                                                            },
-                                                            {
-                                                                text: 'MEDIUM',
-                                                                color: '#0077e6',
-                                                                backgroundColor: '#cce6ff',
-                                                                menuOnClickFn: () => handleTicketStatusAndPriority(ticket._id, 'MEDIUM', '')
-                                                            },
-                                                            {
-                                                                text: 'HIGH',
-                                                                color: '#cc0000',
-                                                                backgroundColor: '#ffcccc',
-                                                                menuOnClickFn: () => handleTicketStatusAndPriority(ticket._id, 'HIGH', '')
-                                                            }
-                                                        ]}
-                                                    />
-                                                </td>
-                                                <td className="whitespace-wrap p-3 text-center text-xs font-medium ">
-                                                    {moment(ticket.createdAt).format('Do MMMM YYYY, h:mm:ss A')}
-                                                </td>
-                                                <td className="whitespace-nowrap p-3 text-center text-sm font-medium">
-                                                    {/* {ticket.userId !== 'john123' &&
-                                                        (<Button
-                                                            className="text-gray-700"
-                                                            variant='text'>
-                                                            <ModeEditRoundedIcon sx={{ color: 'black' }} />
-                                                        </Button>)} */}
-                                                </td>
-                                                <td className="whitespace-nowrap p-3 text-center text-sm font-medium">
-                                                    {ticket.userId !== 'john123' &&
-                                                        (<IconButton aria-label="delete"
-                                                            onClick={() => toast('Coming Soon...', {
-                                                                icon: '🚀',
-                                                            })} >
-                                                            <DeleteIcon sx={{ color: 'black' }} />
-                                                        </IconButton>)}
-                                                </td>
-                                            </tr>
-                                        )))}
-                                    </tbody>)}
-                                </table>
-                                {allTickets.length === 0 && (<div className='w-full h-[50vh] text-2xl text-center pt-16 items-center justify-center bg-slate-50'>
-                                    No Tickets Found
-                                </div>)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    )
+            <Menu
+                id="priority-menu"
+                anchorEl={priorityAnchorEl}
+                open={openPriorityMenu}
+                onClose={handlePriorityClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                }}
+            >
+                <MenuItem
+                    onClick={() =>
+                        handleTicketStatusAndPriority(
+                            selectedTicketId,
+                            "LOW",
+                            ""
+                        )
+                    }
+                    sx={{
+                        color: "success.main",
+                        "&:hover": { backgroundColor: "success.light" },
+                    }}
+                >
+                    LOW
+                </MenuItem>
+                <MenuItem
+                    onClick={() =>
+                        handleTicketStatusAndPriority(
+                            selectedTicketId,
+                            "MEDIUM",
+                            ""
+                        )
+                    }
+                    sx={{
+                        color: "warning.main",
+                        "&:hover": { backgroundColor: "warning.light" },
+                    }}
+                >
+                    MEDIUM
+                </MenuItem>
+                <MenuItem
+                    onClick={() =>
+                        handleTicketStatusAndPriority(
+                            selectedTicketId,
+                            "HIGH",
+                            ""
+                        )
+                    }
+                    sx={{
+                        color: "error.main",
+                        "&:hover": { backgroundColor: "error.light" },
+                    }}
+                >
+                    HIGH
+                </MenuItem>
+            </Menu>
+        </Box>
+    );
 }
 
-export default Tickets
+export default Tickets;
