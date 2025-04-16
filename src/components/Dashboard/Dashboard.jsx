@@ -138,7 +138,7 @@ export default function Dashboard() {
                     boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                 }}
             >
-                <Container maxWidth="lg">
+                <Container maxWidth="xxl">
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} md={8}>
                             <Typography
@@ -209,16 +209,15 @@ export default function Dashboard() {
                 {(authData.userType === "CUSTOMER" ||
                     authData.userType === "ENGINEER") && (
                     <Grid container spacing={3}>
-                        <Grid item xs={12} sx={{ display: { sm: "none" } }}>
+                        {/* <Grid item xs={12} sx={{ display: { sm: "none" } }}>
                             <ProfileCard />
-                        </Grid>
+                        </Grid> */}
 
                         <Grid
                             item
                             xs={12}
                             sm={4}
                             lg={3}
-                            sx={{ display: { xs: "none", sm: "block" } }}
                         >
                             <Card
                                 elevation={2}

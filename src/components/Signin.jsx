@@ -134,7 +134,7 @@ export default function Signin() {
                         setOpenSnackbar={true}
                     />
                 )}
-                <div className="flex items-center justify-center py-8 min-h-screen bg-zinc-800">
+                <div className="flex items-center justify-center py-8 min-h-screen bg-zinc-800 px-4">
                     <div className="mx-auto w-full sm:max-w-sm rounded-xl py-20 px-8 shadow-lg shadow-slate-700 bg-gray-600 text-white mt-[70px]">
                         <div className="mb-2 flex justify-center">
                             <img

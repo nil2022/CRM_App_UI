@@ -80,86 +80,119 @@ export default function UserCardProfile({
                                         flex: 1,
                                         display: "flex",
                                         flexDirection: "column",
+                                        textAlign: "center",
                                     }}
                                 >
-                                    {/* Header with name and status */}
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            flexDirection: {
-                                                xs: "column",
-                                                sm: "row",
-                                            },
-                                            justifyContent: "space-between",
-                                            alignItems: {
-                                                xs: "flex-start",
-                                                sm: "center",
-                                            },
-                                            gap: 1,
-                                            mb: 2,
-                                        }}
-                                    >
-                                        <Typography
-                                            variant="h6"
-                                            sx={{
-                                                fontWeight: "bold",
-                                                fontSize: {
-                                                    xs: "1rem",
-                                                    sm: "1.25rem",
-                                                },
-                                                wordBreak: "break-word",
-                                            }}
-                                        >
-                                            {user.fullName}
-                                        </Typography>
-                                        <Chip
-                                            label={user.userStatus}
-                                            size="small"
-                                            {...getStatusChipProps(
-                                                user.userStatus
-                                            )}
-                                        />
-                                    </Box>
-
                                     {/* User avatar and type section */}
                                     <Box
                                         sx={{
                                             display: "flex",
-                                            flexDirection: {
-                                                xs: "column",
-                                                sm: "row",
-                                            },
+                                            flexDirection: "column",
                                             alignItems: {
                                                 xs: "center",
                                                 sm: "flex-start",
                                             },
-                                            mb: 2,
+                                            mb: 1,
                                             gap: 2,
+                                            mx: "auto",
                                         }}
                                     >
-                                        {user.avatar ? (
-                                            <Avatar
-                                                src={user.avatar}
-                                                alt={user.fullName}
-                                                sx={{ width: 64, height: 64 }}
-                                            />
-                                        ) : (
-                                            <Avatar
-                                                sx={{
-                                                    width: 64,
-                                                    height: 64,
-                                                    bgcolor: "grey.300",
-                                                }}
-                                            >
-                                                {user.fullName.charAt(0)}
-                                            </Avatar>
-                                        )}
+                                        <Box
+                                            width={"100%"}
+                                            display={"flex"}
+                                            justifyContent={"center"}
+                                        >
+                                            {user.avatar ? (
+                                                <Avatar
+                                                    src={user.avatar}
+                                                    alt={user.fullName}
+                                                    sx={{
+                                                        width: 64,
+                                                        height: 64,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <Avatar
+                                                    sx={{
+                                                        width: 64,
+                                                        height: 64,
+                                                        bgcolor: "grey.300",
+                                                    }}
+                                                >
+                                                    {user.fullName.charAt(0)}
+                                                </Avatar>
+                                            )}
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                flexDirection: {
+                                                    xs: "column",
+                                                },
+                                                justifyContent: "center",
+                                                alignItems: {
+                                                    xs: "flex-start",
+                                                },
+                                                gap: 1,
+                                                textAlign: "center",
+                                                mx: "auto",
+                                            }}
+                                        >
+                                            <Box width={"100%"}>
+                                                <Typography
+                                                    variant="h6"
+                                                    sx={{
+                                                        fontWeight: "bold",
+                                                        fontSize: {
+                                                            xs: "1rem",
+                                                            sm: "1.25rem",
+                                                        },
+                                                        wordBreak: "break-word",
+                                                        mb: -1,
+                                                    }}
+                                                >
+                                                    {user.fullName}
+                                                </Typography>
+                                            </Box>
+                                            <Box width={"100%"}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 0.5,
+                                                        flexWrap: "wrap",
+                                                        justifyContent: {
+                                                            xs: "center",
+                                                            sm: "flex-start",
+                                                        },
+                                                        wordBreak: "break-word",
+                                                        color: "gray",
+                                                    }}
+                                                >
+                                                    <AlternateEmailRounded
+                                                        fontSize="small"
+                                                        color="action"
+                                                    />
+                                                    {user.userId}
+                                                </Typography>
+                                            </Box>
+                                            <Box width={"100%"}>
+                                                <Chip
+                                                    label={user.userStatus}
+                                                    size="small"
+                                                    {...getStatusChipProps(
+                                                        user.userStatus
+                                                    )}
+                                                />
+                                            </Box>
+                                        </Box>
                                         <Box
                                             sx={{
                                                 width: "100%",
                                                 textAlign: {
                                                     xs: "center",
-                                                    sm: "left",
+                                                    // sm: "left",
                                                 },
                                             }}
                                         >
@@ -171,53 +204,37 @@ export default function UserCardProfile({
                                                 )}
                                                 sx={{ mb: 1 }}
                                             />
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: 0.5,
-                                                    flexWrap: "wrap",
-                                                    justifyContent: {
-                                                        xs: "center",
-                                                        sm: "flex-start",
-                                                    },
-                                                    wordBreak: "break-word",
-                                                }}
-                                            >
-                                                <AlternateEmailRounded
-                                                    fontSize="small"
-                                                    color="action"
-                                                />
-                                                {user.userId}
-                                            </Typography>
                                         </Box>
                                     </Box>
 
                                     {/* Email */}
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "flex-start",
-                                            gap: 0.5,
-                                            mb: 1,
-                                            wordBreak: "break-all",
-                                            overflowWrap: "break-word",
-                                        }}
-                                    >
-                                        <ForwardToInboxTwoTone
-                                            fontSize="small"
-                                            color="action"
-                                            sx={{ mt: 0.3 }}
-                                        />
-                                        <Box component="span" sx={{ flex: 1 }}>
-                                            {user.email}
-                                        </Box>
-                                    </Typography>
-
+                                    <Box width={"100%"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "flex-start",
+                                                gap: 0.5,
+                                                mb: 1,
+                                                wordBreak: "break-all",
+                                                overflowWrap: "break-word",
+                                            }}
+                                        >
+                                            {/* <ForwardToInboxTwoTone
+                                                fontSize="small"
+                                                color="action"
+                                                sx={{ mt: 0.3 }}
+                                            /> */}
+                                            <Box
+                                                component="span"
+                                                sx={{ flex: 1 }}
+                                            >
+                                                {user.email}
+                                            </Box>
+                                        </Typography>
+                                    </Box>
                                     {/* User ID */}
-                                    <Typography
+                                    {/* <Typography
                                         variant="caption"
                                         color="text.secondary"
                                         sx={{ mt: 1 }}
@@ -233,7 +250,7 @@ export default function UserCardProfile({
                                         }}
                                     >
                                         {user._id}
-                                    </Typography>
+                                    </Typography> */}
 
                                     <Divider sx={{ my: 1 }} />
 

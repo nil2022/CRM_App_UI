@@ -32,6 +32,7 @@ import {
     Grid,
     Select,
     FormControl,
+    Tooltip,
 } from "@mui/material";
 
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -443,9 +444,25 @@ function Tickets() {
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography noWrap sx={{ maxWidth: 200 }}>
-                                        {ticket.description}
-                                    </Typography>
+                                    <Tooltip
+                                        title={ticket.description}
+                                        componentsProps={{
+                                            tooltip: {
+                                                sx: {
+                                                    fontSize: 12, 
+                                                    maxWidth: 300, 
+                                                    p: 1, 
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        <Typography
+                                            noWrap
+                                            sx={{ maxWidth: 200 }}
+                                        >
+                                            {ticket.description}
+                                        </Typography>
+                                    </Tooltip>
                                 </TableCell>
                                 {userData.userType !== "CUSTOMER" && (
                                     <TableCell>{ticket.reporter}</TableCell>

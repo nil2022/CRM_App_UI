@@ -10,6 +10,8 @@ export default function NavbarLinks({ iconEnabled = true }) {
     const userData = useSelector((state) => state.auth?.userData || []);
     const [drawerOpen, setDrawerOpen] = React.useState(false);
 
+    console.log("userData", userData);
+
     const toggleDrawer = (open) => (event) => {
         if (
             event.type === "keydown" &&
@@ -29,6 +31,7 @@ export default function NavbarLinks({ iconEnabled = true }) {
             >
                 Dashboard
             </Link>
+
             <Link
                 to="/tickets"
                 className="hover:underline"
@@ -36,13 +39,16 @@ export default function NavbarLinks({ iconEnabled = true }) {
             >
                 View Tickets
             </Link>
-            <Link
-                to="/create-ticket"
-                className="hover:underline"
-                onClick={() => setDrawerOpen(false)}
-            >
-                Add Ticket
-            </Link>
+
+            {userData?.userType !== "ENGINEER" && (
+                <Link
+                    to="/create-ticket"
+                    className="hover:underline"
+                    onClick={() => setDrawerOpen(false)}
+                >
+                    Add Ticket
+                </Link>
+            )}
             <Link
                 to="/change-password"
                 className="hover:underline"
@@ -73,12 +79,14 @@ export default function NavbarLinks({ iconEnabled = true }) {
                         >
                             View Tickets
                         </Link>
-                        <Link
-                            to="/create-ticket"
-                            className="text-white hover:underline"
-                        >
-                            Add Ticket
-                        </Link>
+                        {userData?.userType !== "ENGINEER" && (
+                            <Link
+                                to="/create-ticket"
+                                className="text-white hover:underline"
+                            >
+                                Add Ticket
+                            </Link>
+                        )}
                         <Link
                             to="/change-password"
                             className="text-white hover:underline"

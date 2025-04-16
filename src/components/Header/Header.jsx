@@ -42,7 +42,7 @@ export function Header() {
     };
 
     return (
-        <Box>
+        <Box className="z-50">
             <Box className="w-full flex justify-between items-center bg-gray-800 gap-x-2 h-[70px]  fixed top-0 z-10 border-b-0 shadow-md border-zinc-700 text-white px-6">
                 <div>
                     <Link to="/">

@@ -121,7 +121,7 @@ function Signup() {
                 </Backdrop>
                 {successMsg && (<CustomizedSnackbars severity="success" message={successMsg} setOpenSnackbar={true} />)}
                 {error && (<CustomizedSnackbars severity="error" message={error} setOpenSnackbar={true} />)}
-                <div className="flex items-center justify-center bg-zinc-800 min-h-screen">
+                <div className="flex items-center justify-center bg-zinc-800 min-h-screen px-4 py-4">
                     <div className="sm:mx-auto sm:max-w-sm w-full bg-gray-600 rounded-xl p-8 shadow-lg shadow-slate-700 text-white mt-[72px]">
                         <div className="mb-2 flex justify-center">
                             <img src="/register.png"
