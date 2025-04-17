@@ -18,8 +18,6 @@ import ChangePassword from './components/ChangePassword.jsx'
 import Tickets from './components/Tickets.jsx'
 import CreateTicket from './components/CreateTicket.jsx'
 import OTPInput from './components/OtpVerifyPage.jsx'
-import Test from './components/Test.jsx'
-
 
 const router = createBrowserRouter(
   createRoutesFromElements(
