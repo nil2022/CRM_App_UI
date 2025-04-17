@@ -26,7 +26,6 @@ const router = createBrowserRouter(
     <Route path='/' element={<Layout />}>
       <Route path='/' element={<PrivateRoute authentication = {false}> <Home/></PrivateRoute>} />
       <Route path='/register' element={<Register />} />
-      <Route path='/test' element={<Test />} />
       <Route path='/login' element={<Login />} />
       <Route path='/verify-otp' element={<OTPInput />} />
       <Route path='/dashboard' element={
