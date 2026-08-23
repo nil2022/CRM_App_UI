@@ -19,20 +19,25 @@ import Tickets from './components/Tickets.jsx'
 import CreateTicket from './components/CreateTicket.jsx'
 import OTPInput from './components/OtpVerifyPage.jsx'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
+const queryClient = new QueryClient()
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<Layout />}>
-      <Route path='/' element={<PrivateRoute authentication = {false}> <Home/></PrivateRoute>} />
+      <Route path='/' element={<PrivateRoute authentication={false}> <Home /></PrivateRoute>} />
       <Route path='/register' element={<Register />} />
       <Route path='/login' element={<Login />} />
       <Route path='/verify-otp' element={<OTPInput />} />
       <Route path='/dashboard' element={
-        <PrivateRoute authentication = {true}><DashboardLayout /></PrivateRoute>}>
+        <PrivateRoute authentication={true}><DashboardLayout /></PrivateRoute>}>
         <Route path='/dashboard' element={<Dashboard />} />
       </Route>
-      <Route path='/change-password' element={<PrivateRoute authentication={true}><ChangePassword /></PrivateRoute>}/>
-      <Route path='/tickets' element={<PrivateRoute authentication={true}><Tickets /></PrivateRoute>}/>
-      <Route path='/create-ticket' element={<PrivateRoute authentication={true}><CreateTicket /></PrivateRoute>}/>
+      <Route path='/change-password' element={<PrivateRoute authentication={true}><ChangePassword /></PrivateRoute>} />
+      <Route path='/tickets' element={<PrivateRoute authentication={true}><Tickets /></PrivateRoute>} />
+      <Route path='/create-ticket' element={<PrivateRoute authentication={true}><CreateTicket /></PrivateRoute>} />
       {/* <Route path= '/test-page' element={<Users />} /> */}
       <Route path='*' element={<Error />} />
     </Route>
@@ -42,7 +47,10 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </Provider>
   </React.StrictMode>,
 )

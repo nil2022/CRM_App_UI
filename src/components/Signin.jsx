@@ -1,14 +1,15 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, User, Lock, Eye, EyeOff, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { useCookies, Cookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { login as authLogin } from "../store/authSlice";
 import authService from "../server/auth";
 import { Backdrop, CircularProgress } from "@mui/material";
 import CustomizedSnackbars from "./SnackbarComponent";
 import { useForm } from "react-hook-form";
+import { motion } from "framer-motion";
 
 const cookieOptions = {
     path: "/",
@@ -21,9 +22,7 @@ export default function Signin() {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [successMsg, setSuccessMsg] = useState("");
     const [error, setError] = useState("");
-    /** set loading state  */
-    const [loading, setLoading] = useState(false);
-    const [cookies, setCookie, removeCookie] = useCookies([
+    const [, setCookie, removeCookie] = useCookies([
         "accessToken",
         "refreshToken",
     ]);
@@ -37,19 +36,14 @@ export default function Signin() {
         setPasswordVisible(!passwordVisible);
     };
 
-    /* ******************************************** */
-    /* ***********  HANDLE THE LOGIN  ************* */
-    /* ******************************************** */
     const login = async (data) => {
         setError("");
         setSuccessMsg("");
         try {
             setOpen(true);
             const userSession = await authService.login(data);
-            // console.log('userSession:', userSession)
             dispatch(authLogin(userSession.data?.user));
             if (userSession) {
-                // console.log('Login Successfull !')
                 toast(userSession?.message, {
                     icon: "👏",
                     style: {
@@ -89,7 +83,6 @@ export default function Signin() {
         } catch (err) {
             setOpen(false);
             setError(err.response?.data?.message || err.message);
-            // err.response?.data?.message ? toast.error(err.response?.data?.message) : toast.error(err.message)
             console.log(
                 "Login error ::",
                 err.response?.data?.message || err.message
@@ -110,7 +103,51 @@ export default function Signin() {
 
     return (
         <>
-            <section>
+            <section className="relative min-h-screen overflow-hidden">
+                {/* Animated Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+                    {/* Grid Pattern */}
+                    <div className="absolute inset-0 grid-pattern opacity-30" />
+
+                    {/* Gradient Orbs */}
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                        className="absolute top-20 left-10 w-72 h-72 bg-purple-500/30 rounded-full blur-[100px]"
+                    />
+                    <motion.div
+                        animate={{
+                            scale: [1.2, 1, 1.2],
+                            opacity: [0.2, 0.4, 0.2],
+                        }}
+                        transition={{
+                            duration: 10,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                        className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/30 rounded-full blur-[120px]"
+                    />
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.3, 1],
+                            opacity: [0.2, 0.3, 0.2],
+                        }}
+                        transition={{
+                            duration: 12,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px]"
+                    />
+                </div>
+
                 <Backdrop
                     sx={{
                         color: "#fff",
@@ -120,6 +157,7 @@ export default function Signin() {
                 >
                     <CircularProgress color="inherit" />
                 </Backdrop>
+
                 {successMsg && (
                     <CustomizedSnackbars
                         severity="success"
@@ -134,51 +172,98 @@ export default function Signin() {
                         setOpenSnackbar={true}
                     />
                 )}
-                <div className="flex items-center justify-center py-8 min-h-screen bg-zinc-800 px-4">
-                    <div className="mx-auto w-full sm:max-w-sm rounded-xl py-20 px-8 shadow-lg shadow-slate-700 bg-gray-600 text-white mt-[70px]">
-                        <div className="mb-2 flex justify-center">
-                            <img
-                                src="/login.png"
-                                className="rounded-full"
-                                width={60}
-                                alt="login_Page_image"
-                                loading="lazy"
-                            />
-                        </div>
-                        <h2 className="text-center text-2xl font-[700] leading-tight">
-                            Log in to {"\n"}Dashboard
-                        </h2>
-                        <p className="mt-2 text-center text-base font-[500]">
-                            Don&apos;t have an account? <br />
-                            <Link
-                                to="/register"
-                                rel="noopener noreferrer"
-                                className="font-[700] transition-all duration-200 hover:underline"
+
+                <div className="relative flex items-center justify-center min-h-screen py-12 px-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+                        className="w-full max-w-md mt-16"
+                    >
+                        {/* Main Card */}
+                        <div className="glass-card-dark p-8 sm:p-10 shadow-2xl shadow-purple-500/10">
+                            {/* Logo */}
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{
+                                    delay: 0.2,
+                                    type: "spring",
+                                    stiffness: 200,
+                                }}
+                                className="mb-6 flex justify-center"
                             >
-                                Register Now !
-                            </Link>
-                        </p>
-                        <form
-                            onSubmit={handleSubmit(login)}
-                            className="mt-8 max-w-[280px] mx-auto"
-                        >
-                            <div className="space-y-5">
-                                <div>
-                                    <div className="mt-2">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-xl opacity-50" />
+                                    <img
+                                        src="/login.png"
+                                        className="relative rounded-full border-2 border-white/20"
+                                        width={70}
+                                        alt="login_Page_image"
+                                        loading="lazy"
+                                    />
+                                </div>
+                            </motion.div>
+
+                            {/* Title */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="text-center mb-8"
+                            >
+                                <h2 className="text-3xl font-bold text-white mb-2">
+                                    Welcome Back
+                                </h2>
+                                <p className="text-gray-400">
+                                    Sign in to access your dashboard
+                                </p>
+                            </motion.div>
+
+                            {/* Form */}
+                            <form
+                                onSubmit={handleSubmit(login)}
+                                className="space-y-5"
+                            >
+                                {/* Username Input */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.4 }}
+                                >
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                                        Username
+                                    </label>
+                                    <div className="relative group">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <User className="h-5 w-5 text-gray-400 group-focus-within:text-purple-400 transition-colors" />
+                                        </div>
                                         <input
                                             type="text"
                                             autoComplete="userId"
-                                            placeholder="Username"
+                                            placeholder="Enter your username"
                                             {...register("userId", {
                                                 required: true,
                                                 minLength: 3,
                                             })}
-                                            className="w-full py-2 px-2 rounded-md bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500"
+                                            className="input-premium input-with-icon"
                                         />
                                     </div>
-                                </div>
-                                <div>
-                                    <div className="relative mt-2 flex flex-col">
+                                </motion.div>
+
+                                {/* Password Input */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                                        Password
+                                    </label>
+                                    <div className="relative group">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-purple-400 transition-colors" />
+                                        </div>
                                         <input
                                             type={
                                                 passwordVisible
@@ -186,50 +271,81 @@ export default function Signin() {
                                                     : "password"
                                             }
                                             autoComplete="current-password"
-                                            placeholder="Password"
+                                            placeholder="Enter your password"
                                             {...register("password", {
                                                 required: true,
                                             })}
-                                            className="w-full py-2 px-2 rounded-md bg-slate-700 outline-none hover:ring-2 hover:ring-slate-400 transition-all duration-500"
+                                            className="input-premium input-with-icon pr-12"
                                         />
-                                        <div className="relative w-full py-2">
-                                            <button
-                                                type="button"
-                                                onClick={
-                                                    togglePasswordVisibility
-                                                }
-                                                className="flex justify-center"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={passwordVisible}
-                                                    onChange={
-                                                        togglePasswordVisibility
-                                                    }
-                                                    className="my-auto w-[16px] h-[16px]"
-                                                />
-                                                <span className="ml-2 font-[500] text-base">
-                                                    Show Password
-                                                </span>
-                                            </button>
-                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={togglePasswordVisibility}
+                                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-purple-400 transition-colors"
+                                        >
+                                            {passwordVisible ? (
+                                                <EyeOff className="h-5 w-5" />
+                                            ) : (
+                                                <Eye className="h-5 w-5" />
+                                            )}
+                                        </button>
                                     </div>
-                                </div>
-                                <div>
+                                </motion.div>
+
+                                {/* Submit Button */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="pt-2"
+                                >
                                     <button
-                                        // onClick={handleLogin}
-                                        className="inline-flex w-full items-center justify-center rounded-lg bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-slate-700 transition-all duration-400"
+                                        type="submit"
+                                        className="group relative w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-4 font-semibold text-white overflow-hidden transition-all duration-300"
+                                        style={{
+                                            background:
+                                                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                            boxShadow:
+                                                "0 4px 20px rgba(102, 126, 234, 0.4)",
+                                        }}
                                     >
-                                        Sign In{" "}
-                                        <ArrowRight
-                                            className="ml-2"
-                                            size={16}
+                                        <span className="relative z-10 flex items-center gap-2 text-lg">
+                                            <Sparkles className="w-5 h-5" />
+                                            Sign In
+                                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                        </span>
+                                        <div
+                                            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                            style={{
+                                                background:
+                                                    "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
+                                            }}
                                         />
                                     </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                                </motion.div>
+                            </form>
+
+                            {/* Register Link */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.7 }}
+                                className="mt-8 text-center"
+                            >
+                                <p className="text-gray-400">
+                                    Don&apos;t have an account?{" "}
+                                    <Link
+                                        to="/register"
+                                        className="font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                                    >
+                                        Register Now
+                                    </Link>
+                                </p>
+                            </motion.div>
+                        </div>
+
+                        {/* Bottom Glow */}
+                        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-3/4 h-40 bg-purple-500/20 rounded-full blur-3xl" />
+                    </motion.div>
                 </div>
             </section>
         </>
